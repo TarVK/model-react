@@ -16,6 +16,7 @@ npm install model-react --save
 
 # Usage 
 
+The examples described below can be tested here on [codesandbox](https://codesandbox.io/embed/model-react-edlq8).
 Simply create a model class by extending model-react's `BaseModel` class, and use `Fields` for any data that a react component should be able to react to. For instance:
 ```jsx
 import {BaseModel, Field} from "model-react";
@@ -71,7 +72,7 @@ class SearchModel extends BaseModel {
         if(search!=this.search.get()) return;
         
         this.results.set(items.filter(i=>i.includes(search)));
-        this.loading.false(false);
+        this.loading.set(false);
     }
     getSearch() {
         return this.search.get();
@@ -90,12 +91,15 @@ class SearchModel extends BaseModel {
 import React from "react";
 import {useModel} from "model-react";
 
-const Search = ({SearchModel})=>{
-    const search = useModel(SearchModel);
+const Search = ({searchModel})=>{
+    const search = useModel(searchModel);
     const isLoading = search.isLoading();
     return <div>
         <input value={search.getSearch()} onChange={e=>search.setSearch(e.target.value)} />
-        {isLoading?"Loading":search.getResults()}
+        {isLoading
+            ? <div>Loading</div>
+            : search.getResults().map(i=><div key={i}>{i}</div>)
+        }
     </div>;
 }
 ```
