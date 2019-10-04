@@ -39,6 +39,9 @@ class MyFieldModel extends BaseModel {
 
 We can then make use of an instance of this model in a functional react component:
 ```js
+import React from "react";
+import {useModel} from "model-react";
+
 const MyField = ({myFieldModel})=>{
     const myField = useModel(myFieldModel);
     return <input value={myField.getText()} onChange={e=>myField.setText(e.target.value)} />;
@@ -84,6 +87,9 @@ class SearchModel extends BaseModel {
 ```
 
 ```js
+import React from "react";
+import {useModel} from "model-react";
+
 const Search = ({SearchModel})=>{
     const search = useModel(SearchModel);
     const isLoading = search.isLoading();

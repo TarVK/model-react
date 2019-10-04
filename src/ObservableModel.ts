@@ -95,7 +95,7 @@ export abstract class ObservableModel {
         let Class = modelClass;
         while (Class && Class.prototype) {
             // Go through all
-            Object.keys(Class.prototype).forEach(key => {
+            Object.getOwnPropertyNames(Class.prototype).forEach(key => {
                 // Obtain the value associated with the key
                 const value = Class.prototype[key];
 
