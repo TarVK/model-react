@@ -287,11 +287,9 @@ const Todo: FunctionComponent<{todoListModel: TodoListModel}> = ({todoListModel}
     );
 };
 
-export function renderTodo() {
-    const todoList = new TodoListModel();
-    console.log(todoList);
-    ReactDOM.render(<Todo todoListModel={todoList} />, document.getElementById("root"));
-}
+const todoList = new TodoListModel();
+console.log(todoList);
+ReactDOM.render(<Todo todoListModel={todoList} />, document.getElementById("root"));
 ```
 </details>
 
@@ -417,11 +415,9 @@ const Todo: = ({todoListModel}) => {
     );
 };
 
-export function renderTodo() {
-    const todoList = new TodoListModel();
-    console.log(todoList);
-    ReactDOM.render(<Todo todoListModel={todoList} />, document.getElementById("root"));
-}
+const todoList = new TodoListModel();
+console.log(todoList);
+ReactDOM.render(<Todo todoListModel={todoList} />, document.getElementById("root"));
 ```
 </details>
 
