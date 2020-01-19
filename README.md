@@ -129,7 +129,7 @@ class MyFieldModel extends BaseModel {
     text = new Field("");
 }
 ```
-will bind `text` to the wrong model. We can also explicetely bind the model to solve this:
+will bind `text` to the wrong model. We can also explicitly bind the model to solve this:
 ```js
 import {BaseModel, Field} from "model-react";
 import {MyOtherModel} from "./Somewhere";
