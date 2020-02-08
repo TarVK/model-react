@@ -1,4 +1,4 @@
-import { IDataRetrieverParams } from "./IDataRetrieverParams";
+import {IDataRetrieverParams} from "./IDataRetrieverParams";
 
 /**
  * Retrieves the data of a source
