@@ -17,13 +17,16 @@ export class LoadableField<T> extends Field<T> implements IDataSource<T> {
     /**
      * Creates a new field that synchronizes with a data loader.
      * @param loader The loader to get the data from
-     * @param updater A function
+     * @param updater A function to determine the new value of the field
      */
     constructor(
         loader: IDataRetriever<T>,
         updater: (
+            /** The latest value of the loader */
             newLoaded: T,
+            /** The previous value of the loader */
             previousLoaded: T | undefined,
+            /** The current value of the field */
             current: T
         ) => T = defaultUpdater
     ) {

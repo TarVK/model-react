@@ -24,7 +24,7 @@ export class DataLoader<T> extends AbstractDataSource<T> implements IDataSource<
      * Creates a new data loader instance
      * @param loader The function to load the data with
      * @param initial The initial value of the data
-     * @param dirty Whether the initial value should be overwritten when any data is request
+     * @param dirty Whether the initial value should be overwritten when any data is requested
      * @param loadImmediately Whether the data should already be fetched despite not having been requested yet
      */
     constructor(
@@ -93,7 +93,7 @@ export class DataLoader<T> extends AbstractDataSource<T> implements IDataSource<
     }
 
     /**
-     * Indicates that this data is no longer up to data and should be checked
+     * Indicates that this data is no longer up to data and should be reloaded
      */
     public markDirty(): void {
         this.dirty = true;

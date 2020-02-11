@@ -1,6 +1,9 @@
 import {FC, ReactNode} from "react";
 import * as React from "react";
 
+/**
+ * A component to handle the loading or error state of loadable data sources
+ */
 export const LoaderSwitch: FC<{
     children?: ReactNode;
     content?: ReactNode;
@@ -13,11 +16,11 @@ export const LoaderSwitch: FC<{
     children,
     /** The content to show when there are no exceptions and data loaded */
     content,
-    /** The data to show while loading */
+    /** The node to show while loading */
     onLoad,
-    /** A function retrieving the data to show */
+    /** The node to show if an error occured */
     onError,
-    /** Whether the data is currently loading */
+    /** A function to check whether the data is currently loading */
     isLoading,
     /** A getter for the exceptions */
     getExceptions,

@@ -1,12 +1,14 @@
 # model-react
+
 Model-react provides a simple system to create a data model together with applicable actions for the data (methods), and easily use this data in react components.
 
 There are two main situations when usage of this module could be considered:
-- If you render the same data in multiplce places and want to manage the data neatly
-- If the data has complex behaviour, possibly separate of any GUI
+
+-   If you render the same data in multiple places and want to manage the data neatly
+-   If the data has complex behaviour, possibly separate of any GUI
 
 This module has full TypeScript support, and will work well in a statically typed structured project.
-A demo project written in TypeScript can be found in the examples folder, and shows of several useful constructs in models. The result can be [viewed in browser here](http://tarvk.github.io/model-react/examples/build) but is rather silly. Also note that this demo wasn't made mobile friendly, and generally little time was spent on the looks.
+A demo project written in TypeScript can be found in the examples folder, and shows of several useful constructs in models. The result can be [viewed in browser here](http://tarvk.github.io/model-react/examples/build) but is rather silly. Also note that this demo wasn't made mobile friendly, and generally little time was spent on the looks. This demo was made for the first version of this library and still has to be updated to show all the features of the second version.
 
 # Installation
 
@@ -14,442 +16,1150 @@ A demo project written in TypeScript can be found in the examples folder, and sh
 npm install model-react --save
 ```
 
-# Usage 
+# Quickstart
 
-The examples described below can be tested here on [codesandbox](https://codesandbox.io/embed/model-react-edlq8).
-Simply create a model class by extending model-react's `BaseModel` class, and use `Fields` for any data that a react component should be able to react to. For instance:
+## JavaScript
+
+The example described below can be directly tested on [codesandbox](https://codesandbox.io/s/model-react-v2-quickstart-javascript-4gp3y).
+
 ```jsx
-import {BaseModel, Field} from "model-react";
-class MyFieldModel extends BaseModel {
-    text = new Field("");
-
-    constructor(text) {
-        super();
-        this.text.set(text);
-    }
-
-    setText(text) {
-        this.text.set(text);
-    }
-
-    getText() {
-        return this.text.get();
-    }
-}
-```
-
-We can then make use of an instance of this model in a functional react component:
-```js
+import {Field, useDataHook} from "model-react";
 import React from "react";
-import {useModel} from "model-react";
 
-const MyField = ({myFieldModel})=>{
-    const myField = useModel(myFieldModel);
-    return <input value={myField.getText()} onChange={e=>myField.setText(e.target.value)} />;
-}
-```
-Now we can render `MyField` with an instance of `MyFieldModel` as a parameter, and it will use and update the data in the model. 
-
-If we were to render two instances of `MyField` with the same model instance, the data would stay synchronised, and both components would automically rerender when one of them changes the value. This is how model-react offers a rather clean and simple way of managing a global, or shared, state in a project.
-The model will also make sure to only rerender components when data they use changes, not when an arbitrary field changes.
-
-Performing asynchronous operations also lends itself quite well to this approach:
-```jsx
-import {BaseModel, Field} from "model-react";
-class SearchModel extends BaseModel {
-    search = new Field("");
-    loading = new Field(false);
-    items = ["Hoi", "Hello", "How are you?", "I am fine, you?", "I am fine too", "How are the kids?", "Dead"]
-    results = new Field(this.items);
-
-    async setSearch(search) {
-        this.loading.set(true);
-        this.search.set(search);
-
-        // Emulate some async delay of an api search
-        await new Promise(res=>setTimeout(res, 200));
-
-        if(search!=this.search.get()) return;
-        
-        this.results.set(items.filter(i=>i.includes(search)));
-        this.loading.set(false);
+class Person {
+    constructor(name, age) {
+        this.name = new Field(name);
+        this.age = new Field(age);
     }
-    getSearch() {
-        return this.search.get();
+    setName(name) {
+        this.name.set(name);
     }
-
-    isLoading() {
-        return this.loading.get();
+    getName(p) {
+        return this.name.get(p);
     }
-    getResults() {
-        return this.results.get();
+    setAge(age) {
+        this.age.set(age);
+    }
+    getAge(p) {
+        return this.age.get(p);
     }
 }
+
+const PersonEditor = ({person}) => {
+    const [l] = useDataHook();
+    return (
+        <div>
+            <input
+                value={person.getName(l)}
+                onChange={e => person.setName(e.target.value)}
+            />
+            <input
+                type="number"
+                value={person.getAge(l)}
+                onChange={e => person.setAge(Number(e.target.value))}
+            />
+        </div>
+    );
+};
+
+const PersonProfile = ({person}) => {
+    const [l] = useDataHook();
+    return (
+        <div>
+            Name: {person.getName(l)} <br />
+            Age: {person.getAge(l)}
+        </div>
+    );
+};
+
+const john = new Person("John", 1);
+ReactDOM.render(
+    <div>
+        <PersonEditor person={john} />
+        <PersonProfile person={john} />
+    </div>,
+    document.getElementById("root")
+);
 ```
 
-```js
-import React from "react";
-import {useModel} from "model-react";
+## TypeScript
 
-const Search = ({searchModel})=>{
-    const search = useModel(searchModel);
-    const isLoading = search.isLoading();
-    return <div>
-        <input value={search.getSearch()} onChange={e=>search.setSearch(e.target.value)} />
-        {isLoading
-            ? <div>Loading</div>
-            : search.getResults().map(i=><div key={i}>{i}</div>)
-        }
-    </div>;
-}
-```
+The example described below can be directly tested on [codesandbox](https://codesandbox.io/s/model-react-v2-quickstart-typescript-e7v86).
 
-`useModel` also has a small feature build in, that allows `useModel(context)` to be shorthand for `useModel(useContext(context))` since usage with contexts will be quite common for global states. 
-
-## caveats
-### Field binding
-<details>
-<summary> The `Field` constructor automatically binds a field to the last instanciated model, this means that submodels should be initiated after any fields </summary>
-
-E.G:
-```js
-import {BaseModel, Field} from "model-react";
-import {MyOtherModel} from "./Somewhere";
-class MyFieldModel extends BaseModel {
-    text = new Field("");
-    something = new MyOtherModel();
-}
-```
-will work fine, where as 
-```js
-import {BaseModel, Field} from "model-react";
-import {MyOtherModel} from "./Somewhere";
-class MyFieldModel extends BaseModel {
-    something = new MyOtherModel();
-    text = new Field("");
-}
-```
-will bind `text` to the wrong model. We can also explicitly bind the model to solve this:
-```js
-import {BaseModel, Field} from "model-react";
-import {MyOtherModel} from "./Somewhere";
-class MyFieldModel extends BaseModel {
-    something = new MyOtherModel();
-    text = new Field("", this);
-}
-```
-
-</details>
-
-### Listener bindings
-
-<details>
-<summary> Usage of field getters in update functions might cause unnecessary rerenders </summary>
-
-Whenever a model is used with `mdl = useModel(model)`, the `mdl` instance will register any of the data retrieved, and rerender the component when any of the retrieved data is updated. It might however be that the model internally uses the data to update a field as well, on a async callback like a click event, e.g.:
-```js
-...
-update(){
-    this.count.set(this.count.get()+1)
-}
-```
-```jsx
-const comp = ()=>{
-    mdl = useModel(model);
-    return <button onClick={()=>mdl.update()}>Update</button>;
-}
-```
-This means that despite comp not showing the count, it will listen for count changes after the button has been pressed. In order to prevent these unnecessary rerenders, we can simply retrieve rendered data from `mdl` but perform callback on `model`:
-
-```jsx
-const comp = ()=>{
-    mdl = useModel(model);
-    return <button onClick={()=>model.update()}>Update</button>;
-}
-```
-
-</details>
-
-## Todo List Example
-This example does not show the capabilities of model-react too well, but can be useful to get an idea for basic usage. As can be seen, the implementation of the models is rather verbose and large for that reason. This is of course a personal preference.
-### TypesSript implementation
-<details>
-<summary> Code </summary>
+<details><summary>Code</summary>
 
 ```tsx
-import ReactDOM from "react-dom";
-import React, {FunctionComponent, useState, useCallback} from "react";
-import {BaseModel, Field, useModel} from "model-react";
+import {Field, useDataHook, IDataRetrieverParams} from "model-react";
+import {FC}, React from "react";
 
-class TodoItemModel extends BaseModel {
-    // The text of the item
-    protected text = new Field("");
-
-    /**
-     * Creates a list item
-     * @param text The content of the item
-     */
-    constructor(text: string) {
-        super();
-        this.text.set(text);
+class Person {
+    protected name = new Field("");
+    protected age = new Field(0);
+    public constructor(name: string, age: number) {
+        this.name.set(name);
+        this.age.set(age);
     }
-
-    /**
-     * Sets the text of the item
-     * @param text The text
-     */
-    public setText(text: string): void {
-        this.text.set(text);
+    public setName(name: string): void {
+        this.name.set(name);
     }
-
-    /**
-     * Retrieves the text of the item
-     * @returns The text
-     */
-    public getText(): string {
-        return this.text.get();
+    public getName(p: IDataRetrieverParams): string {
+        return this.name.get(p);
+    }
+    public setAge(age: number): void {
+        this.age.set(age);
+    }
+    public getAge(p: IDataRetrieverParams): number {
+        return this.age.get(p);
     }
 }
 
-class TodoListModel extends BaseModel {
-    // The items on the todolost
-    protected items = new Field([] as TodoItemModel[]);
-
-    /**
-     * Retrieves all of the items on the todolist
-     * @returns All items
-     */
-    public getItems(): TodoItemModel[] {
-        return this.items.get();
-    }
-
-    /**
-     * Inserts an item into the todolist
-     * @param item The item to insert
-     * @returns Whether the item was successfully added (doesn't allow duplicate items)
-     */
-    public addItem(item: TodoItemModel): boolean {
-        const items = this.items.get();
-
-        // Make sure the item isn't already present
-        if (items.find(i => i.$equals(item))) return false;
-
-        // Add the item
-        this.items.set([...items, item]);
-        return true;
-    }
-
-    /**
-     * Removes an item from the todolist
-     * @param item The item to remove
-     * @returns Whether the item was present and could be removed
-     */
-    public removeItem(item: TodoItemModel): boolean {
-        const items = this.items.get();
-
-        // Get the items with the item removed
-        const remainingItems = items.filter(i => !i.$equals(item));
-
-        // Check if anything was removed
-        if (items.length == remainingItems.length) return false;
-
-        // Store the result
-        this.items.set(remainingItems);
-        return true;
-    }
-}
-
-const TodoItem: FunctionComponent<{
-    todoItemModel: TodoItemModel;
-    onDelete: (item: TodoItemModel) => void;
-}> = ({todoItemModel, onDelete}) => {
-    const todoItem = useModel(todoItemModel);
+const PersonEditor: FC<{person: Person}> = ({person}) => {
+    const [l] = useDataHook();
     return (
         <div>
             <input
-                value={todoItem.getText()}
-                onChange={e => todoItem.setText(e.target.value)}
+                value={person.getName(l)}
+                onChange={e => person.setName(e.target.value)}
             />
-            <button onClick={() => onDelete(todoItem)}>Remove</button>
+            <input
+                type="number"
+                value={person.getAge(l)}
+                onChange={e => person.setAge(Number(e.target.value))}
+            />
         </div>
     );
 };
 
-const Todo: FunctionComponent<{todoListModel: TodoListModel}> = ({todoListModel}) => {
-    const todoList = useModel(todoListModel);
-    const [insertText, setInsertText] = useState("");
-    const onDelete = useCallback((item: TodoItemModel) => todoList.removeItem(item), []);
-
+const PersonProfile: FC<{person: Person}> = ({person}) => {
+    const [l] = useDataHook();
     return (
         <div>
-            <input value={insertText} onChange={e => setInsertText(e.target.value)} />
-            <button
-                onClick={() => {
-                    todoList.addItem(new TodoItemModel(insertText));
-                    setInsertText("");
-                }}>
-                Add
-            </button>
-            {todoList.getItems().map(item => (
-                <TodoItem key={item.$getID()} todoItemModel={item} onDelete={onDelete} />
-            ))}
+            Name: {person.getName(l)} <br />
+            Age: {person.getAge(l)}
         </div>
     );
 };
 
-const todoList = new TodoListModel();
-console.log(todoList);
-ReactDOM.render(<Todo todoListModel={todoList} />, document.getElementById("root"));
+const john = new Person("John", 1);
+ReactDOM.render(
+    <div>
+        <PersonEditor person={john} />
+        <PersonProfile person={john} />
+    </div>,
+    document.getElementById("root")
+);
 ```
+
 </details>
 
-### JavaScript implementation
-<details>
-<summary> Code </summary>
+# Usage
+
+## Premise
+
+Model-react primarily consists of 1 design pattern, together with surrounding tools;
+
+Model data (data of some data model) that should be accessible from a react component, should implement the IDataRetriever interface:
+
+```ts
+type IDataRetriever<T> = (params?: IDataRetrieverParams) => T;
+```
+
+Where IDateRetrieverParams is defined as:
+
+```ts
+type IDataRetrieverParams = IDataLoadRequest | IDataListener;
+type IDataListener = {
+    /** The method to call when the source data changes */
+    call: () => void;
+    /** A method to register a function to be called in order to remove this listener from a data source
+     *  @param remove The function to casll in order to unregister this listener */
+    registerRemover: (remove: () => void) => void;
+};
+type IDataLoadRequest = {
+    /** Whether data should be loaded if absent or outdated */
+    readonly refreshData?: boolean;
+    /** The timestamp such that data was loaded before this timestamp, it will be force reloaded */
+    readonly refreshTimestamp?: number;
+    /** Marks that the retrieved data should refresh,
+     *  considdering the refresh timestamp passed,
+     *  as well a data source's own state.
+     *  Should only be called synchronously. */
+    markShouldRefresh?: () => void;
+    /** A function to pass data retrieval exceptions to
+     *  @param exception An exception thrown when refreshing data */
+    registerException?: (error: any) => void;
+};
+```
+
+This retriever will simply return the current value of the model, and allow you to pass contextual data.
+This data can be used by a `IDataSource`:
+
+```ts
+export type IDataSource<T> = {
+    /** Retrieves the data of a source
+     *  @param params Data used to know whether to reload and to notify about state changes
+     *  @returns The data that's currently available */
+    get: IDataRetriever<T>;
+};
+```
+
+Data sources can use `IDataListeners` to inform about changes of the value of the source, this is how react elements can hook into the data.
+`IDataLoadRequests` can be used to check whether data is still loading, handle loading errors, and force data to refresh.
+
+The library offers some simple data sources:
+
+-   Field: A data source whose value can be updated
+-   DataLoader: A data source that retrieves its value from an async user callback
+-   LoadableField: A data source whose value is loaded from an async user callback, but can be changed like a field
+
+Together with some simple data hooks:
+
+-   useDataHook: The react hook that makes an element rerender when data changes, and tracks whether the data source is still loading, or errored while loading
+-   getAsync: A function to convert a `IDataRetriever` into a promise that resolves when all data finished loading
+
+And some additional tools:
+
+-   Loader: A react component that uses a render prop to pass the data hook, and renders alternative elements while your data is loading
+-   LoaderSwitch: A react component that allows you to pass data of your data hook to render alternative elements while your data is loading
+
+## Examples
+
+### JavaScript
+
+The examples described below can be directly tested on [codesandbox](https://codesandbox.io/s/model-react-v2-quickstart-javascript-4gp3y).
+
+<details><summary>Field</summary>
 
 ```jsx
-import ReactDOM from "react-dom";
-import React, {FunctionComponent, useState, useCallback} from "react";
-import {BaseModel, Field, useModel} from "model-react";
+import React from "react";
+import {render} from "react-dom";
+import {Field, useDataHook} from "model-react";
 
-class TodoItemModel extends BaseModel {
-    // The text of the item
-    text = new Field("");
-
-    /**
-     * Creates a list item
-     * @param text The content of the item
-     */
-    constructor(text: string) {
-        super();
-        this.text.set(text);
-    }
-
-    /**
-     * Sets the text of the item
-     * @param {string} text The text
-     */
-    setText(text) {
-        this.text.set(text);
-    }
-
-    /**
-     * Retrieves the text of the item
-     * @returns {string} The text
-     */
-    getText() {
-        return this.text.get();
-    }
-}
-
-class TodoListModel extends BaseModel {
-    // The items on the todolost
-    items = new Field([]);
-
-    /**
-     * Retrieves all of the items on the todolist
-     * @returns {TodoItemModel[]} All items
-     */
-    getItems() {
-        return this.items.get();
-    }
-
-    /**
-     * Inserts an item into the todolist
-     * @param {TodoItemModel} item The item to insert
-     * @returns {boolean} Whether the item was successfully added (doesn't allow duplicate items)
-     */
-    addItem(item) {
-        const items = this.items.get();
-
-        // Make sure the item isn't already present
-        if (items.find(i => i.$equals(item))) return false;
-
-        // Add the item
-        this.items.set([...items, item]);
-        return true;
-    }
-
-    /**
-     * Removes an item from the todolist
-     * @param {TodoItemModel} item The item to remove
-     * @returns {boolean} Whether the item was present and could be removed
-     */
-    removeItem(item: TodoItemModel) {
-        const items = this.items.get();
-
-        // Get the items with the item removed
-        const remainingItems = items.filter(i => !i.$equals(item));
-
-        // Check if anything was removed
-        if (items.length == remainingItems.length) return false;
-
-        // Store the result
-        this.items.set(remainingItems);
-        return true;
-    }
-}
-
-const TodoItem = ({todoItemModel, onDelete}) => {
-    const todoItem = useModel(todoItemModel);
+// Pass a field as a prop to the element, and use the data hook to stay synced with it
+const SomeInput = ({field}) => {
+    const [l] = useDataHook();
     return (
-        <div>
-            <input
-                value={todoItem.getText()}
-                onChange={e => todoItem.setText(e.target.value)}
-            />
-            <button onClick={() => onDelete(todoItem)}>Remove</button>
-        </div>
+        <input
+            type="text"
+            value={field.get(l)}
+            onChange={e => field.set(e.target.value)}
+        />
     );
 };
 
-const Todo: = ({todoListModel}) => {
-    const todoList = useModel(todoListModel);
-    const [insertText, setInsertText] = useState("");
-    const onDelete = useCallback((item: TodoItemModel) => todoList.removeItem(item), []);
-
-    return (
-        <div>
-            <input value={insertText} onChange={e => setInsertText(e.target.value)} />
-            <button
-                onClick={() => {
-                    todoList.addItem(new TodoItemModel(insertText));
-                    setInsertText("");
-                }}>
-                Add
-            </button>
-            {todoList.getItems().map(item => (
-                <TodoItem key={item.$getID()} todoItemModel={item} onDelete={onDelete} />
-            ))}
-        </div>
-    );
+// You can then have another element that uses the same field somewhere, and it will stay synced
+const SomeOutput = ({field}) => {
+    const [l] = useDataHook();
+    return <div>{field.get(l)}</div>;
 };
 
-const todoList = new TodoListModel();
-console.log(todoList);
-ReactDOM.render(<Todo todoListModel={todoList} />, document.getElementById("root"));
+// Create a field anywhere, it may be part of an object, or be on its own
+const field = new Field("hoi");
+
+// Render some 'app' element that shows an input and output using the same field
+render(
+    <div>
+        <SomeInput field={field} />
+        <SomeOutput field={field} />
+    </div>,
+    document.body
+);
 ```
+
 </details>
+
+<details><summary>DataLoader</summary>
+
+```jsx
+import React from "react";
+import {render} from "react-dom";
+import {DataLoader, useDataHook} from "model-react";
+
+// A delay function to fake some delay that would occur
+const delay = () => new Promise(res => setTimeout(res, 2000));
+
+// Pass a loadable data source to an element, and let the element check the state
+const SomeData = ({source}) => {
+    const [l, {isLoading, getExceptions}] = useDataHook();
+    const data = source.get(l);
+
+    // Check if the data is loading
+    if (isLoading()) return <div>Loading</div>;
+
+    // Check if any error occured
+    const errors = getExceptions();
+    if (errors.length !== 0) return <div>Data failed to fetch</div>;
+
+    // Return the actual data and a reload button
+    return (
+        <div>
+            {data}
+            <button onClick={() => source.markDirty()}>reload</button>
+        </div>
+    );
+};
+
+// Create a loadable data source anywhere, it may be part of an object, or be on its own
+export const source = new DataLoader(async () => {
+    // Simply returns random data after some delay, would more realistically be an async data fetch
+    await delay();
+    return Math.random();
+}, 0); // 0 is the initial value
+
+render(<SomeData source={source} />, document.body);
+```
+
+</details>
+
+<details><summary>LoaderSwitch</summary>
+The loader switch can be used to cleanly deal with the state of a loadable source
+
+```jsx
+import React from "react";
+import {render} from "react-dom";
+import {DataLoader, LoaderSwitch, useDataHook} from "model-react";
+
+// A delay function to fake some delay that would occur
+const delay = () => new Promise(res => setTimeout(res, 2000));
+
+// Pass a loadable data source to an element, and use a loader switch to handle the state
+const SomeData = ({source}) => {
+    const [l, c] = useDataHook();
+
+    return (
+        <div>
+            <LoaderSwitch
+                {...c} // Passes the state
+                onLoad={<div>Loading</div>}
+                onError={<div>Data failed to fetch</div>}>
+                {source.get(l)}
+            </LoaderSwitch>
+            <button onClick={() => source.markDirty()}>reload</button>
+        </div>
+    );
+};
+
+// Create a loadable data source anywhere, it may be part of an object, or be on its own
+export const source = new DataLoader(async () => {
+    // Simply returns random data after some delay, would more realistically be an async data fetch
+    await delay();
+    return Math.random();
+}, 0); // 0 is the initial value
+
+render(<SomeData source={source} />, document.body);
+```
+
+</details>
+
+<details><summary>Loader</summary>
+The loader is almost the same as the loader switch, except that it will 'host' the listener
+
+```jsx
+import React from "react";
+import {render} from "react-dom";
+import {DataLoader, Loader} from "model-react";
+
+// A delay function to fake some delay that would occur
+const delay = () => new Promise(res => setTimeout(res, 2000));
+
+// Pass a loadable data source to an element, and use a loader switch to handle the state
+const SomeData = ({source}) => (
+    <div>
+        <Loader onLoad={<div>Loading</div>} onError={<div>Data failed to fetch</div>}>
+            {l => source.get(l) // The data hook is created by the loader
+            }
+        </Loader>
+        <button onClick={() => source.markDirty()}>reload</button>
+    </div>
+);
+
+// Create a loadable data source anywhere, it may be part of an object, or be on its own
+export const source = new DataLoader(async () => {
+    // Simply returns random data after some delay, would more realistically be an async data fetch
+    await delay();
+    return Math.random();
+}, 0); // 0 is the initial value
+
+render(<SomeData source={source} />, document.body);
+```
+
+</details>
+
+<details><summary>LoadableField</summary>
+The loadable field acts like the default field, except that it will update data according to another source, which takes presendence over the local value
+
+```jsx
+import React from "react";
+import {render} from "react-dom";
+import {DataLoader, LoadableField, Loader} from "model-react";
+
+// A delay function to fake some delay that would occur
+const delay = () => new Promise(res => setTimeout(res, 2000));
+
+// A button that allows for reloading of a data source
+const SomeReload = ({source}) => (
+    <button onClick={() => source.markDirty()}>Reload</button>
+);
+
+// Use a loader for both the in and output,
+// since it must load the initial data from a loadable source
+const SomeInput = ({field}) => (
+    <Loader onLoad="Loading">
+        {l => (
+            <input
+                type="text"
+                value={field.get(l)}
+                onChange={e => field.set(e.target.value)}
+            />
+        )}
+    </Loader>
+);
+const SomeOutput = ({field}) => (
+    <Loader onLoad="Loading" onError={e => `The following errors were thrown: ${e}`}>
+        {l => <span>{field.get(l)}</span>}
+    </Loader>
+);
+
+// Create a data source
+export const loadableSource = new DataLoader(async () => {
+    // Simply returns random data after some delay, would more realistically be an async data fetch
+    await delay();
+    return `${Math.random()}`;
+}, "test");
+
+// Create a loadable field that synchronyses with the data source
+const loadableField = new LoadableField(t => loadableSource.get(t));
+
+// Render the elements
+render(
+    <div>
+        <SomeInput field={loadableField} />
+        <SomeOutput field={loadableField} />
+        <SomeReload source={loadableSource} />
+    </div>,
+    document.body
+);
+```
+
+</details>
+
+<details><summary>Combining data (transformers)</summary>
+We can easily combine data of different data sources in this system, everything will behave as if it's only a single source.
+
+```jsx
+import React from "react";
+import {render} from "react-dom";
+import {Field, useDataHook} from "model-react";
+
+const SomeInput = ({field}) => {
+    const [l] = useDataHook();
+    return (
+        <input
+            type="text"
+            value={field.get(l)}
+            onChange={e => field.set(e.target.value)}
+        />
+    );
+};
+const SomeOutput = ({dataRetriever}) => {
+    const [l] = useDataHook();
+    return <div>{dataRetriever(l)}</div>;
+};
+
+// Create multiple fields
+const field1 = new Field("hoi");
+const field2 = new Field("bye");
+
+// Create a 'transformer' that combines or transforms source data
+const transformer = l => `${field1.get(l)} - ${field2.get(l)}`;
+
+// Render some 'app' element that shows the two fields and combined output
+render(
+    <div>
+        <SomeInput field={field} />
+        <SomeInput field={field2} />
+        <SomeOutput field={transformer} />
+    </div>,
+    document.body
+);
+```
+
+</details>
+
+<details><summary>Async</summary>
+This whole system is nice when you want to render your data, but it sucks when you just want to get some data when it's finished loading like you would with promises. As a solution the library provides a function to convert a data source get to a normal asynchronous fetch.
+
+```js
+import {DataLoader, getAsync} from "model-react";
+
+// Create a data source
+export const loadableSource = new DataLoader(async () => {
+    // Simply returns random data after some delay, would more realistically be an async data fetch
+    await delay();
+    return `${Math.random()}`;
+}, "test");
+
+// Convert a get to a promise fetch:
+getAsync(l => loadableField.get(l))
+    .then(result => console.log(result))
+    .catch(error => console.error(error));
+```
+
+</details>
+
+<details><summary>Exceptions</summary>
+Data loaders may throw errors, which are handled by the data hooks like you would expect for the most part.
+The interesting behaviour is that the hooks 'collect' multiple exceptions. So the `.catch` on the promise will receive an array of exceptions too. This is done because a single data retriever may have multiple exceptions, if it consists of multiple data sources.
+
+```jsx
+import React from "react";
+import {render} from "react-dom";
+import {DataLoader, getAsync, Loader} from "model-react";
+
+// Create a data source
+export const loadableSource = new DataLoader(async () => {
+    // Simply returns random data after some delay, would more realistically be an async data fetch
+    await delay();
+    throw "error1! ";
+}, "test");
+
+// Create a transformer to have multiple sources: (or the same one multiple times)
+const getSomeData = l => `${loadableSource.get(l)} - ${loadableSource.get(l)}`;
+
+// Convert a get to a promise fetch:
+getAsync(l => getSomeData(l))
+    .then(result => console.log(result))
+    .catch(error => console.error(error));
+
+// Render as element
+render(
+    <Loader onLoad="Loading" onError={e => `The following errors were thrown: ${e}`}>
+        {l => getSomeData(l)}
+    </Loader>,
+    document.body
+);
+```
+
+</details>
+
+### TypeScript
+
+The examples described below can be directly tested on [codesandbox](https://codesandbox.io/s/model-react-v2-quickstart-typescript-e7v86).
+
+<details><summary>Field</summary>
+
+```jsx
+import React, {FC} from "react";
+import {render} from "react-dom";
+import {Field, useDataHook} from "model-react";
+
+// Pass a field as a prop to the element, and use the data hook to stay synced with it
+const SomeInput: FC<{field: Field<string>}> = ({field}) => {
+    const [l] = useDataHook();
+    return (
+        <input
+            type="text"
+            value={field.get(l)}
+            onChange={e => field.set(e.target.value)}
+        />
+    );
+};
+
+// You can then have another element that uses the same field somewhere, and it will stay synced
+const SomeOutput: FC<{field: Field<string>}> = ({field}) => {
+    const [l] = useDataHook();
+    return <div>{field.get(l)}</div>;
+};
+
+// Create a field anywhere, it may be part of an object, or be on its own
+const field = new Field("hoi");
+
+// Render some 'app' element that shows an input and output using the same field
+render(
+    <div>
+        <SomeInput field={field} />
+        <SomeOutput field={field} />
+    </div>,
+    document.body
+);
+```
+
+</details>
+
+<details><summary>DataLoader</summary>
+
+```jsx
+import React, {FC} from "react";
+import {render} from "react-dom";
+import {DataLoader, useDataHook} from "model-react";
+
+// A delay function to fake some delay that would occur
+const delay = () => new Promise<void>(res => setTimeout(res, 2000));
+
+// Pass a loadable data source to an element, and let the element check the state
+const SomeData: FC<{source: DataLoader<number>}> = ({source}) => {
+    const [l, {isLoading, getExceptions}] = useDataHook();
+    const data = source.get(l);
+
+    // Check if the data is loading
+    if (isLoading()) return <div>Loading</div>;
+
+    // Check if any error occured
+    const errors = getExceptions();
+    if (errors.length !== 0) return <div>Data failed to fetch</div>;
+
+    // Return the actual data and a reload button
+    return (
+        <div>
+            {data}
+            <button onClick={() => source.markDirty()}>reload</button>
+        </div>
+    );
+};
+
+// Create a loadable data source anywhere, it may be part of an object, or be on its own
+export const source = new DataLoader(async () => {
+    // Simply returns random data after some delay, would more realistically be an async data fetch
+    await delay();
+    return Math.random();
+}, 0); // 0 is the initial value
+
+render(<SomeData source={source} />, document.body);
+```
+
+</details>
+
+<details><summary>LoaderSwitch</summary>
+The loader switch can be used to cleanly deal with the state of a loadable source
+
+```jsx
+import React, {FC} from "react";
+import {render} from "react-dom";
+import {DataLoader, LoaderSwitch, useDataHook} from "model-react";
+
+// A delay function to fake some delay that would occur
+const delay = () => new Promise<void>(res => setTimeout(res, 2000));
+
+// Pass a loadable data source to an element, and use a loader switch to handle the state
+const SomeData: FC<{source: DataLoader<number>}> = ({source}) => {
+    const [l, c] = useDataHook();
+    return (
+        <div>
+            <LoaderSwitch
+                {...c} // Passes the state
+                onLoad={<div>Loading</div>}
+                onError={<div>Data failed to fetch</div>}>
+                {source.get(l)}
+            </LoaderSwitch>
+            <button onClick={() => source.markDirty()}>reload</button>
+        </div>
+    );
+};
+
+// Create a loadable data source anywhere, it may be part of an object, or be on its own
+export const source = new DataLoader(async () => {
+    // Simply returns random data after some delay, would more realistically be an async data fetch
+    await delay();
+    return Math.random();
+}, 0); // 0 is the initial value
+
+render(<SomeData source={source} />, document.body);
+```
+
+</details>
+
+<details><summary>Loader</summary>
+The loader is almost the same as the loader switch, except that it will 'host' the listener
+
+```jsx
+import React, {FC} from "react";
+import {render} from "react-dom";
+import {DataLoader, Loader} from "model-react";
+
+// A delay function to fake some delay that would occur
+const delay = () => new Promise<void>(res => setTimeout(res, 2000));
+
+// Pass a loadable data source to an element, and use a loader switch to handle the state
+const SomeData: FC<{source: DataLoader<number>}> = ({source}) => (
+    <div>
+        <Loader onLoad={<div>Loading</div>} onError={<div>Data failed to fetch</div>}>
+            {l => source.get(l) // The data hook is created by the loader
+            }
+        </Loader>
+        <button onClick={() => source.markDirty()}>reload</button>
+    </div>
+);
+
+// Create a loadable data source anywhere, it may be part of an object, or be on its own
+export const source = new DataLoader(async () => {
+    // Simply returns random data after some delay, would more realistically be an async data fetch
+    await delay();
+    return Math.random();
+}, 0); // 0 is the initial value
+
+render(<SomeData source={source} />, document.body);
+```
+
+</details>
+
+<details><summary>LoadableField</summary>
+The loadable field acts like the default field, except that it will update data according to another source, which takes presendence over the local value
+
+```jsx
+import React, {FC} from "react";
+import {render} from "react-dom";
+import {DataLoader, LoadableField, Loader} from "model-react";
+
+// A delay function to fake some delay that would occur
+const delay = () => new Promise<void>(res => setTimeout(res, 2000));
+
+// A button that allows for reloading of a data source
+const SomeReload: FC<{source: DataLoader<string>}> = ({source}) => (
+    <button onClick={() => source.markDirty()}>Reload</button>
+);
+
+// Use a loader for both the in and output,
+// since it must load the initial data from a loadable source
+const SomeInput: FC<{field: LoadableField<string>}> = ({field}) => (
+    <Loader onLoad="Loading">
+        {l => (
+            <input
+                type="text"
+                value={field.get(l)}
+                onChange={e => field.set(e.target.value)}
+            />
+        )}
+    </Loader>
+);
+const SomeOutput: FC<{field: LoadableField<string>}> = ({field}) => (
+    <Loader onLoad="Loading" onError={e => `The following errors were thrown: ${e}`}>
+        {l => <span>{field.get(l)}</span>}
+    </Loader>
+);
+
+// Create a data source
+export const loadableSource = new DataLoader(async () => {
+    // Simply returns random data after some delay, would more realistically be an async data fetch
+    await delay();
+    return `${Math.random()}`;
+}, "test");
+
+// Create a loadable field that synchronyses with the data source
+const loadableField = new LoadableField(t => loadableSource.get(t));
+
+// Render the elements
+render(
+    <div>
+        <SomeInput field={loadableField} />
+        <SomeOutput field={loadableField} />
+        <SomeReload source={loadableSource} />
+    </div>,
+    document.body
+);
+```
+
+</details>
+
+<details><summary>Combining data (transformers)</summary>
+We can easily combine data of different data sources in this system, everything will behave as if it's only a single source.
+
+```jsx
+import React, {FC} from "react";
+import {render} from "react-dom";
+import {Field, useDataHook, IDataRetriever} from "model-react";
+
+const SomeInput: FC<{field: Field<string>}> = ({field}) => {
+    const [l] = useDataHook();
+    return (
+        <input
+            type="text"
+            value={field.get(l)}
+            onChange={e => field.set(e.target.value)}
+        />
+    );
+};
+const SomeOutput: FC<{dataRetriever: IDataRetriever<string>}> = ({dataRetriever}) => {
+    const [l] = useDataHook();
+    return <div>{dataRetriever(l)}</div>;
+};
+
+// Create multiple fields
+const field1 = new Field("hoi");
+const field2 = new Field("bye");
+
+// Create a 'transformer' that combines or transforms source data
+const transformer: IDataRetriever<string> = l => `${field1.get(l)} - ${field2.get(l)}`;
+
+// Render some 'app' element that shows the two fields and combined output
+render(
+    <div>
+        <SomeInput field={field} />
+        <SomeInput field={field2} />
+        <SomeOutput field={transformer} />
+    </div>,
+    document.body
+);
+```
+
+</details>
+
+<details><summary>Async</summary>
+This whole system is nice when you want to render your data, but it sucks when you just want to get some data when it's finished loading like you would with promises. As a solution the library provides a function to convert a data source get to a normal asynchronous fetch.
+
+```js
+import {DataLoader, getAsync} from "model-react";
+
+// Create a data source
+export const loadableSource = new DataLoader(async () => {
+    // Simply returns random data after some delay, would more realistically be an async data fetch
+    await delay();
+    return `${Math.random()}`;
+}, "test");
+
+// Convert a get to a promise fetch:
+getAsync(l => loadableField.get(l))
+    .then(result => console.log(result))
+    .catch(error => console.error(error));
+```
+
+</details>
+
+<details><summary>Exceptions</summary>
+Data loaders may throw errors, which are handled by the data hooks like you would expect for the most part.
+The interesting behaviour is that the hooks 'collect' multiple exceptions. So the `.catch` on the promise will receive an array of exceptions too. This is done because a single data retriever may have multiple exceptions, if it consists of multiple data sources.
+
+```jsx
+import React from "react";
+import {render} from "react-dom";
+import {DataLoader, getAsync, Loader, IDataRetriever} from "model-react";
+
+// Create a data source
+export const loadableSource = new DataLoader(async () => {
+    // Simply returns random data after some delay, would more realistically be an async data fetch
+    await delay();
+    throw "error1! ";
+}, "test");
+
+// Create a transformer to have multiple sources: (or the same one multiple times)
+const getSomeData: IDataRetriever<string> = l =>
+    `${loadableSource.get(l)} - ${loadableSource.get(l)}`;
+
+// Convert a get to a promise fetch:
+getAsync(l => getSomeData(l))
+    .then(result => console.log(result))
+    .catch(error => console.error(error));
+
+// Render as element
+render(
+    <Loader onLoad="Loading" onError={e => `The following errors were thrown: ${e}`}>
+        {l => getSomeData(l)}
+    </Loader>,
+    document.body
+);
+```
+
+</details>
+
+# API
+
+## Data Sources
+
+Data sources keep track of data, allow you to retrieve data and allow you to listen to changes.
+
+### Field
+
+A field stores a value, and allows you to change this value at any time.
+
+#### Interface
+
+```ts
+interface Field<T> {
+    /**
+     * Creates a new field
+     * @param value The initial value of the field
+     */
+    new (value: T): Field<T>;
+
+    /**
+     * Retrieves the value of a source
+     * @param params Data used to know whether to reload and to notify about state changes
+     * @returns The value that's currently available
+     */
+    get(params?: IDataRetrieverParams): T;
+
+    /**
+     * Sets the new value of the field
+     * @param value The new value
+     */
+    set(value: T): void;
+}
+```
+
+### DataLoader
+
+A data loader obtains a value from an asynchronous callback, and reloads it when either the retrieval parameter specifies it's outdated, or the loader is marked as dirty.
+
+#### Interface
+
+```ts
+interface DataLoader<T> {
+    /**
+     * Creates a new data loader instance
+     * @param loader The function to load the data with
+     * @param initial The initial value of the data
+     * @param dirty Whether the initial value should be overwritten when any data is requested
+     * @param loadImmediately Whether the data should already be fetched despite not having been requested yet
+     */
+    new (
+        loader: () => Promise<T>,
+        initial: T,
+        dirty: boolean = true,
+        loadImmediately: boolean = false
+    ): DataLoader<T>;
+
+    /**
+     * Retrieves the data of a source
+     * @param params Data used to know whether to reload and to notify about state changes
+     * @returns The data that's currently available
+     */
+    get(params?: IDataRetrieverParams): T;
+
+    /**
+     * Indicates that this data is no longer up to data and should be reloaded
+     */
+    markDirty(): void;
+}
+```
+
+### LoadableField
+
+A loadable field is a combination of a data loader and a field. It will use a data loader to retrieve its initial value, but can be altered like a field. The data loader takes presendence over the value that has been manually set however. This means that by default, when the data loader updates, the loadable field will copy its data overwritting the current data.
+
+#### Interface
+
+```ts
+interface LoadableField<T> {
+    /**
+     * Creates a new field that synchronizes with a data loader.
+     * @param loader The loader to get the data from
+     * @param updater A function to determine the new value of the field
+     */
+    new (
+        loader: IDataRetriever<T>,
+        updater: (
+            newLoaded: T, // The latest value of the loader
+            previousLoaded: T | undefined, // The previous value of the loader
+            current: T // The current value of the field
+        ) => T = defaultUpdater
+    ): LoadableField<T>;
+
+    /**
+     * Retrieves the value of a source
+     * @param params Data used to know whether to reload and to notify about state changes
+     * @returns The value that's currently available
+     */
+    get(params?: IDataRetrieverParams): T;
+
+    /**
+     * Sets the new value of the field
+     * @param value The new value
+     */
+    set(value: T): void;
+}
+```
+
+#### Notes
+
+<details>
+<summary>Show notes</summary>
+
+The updater function is used to determine what the value of a field should be whenever someone accesses the data. It will provide the latest value of the loader, the value that the loader had when the updater was previously called and the current value of the field. This data can be combined to determine the new value of the field. The updater that's provided by default looks as follows:
+
+```ts
+const defaultUpdater = (newLoaded: T, previousLoaded: T, current: T) =>
+    newLoaded === previousLoaded ? current : newLoaded;
+```
+
+This results in the field retaining it's last assigned value, unless the loader updated its value. In this case the new loader value is taken instead. Notice that we use shallow equivalence. This may need to be replaced by deep equivalence depending on the data that the loader returns.
+
+</details>
+
+## Data Hooks
+
+Data hooks are ways of accessing the data, and hooking into their state. These hooks implement the `IDataRetrieverParams` interface that was shown in the usage section.
+
+### useDataHook
+
+The main hook that allows you to connect component lifecycles with data sources.
+
+#### Interface
+
+```ts
+/**
+ * Retrieves a hook that can be used to listen to data from data sources,
+ * such that the component rerenders upon data changes.
+ * It also returns a function to determine whether the data is still loading, or has errored.
+ * @param forceRefreshTime The time such that if data is older, it will be refreshed
+ * @returns The data hook followed by contextual data
+ */
+function useDataHook(
+    forceRefreshTime?: number
+): [
+    /**
+     * The retriever params that can be passed to any data retriever call
+     */
+    IDataRetrieverParams,
+    {
+        /**
+         * Retrieves whether any obtained daata is currently loading
+         */
+        isLoading: () => boolean;
+
+        /**
+         * Retrieves the exceptions that may have occured while loading
+         */
+        getExceptions: () => any[];
+    }
+];
+```
+
+#### Notes
+
+<details>
+<summary>Show notes</summary>
+
+The `isLoading` and `getExceptions` functions retrieve the data corresponding to retrieve calls that have been made using the return retriever params. If you try to call them before calling a retriever, it won't work as intended.
+
+Example of what to do:
+
+```ts
+const [l, {isLoading, getExceptions}] = useDataHook();
+const data = source.get(l);
+const loading = isLoading();
+const exceptions = getExceptions();
+```
+
+Example of what not to do:
+
+```ts
+const [l, {isLoading, getExceptions}] = useDataHook();
+const loading = isLoading();
+const exceptions = getExceptions();
+const data = source.get(l);
+```
+
+This is why the Loader and LoaderSwitch component are particularly useful. By design of react's html element resolution, the `isLoading` and `getExceptions` functions passed to the loader will be invoked after the current element has finished executing its code block.
+
+</details>
+
+### getAsync
+
+getAsync can be used to traansform a loadable data retriever into an async data fetch that resolves when all data finished loading.
+
+#### Interface
+
+```ts
+/**
+ * Transforms a normal data getter into a promise that resolves when the data is loaded
+ * @param getter The getter function call, which applies the hook
+ * @param forceRefreshTime The time such that if data is older, it will be refreshed
+ * @returns A promise with the result after all data sources finished loading/refreshing
+ */
+function getAsync<T>(
+    getter: (hook: IDataLoadRequest & IDataListener) => T,
+    forceRefreshTime?: number
+): Promise<T>;
+```
+
+#### Notes
+
+<details>
+<summary>Show notes</summary>
+
+Since a data retriever may consist of multiple data sources, multiple errors may thrown. Therefore any error obtained using the `.catch` of the promise will be an array of thrown items.
+
+</details>
+
+## Tools
+
+Model-react provides a couple of simple components that make dealing with loadable sources easier
+
+### LoaderSwitch
+
+The loader switch component can be used to easily deal with representing the state of loadable data.
+
+#### Interface
+
+```ts
+const LoaderSwitch: FC<{
+    /** An alias for content */
+    children?: ReactNode;
+    /** The content to show when there are no exceptions and data loaded */
+    content?: ReactNode;
+    /** The node to show while loading */
+    onLoad?: ReactNode | (() => ReactNode);
+    /** The node to show if an error occured */
+    onError?: ReactNode | ((exceptions: any[]) => ReactNode);
+    /** A function to check whether the data is currently loading */
+    isLoading?: () => boolean;
+    /** A getter for the exceptions */
+    getExceptions?: () => any[];
+}>;
+```
+
+### Loader
+
+The loader component can be used in the same situations as the loader switch, but may reduce boilerplate code by passing a hosted data hook using a render prop.
+
+#### Interface
+
+```ts
+const Loader: FC<{
+    /** An alias for content */
+    children?: (hook: IDataRetrieverParams) => ReactNode;
+    /** The content to show when there are no exceptions and data loaded */
+    content?: (hook: IDataRetrieverParams) => ReactNode;
+    /** The node to show while loading */
+    onLoad?: ReactNode | (() => ReactNode);
+    /** The node to show if an error occured */
+    onError?: ReactNode | ((exceptions: any[]) => ReactNode);
+}>;
+```
+
+# Limitations
+
+## Efficiency
+
+Since this system relies on updating observers, a large number of calls might be made before the data is actually finalized. This might be rather inefficient, and this should be considered when making complex transformers. One could also make their own DataRetriever that does some debouncing to reduce the load, or create a data transformer that makes use of caching. These techniques aren't included in the library however, since they complicate matters while the provided behaviour is sufficient in most situations.
+
+## Bugs
+
+The system on its own is rather simple and reliable. The usage might be a bit prone to bugs however, since providing data source parameters when retrieving a field is optional. This is intentional as there are many situations where no parameters are required. It does however mean that typescript doesn't complain when you actually forgot to pass the listener of a data hook in a react component, resulting in the component not updating when it should.
 
 # Contributing
 
-Any contributions are welcome
+Any contributions are welcome. The library is operational and no changes are planned. However, if any bugs are found, or someone wants to add features or examples, they are welcome to.
 
 ## Environment setup
 
 within both the main directory and examples run:
+
 ```
 yarn install
 ```
 
 ## Environment usage
+
 To test your code, in both the main directory and examples run:
+
 ```
 yarn start
 ```
+
 This will start a dev server at localhost:3000 to view the examples which make use of the written code
 
 To build the module or the examples for production, in either folder run:
+
 ```
 yarn build
 ```

@@ -13,7 +13,7 @@ export declare class DataLoader<T> extends AbstractDataSource<T> implements IDat
      * Creates a new data loader instance
      * @param loader The function to load the data with
      * @param initial The initial value of the data
-     * @param dirty Whether the initial value should be overwritten when any data is request
+     * @param dirty Whether the initial value should be overwritten when any data is requested
      * @param loadImmediately Whether the data should already be fetched despite not having been requested yet
      */
     constructor(loader: () => Promise<T>, initial: T, dirty?: boolean, loadImmediately?: boolean);
@@ -33,7 +33,7 @@ export declare class DataLoader<T> extends AbstractDataSource<T> implements IDat
      */
     protected load(): Promise<void>;
     /**
-     * Indicates that this data is no longer up to data and should be checked
+     * Indicates that this data is no longer up to data and should be reloaded
      */
     markDirty(): void;
 }

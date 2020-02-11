@@ -4,12 +4,12 @@ import {IDataListener} from "../_types/IDataListener";
 /**
  * Transforms a normal data getter into a promise that resolves when the data is loaded
  * @param getter The getter function call, which applies the hook
- * @param refreshTimestamp The oldest allowed time for data to have been loaded without requiring a refresh
+ * @param forceRefreshTime The time such that if data is older, it will be refreshed
  * @returns A promise with the result after all data sources finished loading/refreshing
  */
 export const getAsync = async <T>(
     getter: (hook: IDataLoadRequest & IDataListener) => T,
-    refreshTimestamp?: number
+    forceRefreshTime?: number
 ): Promise<T> =>
     new Promise((res, rej) => {
         /**
@@ -40,8 +40,8 @@ export const getAsync = async <T>(
                 registerException(exception: any) {
                     exceptions.push(exception);
                 },
-                ...(refreshTimestamp !== undefined && {
-                    refreshTimestamp: refreshTimestamp,
+                ...(forceRefreshTime !== undefined && {
+                    refreshTimestamp: forceRefreshTime,
                 }),
             });
 
