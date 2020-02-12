@@ -1134,7 +1134,7 @@ Since this system relies on updating observers, a large number of calls might be
 
 ## Bugs
 
-The system on its own is rather simple and reliable. The usage might be a bit prone to bugs however, since providing data source parameters when retrieving a field is optional. This is intentional as there are many situations where no parameters are required. It does however mean that typescript doesn't complain when you actually forgot to pass the listener of a data hook in a react component, resulting in the component not updating when it should.
+The system on its own is rather simple and reliable. The usage might be a bit prone to bugs however, since providing `IDataRetrieverParams` when retrieving a value from a data source is optional. This is intentional as there are many situations where no parameters are required. It does however mean that typescript doesn't complain when you actually forget to pass the listener of a data hook in a react component, resulting in the component not updating when it should.
 
 # Contributing
 

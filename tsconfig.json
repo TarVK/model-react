@@ -2,6 +2,7 @@
     "compilerOptions": {
         "moduleResolution": "node",
         "outDir": "./build/",
+        "sourceRoot": "./src",
         "sourceMap": true,
         "declaration": true,
         "module": "es6",

@@ -2,7 +2,7 @@ const path = require("path");
 const build = path.join(process.cwd(), "build");
 module.exports = env => ({
     entry: "./src/index.tsx",
-    devtool: "inline-source-map",
+    devtool: env == "prod" ? undefined : "inline-source-map",
     mode: env == "prod" ? "production" : "development",
     module: {
         rules: [

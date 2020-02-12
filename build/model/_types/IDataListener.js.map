@@ -1,0 +1,1 @@
+{"version":3,"file":"IDataListener.js","sourceRoot":"./src/","sources":["model/_types/IDataListener.ts"],"names":[],"mappings":"AAeA;;;;GAIG;AACH,MAAM,CAAC,IAAM,cAAc,GAAG,UAAC,IAAS;IACpC,OAAA,IAAI,IAAI,IAAI,CAAC,IAAI,KAAK,SAAS,IAAI,IAAI,CAAC,eAAe,YAAY,QAAQ;AAA3E,CAA2E,CAAC"}

@@ -1,6 +1,6 @@
 {
     "name": "model-react",
-    "version": "0.0.2",
+    "version": "2.0.0",
     "description": "A system to create data models to be used with react hooks",
     "main": "build/index.js",
     "types": "build/index.d.ts",
@@ -8,8 +8,8 @@
         "build/*"
     ],
     "scripts": {
-        "start": "webpack --watch --env dev",
-        "build": "webpack --env prod"
+        "start": "tsc -w",
+        "build": "tsc"
     },
     "repository": {
         "type": "git",

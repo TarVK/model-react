@@ -11,6 +11,7 @@ export class PictureSearch {
     protected results = new DataLoader<Image[]>(
         async () => {
             const search = this.search.get();
+            if (!search) return [];
 
             // Get some images from an api
             const params = new URLSearchParams(
