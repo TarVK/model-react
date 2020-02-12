@@ -20,11 +20,12 @@ npm install model-react --save
 
 ## JavaScript
 
-The example described below can be directly tested on [codesandbox](https://codesandbox.io/s/model-react-v2-quickstart-javascript-4gp3y).
+The example described below can be directly tested on [codesandbox](https://codesandbox.io/s/model-react-v2-quickstart-javascript-4gp3y?fontsize=14&hidenavigation=1&module=%2Fsrc%2FquickStart.js&theme=dark).
 
 ```jsx
 import {Field, useDataHook} from "model-react";
 import React from "react";
+import {render} from "react-dom";
 
 class Person {
     constructor(name, age) {
@@ -84,13 +85,14 @@ ReactDOM.render(
 
 ## TypeScript
 
-The example described below can be directly tested on [codesandbox](https://codesandbox.io/s/model-react-v2-quickstart-typescript-e7v86).
+The example described below can be directly tested on [codesandbox](https://codesandbox.io/s/model-react-v2-quickstart-typescript-e7v86?fontsize=14&hidenavigation=1&module=%2Fsrc%2FquickStart.tsx&theme=dark).
 
 <details><summary>Code</summary>
 
 ```tsx
 import {Field, useDataHook, IDataRetrieverParams} from "model-react";
-import {FC}, React from "react";
+import React, {FC} from "react";
+import {render} from "react-dom";
 
 class Person {
     protected name = new Field("");
@@ -181,7 +183,7 @@ type IDataLoadRequest = {
     /** The timestamp such that data was loaded before this timestamp, it will be force reloaded */
     readonly refreshTimestamp?: number;
     /** Marks that the retrieved data should refresh,
-     *  considdering the refresh timestamp passed,
+     *  considering the refresh timestamp passed,
      *  as well a data source's own state.
      *  Should only be called synchronously. */
     markShouldRefresh?: () => void;
@@ -226,7 +228,7 @@ And some additional tools:
 
 ### JavaScript
 
-The examples described below can be directly tested on [codesandbox](https://codesandbox.io/s/model-react-v2-quickstart-javascript-4gp3y).
+The examples described below can be directly tested on [codesandbox](https://codesandbox.io/s/model-react-v2-quickstart-javascript-4gp3y?fontsize=14&hidenavigation=1&module=%2Fsrc%2FquickStart.js&theme=dark).
 
 <details><summary>Field</summary>
 
@@ -386,7 +388,7 @@ render(<SomeData source={source} />, document.body);
 </details>
 
 <details><summary>LoadableField</summary>
-The loadable field acts like the default field, except that it will update data according to another source, which takes presendence over the local value
+The loadable field acts like the default field, except that it will update data according to another source, which takes precedence over the local value
 
 ```jsx
 import React from "react";
@@ -476,9 +478,9 @@ const transformer = l => `${field1.get(l)} - ${field2.get(l)}`;
 // Render some 'app' element that shows the two fields and combined output
 render(
     <div>
-        <SomeInput field={field} />
+        <SomeInput field={field1} />
         <SomeInput field={field2} />
-        <SomeOutput field={transformer} />
+        <SomeOutput dataRetriever={transformer} />
     </div>,
     document.body
 );
@@ -492,6 +494,9 @@ This whole system is nice when you want to render your data, but it sucks when y
 ```js
 import {DataLoader, getAsync} from "model-react";
 
+// A delay function to fake some delay that would occur
+const delay = () => new Promise(res => setTimeout(res, 2000));
+
 // Create a data source
 export const loadableSource = new DataLoader(async () => {
     // Simply returns random data after some delay, would more realistically be an async data fetch
@@ -500,7 +505,7 @@ export const loadableSource = new DataLoader(async () => {
 }, "test");
 
 // Convert a get to a promise fetch:
-getAsync(l => loadableField.get(l))
+getAsync(l => loadableSource.get(l))
     .then(result => console.log(result))
     .catch(error => console.error(error));
 ```
@@ -515,6 +520,9 @@ The interesting behaviour is that the hooks 'collect' multiple exceptions. So th
 import React from "react";
 import {render} from "react-dom";
 import {DataLoader, getAsync, Loader} from "model-react";
+
+// A delay function to fake some delay that would occur
+const delay = () => new Promise(res => setTimeout(res, 2000));
 
 // Create a data source
 export const loadableSource = new DataLoader(async () => {
@@ -544,11 +552,11 @@ render(
 
 ### TypeScript
 
-The examples described below can be directly tested on [codesandbox](https://codesandbox.io/s/model-react-v2-quickstart-typescript-e7v86).
+The examples described below can be directly tested on [codesandbox](https://codesandbox.io/s/model-react-v2-quickstart-typescript-e7v86?fontsize=14&hidenavigation=1&module=%2Fsrc%2FquickStart.tsx&theme=dark).
 
 <details><summary>Field</summary>
 
-```jsx
+```tsx
 import React, {FC} from "react";
 import {render} from "react-dom";
 import {Field, useDataHook} from "model-react";
@@ -588,7 +596,7 @@ render(
 
 <details><summary>DataLoader</summary>
 
-```jsx
+```tsx
 import React, {FC} from "react";
 import {render} from "react-dom";
 import {DataLoader, useDataHook} from "model-react";
@@ -632,7 +640,7 @@ render(<SomeData source={source} />, document.body);
 <details><summary>LoaderSwitch</summary>
 The loader switch can be used to cleanly deal with the state of a loadable source
 
-```jsx
+```tsx
 import React, {FC} from "react";
 import {render} from "react-dom";
 import {DataLoader, LoaderSwitch, useDataHook} from "model-react";
@@ -671,7 +679,7 @@ render(<SomeData source={source} />, document.body);
 <details><summary>Loader</summary>
 The loader is almost the same as the loader switch, except that it will 'host' the listener
 
-```jsx
+```tsx
 import React, {FC} from "react";
 import {render} from "react-dom";
 import {DataLoader, Loader} from "model-react";
@@ -703,9 +711,9 @@ render(<SomeData source={source} />, document.body);
 </details>
 
 <details><summary>LoadableField</summary>
-The loadable field acts like the default field, except that it will update data according to another source, which takes presendence over the local value
+The loadable field acts like the default field, except that it will update data according to another source, which takes precedence over the local value
 
-```jsx
+```tsx
 import React, {FC} from "react";
 import {render} from "react-dom";
 import {DataLoader, LoadableField, Loader} from "model-react";
@@ -763,7 +771,7 @@ render(
 <details><summary>Combining data (transformers)</summary>
 We can easily combine data of different data sources in this system, everything will behave as if it's only a single source.
 
-```jsx
+```tsx
 import React, {FC} from "react";
 import {render} from "react-dom";
 import {Field, useDataHook, IDataRetriever} from "model-react";
@@ -793,9 +801,9 @@ const transformer: IDataRetriever<string> = l => `${field1.get(l)} - ${field2.ge
 // Render some 'app' element that shows the two fields and combined output
 render(
     <div>
-        <SomeInput field={field} />
+        <SomeInput field={field1} />
         <SomeInput field={field2} />
-        <SomeOutput field={transformer} />
+        <SomeOutput dataRetriever={transformer} />
     </div>,
     document.body
 );
@@ -806,8 +814,11 @@ render(
 <details><summary>Async</summary>
 This whole system is nice when you want to render your data, but it sucks when you just want to get some data when it's finished loading like you would with promises. As a solution the library provides a function to convert a data source get to a normal asynchronous fetch.
 
-```js
+```ts
 import {DataLoader, getAsync} from "model-react";
+
+// A delay function to fake some delay that would occur
+const delay = () => new Promise(res => setTimeout(res, 2000));
 
 // Create a data source
 export const loadableSource = new DataLoader(async () => {
@@ -817,7 +828,7 @@ export const loadableSource = new DataLoader(async () => {
 }, "test");
 
 // Convert a get to a promise fetch:
-getAsync(l => loadableField.get(l))
+getAsync(l => loadableSource.get(l))
     .then(result => console.log(result))
     .catch(error => console.error(error));
 ```
@@ -828,10 +839,13 @@ getAsync(l => loadableField.get(l))
 Data loaders may throw errors, which are handled by the data hooks like you would expect for the most part.
 The interesting behaviour is that the hooks 'collect' multiple exceptions. So the `.catch` on the promise will receive an array of exceptions too. This is done because a single data retriever may have multiple exceptions, if it consists of multiple data sources.
 
-```jsx
+```tsx
 import React from "react";
 import {render} from "react-dom";
 import {DataLoader, getAsync, Loader, IDataRetriever} from "model-react";
+
+// A delay function to fake some delay that would occur
+const delay = () => new Promise(res => setTimeout(res, 2000));
 
 // Create a data source
 export const loadableSource = new DataLoader(async () => {
@@ -925,7 +939,7 @@ interface DataLoader<T> {
     get(params?: IDataRetrieverParams): T;
 
     /**
-     * Indicates that this data is no longer up to data and should be reloaded
+     * Indicates that this data is no longer up to date and should be reloaded
      */
     markDirty(): void;
 }
@@ -933,7 +947,7 @@ interface DataLoader<T> {
 
 ### LoadableField
 
-A loadable field is a combination of a data loader and a field. It will use a data loader to retrieve its initial value, but can be altered like a field. The data loader takes presendence over the value that has been manually set however. This means that by default, when the data loader updates, the loadable field will copy its data overwritting the current data.
+A loadable field is a combination of a data loader and a field. It will use a data loader to retrieve its initial value, but can be altered like a field. The data loader takes precedence over the value that has been manually set however. This means that by default, when the data loader updates, the loadable field will copy its data overwriting the current data.
 
 #### Interface
 
@@ -1011,7 +1025,7 @@ function useDataHook(
     IDataRetrieverParams,
     {
         /**
-         * Retrieves whether any obtained daata is currently loading
+         * Retrieves whether any obtained data is currently loading
          */
         isLoading: () => boolean;
 
@@ -1054,7 +1068,7 @@ This is why the Loader and LoaderSwitch component are particularly useful. By de
 
 ### getAsync
 
-getAsync can be used to traansform a loadable data retriever into an async data fetch that resolves when all data finished loading.
+getAsync can be used to transform a loadable data retriever into an async data fetch that resolves when all data finished loading.
 
 #### Interface
 
