@@ -1,3 +1,4 @@
+"use strict";
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -45,13 +46,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var _this = this;
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Transforms a normal data getter into a promise that resolves when the data is loaded
  * @param getter The getter function call, which applies the hook
  * @param forceRefreshTime The time such that if data is older, it will be refreshed
  * @returns A promise with the result after all data sources finished loading/refreshing
  */
-export var getAsync = function (getter, forceRefreshTime) { return __awaiter(_this, void 0, void 0, function () {
+exports.getAsync = function (getter, forceRefreshTime) { return __awaiter(_this, void 0, void 0, function () {
     return __generator(this, function (_a) {
         return [2 /*return*/, new Promise(function (res, rej) {
                 /**

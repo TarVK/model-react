@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -11,7 +12,8 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import { AbstractDataSource } from "./AbstractDataSource";
+Object.defineProperty(exports, "__esModule", { value: true });
+var AbstractDataSource_1 = require("./AbstractDataSource");
 var Field = /** @class */ (function (_super) {
     __extends(Field, _super);
     /**
@@ -41,6 +43,6 @@ var Field = /** @class */ (function (_super) {
         this.callListeners();
     };
     return Field;
-}(AbstractDataSource));
-export { Field };
+}(AbstractDataSource_1.AbstractDataSource));
+exports.Field = Field;
 //# sourceMappingURL=Field.js.map

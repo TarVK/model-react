@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -11,7 +12,8 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import { Field } from "./Field";
+Object.defineProperty(exports, "__esModule", { value: true });
+var Field_1 = require("./Field");
 var defaultUpdater = function (newLoaded, previousLoaded, current) {
     return newLoaded === previousLoaded ? current : newLoaded;
 };
@@ -50,6 +52,6 @@ var LoadableField = /** @class */ (function (_super) {
         this.previousLoaded = value;
     };
     return LoadableField;
-}(Field));
-export { LoadableField };
+}(Field_1.Field));
+exports.LoadableField = LoadableField;
 //# sourceMappingURL=LoadableField.js.map

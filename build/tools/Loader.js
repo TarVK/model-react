@@ -1,9 +1,11 @@
-import * as React from "react";
-import { useDataHook } from "../model/dataHooks/useDataHook";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = require("react");
+var useDataHook_1 = require("../model/dataHooks/useDataHook");
 /**
  * A component to handle the loading or error state of loadable data sources
  */
-export var Loader = function (_a) {
+exports.Loader = function (_a) {
     var 
     /** An alias for content */
     children = _a.children, 
@@ -13,7 +15,7 @@ export var Loader = function (_a) {
     onLoad = _a.onLoad, 
     /** The node to show if an error occured */
     onError = _a.onError;
-    var _b = useDataHook(), l = _b[0], _c = _b[1], isLoading = _c.isLoading, getExceptions = _c.getExceptions;
+    var _b = useDataHook_1.useDataHook(), l = _b[0], _c = _b[1], isLoading = _c.isLoading, getExceptions = _c.getExceptions;
     var result = (content || children || (function () { }))(l);
     if (isLoading && isLoading())
         return React.createElement(React.Fragment, null, onLoad instanceof Function ? onLoad() : onLoad);

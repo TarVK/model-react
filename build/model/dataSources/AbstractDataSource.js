@@ -1,4 +1,6 @@
-import { isDataListener } from "../_types/IDataListener";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var IDataListener_1 = require("../_types/IDataListener");
 var AbstractDataSource = /** @class */ (function () {
     function AbstractDataSource() {
         // Data liseteners to notify when data has changed
@@ -10,7 +12,7 @@ var AbstractDataSource = /** @class */ (function () {
      */
     AbstractDataSource.prototype.addListener = function (listener) {
         var _this = this;
-        if (isDataListener(listener) && this.listeners.indexOf(listener) === -1) {
+        if (IDataListener_1.isDataListener(listener) && this.listeners.indexOf(listener) === -1) {
             this.listeners.push(listener);
             listener.registerRemover(function () {
                 var index = _this.listeners.indexOf(listener);
@@ -28,5 +30,5 @@ var AbstractDataSource = /** @class */ (function () {
     };
     return AbstractDataSource;
 }());
-export { AbstractDataSource };
+exports.AbstractDataSource = AbstractDataSource;
 //# sourceMappingURL=AbstractDataSource.js.map

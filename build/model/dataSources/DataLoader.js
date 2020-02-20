@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -46,8 +47,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { AbstractDataSource } from "./AbstractDataSource";
-import { isDataLoadRequest } from "../_types/IDataLoadRequest";
+Object.defineProperty(exports, "__esModule", { value: true });
+var AbstractDataSource_1 = require("./AbstractDataSource");
+var IDataLoadRequest_1 = require("../_types/IDataLoadRequest");
 var DataLoader = /** @class */ (function (_super) {
     __extends(DataLoader, _super);
     /**
@@ -80,7 +82,7 @@ var DataLoader = /** @class */ (function (_super) {
     DataLoader.prototype.get = function (params) {
         _super.prototype.addListener.call(this, params);
         // Handle any load request
-        if (isDataLoadRequest(params))
+        if (IDataLoadRequest_1.isDataLoadRequest(params))
             this.handleDataLoadRequest(params);
         // Return the current data
         return this.data;
@@ -147,6 +149,6 @@ var DataLoader = /** @class */ (function (_super) {
         this.callListeners();
     };
     return DataLoader;
-}(AbstractDataSource));
-export { DataLoader };
+}(AbstractDataSource_1.AbstractDataSource));
+exports.DataLoader = DataLoader;
 //# sourceMappingURL=DataLoader.js.map

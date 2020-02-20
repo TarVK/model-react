@@ -1,8 +1,10 @@
-import * as React from "react";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = require("react");
 /**
  * A component to handle the loading or error state of loadable data sources
  */
-export var LoaderSwitch = function (_a) {
+exports.LoaderSwitch = function (_a) {
     var 
     /** An alias for content */
     children = _a.children, 
