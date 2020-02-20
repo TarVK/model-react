@@ -28,6 +28,6 @@ export type IDataLoadRequest = {
  */
 export const isDataLoadRequest = (data: any): data is IDataLoadRequest =>
     data &&
-    (data.refreshData === undefined ||
+    (data.refreshData !== undefined ||
         data.registerException instanceof Function ||
         data.markShouldRefresh instanceof Function);
