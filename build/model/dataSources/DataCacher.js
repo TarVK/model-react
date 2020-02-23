@@ -42,7 +42,7 @@ var DataCacher = /** @class */ (function (_super) {
             params.refreshTimestamp;
         if (this.dependencyRemover && !refreshTimestamp)
             return;
-        // If a change occurs, remove the previous dependency listener and call listeners
+        // If a change occurs, remove the previous dependency listener and call own listeners
         var onChange = function () {
             if (!_this.dependencyRemover)
                 return;
@@ -54,7 +54,7 @@ var DataCacher = /** @class */ (function (_super) {
         this.exceptions = [];
         this.loading = false;
         this.lastLoadTime = Date.now();
-        // Setup the listener, and forward changes to our listeners
+        // Retrieve the new value and setup the new listener
         this.cached = this.source({
             refreshData: true,
             refreshTimestamp: refreshTimestamp,
@@ -64,7 +64,6 @@ var DataCacher = /** @class */ (function (_super) {
             },
             registerException: function (exception) {
                 _this.exceptions.push(exception);
-                onChange();
             },
             registerRemover: function (remover) {
                 _this.dependencyRemover = remover;

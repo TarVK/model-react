@@ -1,7 +1,6 @@
 import {AbstractDataSource} from "./AbstractDataSource";
 import {IDataSource} from "../_types/IDataSource";
 import {IDataRetrieverParams} from "../_types/IDataRetrieverParams";
-import {IDataRetriever} from "../_types/IDataRetriever";
 import {isDataLoadRequest} from "../_types/IDataLoadRequest";
 
 export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<T> {
@@ -41,14 +40,14 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
      */
     protected updateIfRequired(params?: IDataRetrieverParams): void {
         // Make sure we don't have a dependency already, unless we want to force reload
-        let refreshTimestamp =
+        const refreshTimestamp =
             isDataLoadRequest(params) &&
             params.refreshData &&
             params.refreshTimestamp > this.lastLoadTime &&
             params.refreshTimestamp;
         if (this.dependencyRemover && !refreshTimestamp) return;
 
-        // If a change occurs, remove the previous dependency listener and call listeners
+        // If a change occurs, remove the previous dependency listener and call own listeners
         const onChange = () => {
             if (!this.dependencyRemover) return;
             this.dependencyRemover();
@@ -61,7 +60,7 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
         this.loading = false;
         this.lastLoadTime = Date.now();
 
-        // Setup the listener, and forward changes to our listeners
+        // Retrieve the new value and setup the new listener
         this.cached = this.source(
             {
                 refreshData: true,
@@ -72,7 +71,6 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
                 },
                 registerException: exception => {
                     this.exceptions.push(exception);
-                    onChange();
                 },
                 registerRemover: remover => {
                     this.dependencyRemover = remover;

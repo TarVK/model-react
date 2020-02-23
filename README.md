@@ -508,7 +508,7 @@ Transformers might be heavy to compute (in case the transformation itself is com
 This example also shows how a refreshTimestamp can be passed to a Loader (can also be passed to hooks and getAsync) to force reload data of a source.
 
 ```tsx
-import React from "react";
+import React, {useState} from "react";
 import {render} from "react-dom";
 import {Field, DataCacher, DataLoader, useDataHook, Loader} from "model-react";
 
