@@ -53,7 +53,7 @@ var IDataLoadRequest_1 = require("../_types/IDataLoadRequest");
 var DataLoader = /** @class */ (function (_super) {
     __extends(DataLoader, _super);
     /**
-     * Creates a new data loader instance
+     * Creates a new data loader instance, used to create a data source for async data getters
      * @param loader The function to load the data with
      * @param initial The initial value of the data
      * @param dirty Whether the initial value should be overwritten when any data is requested
@@ -116,8 +116,11 @@ var DataLoader = /** @class */ (function (_super) {
                 switch (_b.label) {
                     case 0:
                         if (!!this.loading) return [3 /*break*/, 5];
-                        this.lastLoadTime = Date.now();
+                        // Update loading indicators
                         this.loading = true;
+                        this.lastLoadTime = Date.now();
+                        // Call listeners so they know we're loading
+                        this.callListeners();
                         _b.label = 1;
                     case 1:
                         _b.trys.push([1, 3, , 4]);
@@ -132,8 +135,10 @@ var DataLoader = /** @class */ (function (_super) {
                         this.exception = e_1;
                         return [3 /*break*/, 4];
                     case 4:
+                        // Update indicators
                         this.loading = false;
                         this.dirty = false;
+                        // Call listeners to they know we're done loading
                         this.callListeners();
                         _b.label = 5;
                     case 5: return [2 /*return*/];

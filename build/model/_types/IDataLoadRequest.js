@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 exports.isDataLoadRequest = function (data) {
     return data &&
-        (data.refreshData === undefined ||
+        (data.refreshData !== undefined ||
             data.registerException instanceof Function ||
             data.markShouldRefresh instanceof Function);
 };

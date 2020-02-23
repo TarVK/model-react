@@ -7,6 +7,7 @@ export * from "./model/dataHooks/getAsync";
 export * from "./model/dataHooks/useDataHook";
 export * from "./model/dataSources/AbstractDataSource";
 export * from "./model/dataSources/DataLoader";
+export * from "./model/dataSources/DataCacher";
 export * from "./model/dataSources/Field";
 export * from "./model/dataSources/LoadableField";
 export * from "./tools/Loader";

@@ -13,9 +13,11 @@ exports.Loader = function (_a) {
     content = _a.content, 
     /** The node to show while loading */
     onLoad = _a.onLoad, 
-    /** The node to show if an error occured */
-    onError = _a.onError;
-    var _b = useDataHook_1.useDataHook(), l = _b[0], _c = _b[1], isLoading = _c.isLoading, getExceptions = _c.getExceptions;
+    /** The node to show if an error occurred */
+    onError = _a.onError, 
+    /** The time such that if data is older, it will be refreshed */
+    forceRefreshTime = _a.forceRefreshTime;
+    var _b = useDataHook_1.useDataHook(forceRefreshTime), l = _b[0], _c = _b[1], isLoading = _c.isLoading, getExceptions = _c.getExceptions;
     var result = (content || children || (function () { }))(l);
     if (isLoading && isLoading())
         return React.createElement(React.Fragment, null, onLoad instanceof Function ? onLoad() : onLoad);

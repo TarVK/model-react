@@ -2,15 +2,16 @@
     "compilerOptions": {
         "moduleResolution": "node",
         "outDir": "./build/",
-        "sourceRoot": "./src",
+        "rootDir": "./src/",
         "sourceMap": true,
         "declaration": true,
         "module": "commonjs",
         "target": "es5",
         "jsx": "react",
         "allowSyntheticDefaultImports": true,
-        "preserveSymlinks": true
+        "preserveSymlinks": true,
+        "skipLibCheck": true
     },
     "types": ["node"],
-    "exclude": ["node_modules", "**/node_modules/*", "build", "examples"]
+    "exclude": ["node_modules", "**/node_modules/*", "build", "demo", "examples"]
 }

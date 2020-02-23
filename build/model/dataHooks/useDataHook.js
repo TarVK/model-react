@@ -27,21 +27,25 @@ exports.useDataHook = function (forceRefreshTime) {
     var exceptions = [];
     // A list of functions to call to remove the passed listener as a dependency
     var dependencyRemovers = react_1.useRef([]);
-    // Remove all dependencies when the element is removed or remerendered
+    // Remove all dependencies when the element is removed or rerendered
     dependencyRemovers.current.forEach(function (remove) { return remove(); });
     react_1.useEffect(function () { return function () { return dependencyRemovers.current.forEach(function (remove) { return remove(); }); }; }, []);
     return [
-        __assign({ call: function () {
+        __assign({ 
+            // Data listener fields
+            call: function () {
                 update({});
             },
             registerRemover: function (remover) {
                 dependencyRemovers.current.push(remover);
-            }, refreshData: true, markShouldRefresh: function () {
+            }, 
+            // Data loading fields
+            refreshData: true, markShouldRefresh: function () {
                 isRefreshing = true;
             },
             registerException: function (exception) {
                 exceptions.push(exception);
-            } }, (forceRefreshTime !== undefined && { refreshTime: forceRefreshTime })),
+            } }, (forceRefreshTime !== undefined && { refreshTimestamp: forceRefreshTime })),
         // Return the function that retrieves if any data is refreshing
         { isLoading: function () { return isRefreshing; }, getExceptions: function () { return exceptions; } },
     ];

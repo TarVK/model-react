@@ -9,6 +9,7 @@ __export(require("./model/dataHooks/getAsync"));
 __export(require("./model/dataHooks/useDataHook"));
 __export(require("./model/dataSources/AbstractDataSource"));
 __export(require("./model/dataSources/DataLoader"));
+__export(require("./model/dataSources/DataCacher"));
 __export(require("./model/dataSources/Field"));
 __export(require("./model/dataSources/LoadableField"));
 __export(require("./tools/Loader"));

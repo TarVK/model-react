@@ -8,8 +8,8 @@ import { IDataListener } from "../_types/IDataListener";
  * @returns The data hook followed by contextual data
  */
 export declare const useDataHook: (forceRefreshTime?: number) => [IDataListener & IDataLoadRequest, {
-    /** Retrieves whether any obtained daata is currently loading */
+    /** Retrieves whether any obtained data is currently loading */
     isLoading: () => boolean;
-    /** Retrieves the exceptions that may have occured while loading */
+    /** Retrieves the exceptions that may have occurred while loading */
     getExceptions: () => any[];
 }];

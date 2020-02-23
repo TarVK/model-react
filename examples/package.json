@@ -1,7 +1,7 @@
 {
-    "name": "model-react-examples",
+    "name": "model-react-v2-quickstart-typescript",
     "version": "0.0.1",
-    "description": "Examples for model-react",
+    "description": "A typescript quickstart demo for model-react V2",
     "private": true,
     "scripts": {
         "start": "webpack-dev-server --env dev",
@@ -23,17 +23,16 @@
     },
     "homepage": "https://github.com/TarVK/model-react#readme",
     "dependencies": {
-        "@deity/falcon-ui": "^0.2.4",
-        "@rehooks/window-size": "^1.0.2",
         "model-react": "link:..",
         "react": "link:../node_modules/react",
-        "react-dom": "^16.8.6",
-        "react-icons": "^3.7.0"
+        "react-dom": "^16.12.0",
+        "react-router-dom": "5.1.2",
+        "react-scripts": "3.3.0"
     },
     "devDependencies": {
-        "@types/react": "^16.8.19",
-        "@types/react-dom": "^16.8.4",
-        "@types/react-router-dom": "^4.3.3",
+        "@types/react": "16.9.19",
+        "@types/react-dom": "16.9.5",
+        "@types/react-router-dom": "5.1.3",
         "ts-loader": "^6.0.2",
         "typescript": "^3.5.1",
         "webpack": "^4.32.2",

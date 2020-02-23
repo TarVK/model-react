@@ -5,12 +5,12 @@ export type IDataListener = {
     /**
      * The method to call when the source data changes
      */
-    call: () => void;
+    readonly call: () => void;
     /**
      * A method to register a function to be called in order to remove this listener from a data source
-     * @param remove The function to casll in order to unregister this listener
+     * @param remove The function to call in order to unregister this listener
      */
-    registerRemover: (remove: () => void) => void;
+    readonly registerRemover: (remove: () => void) => void;
 };
 
 /**

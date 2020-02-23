@@ -11,6 +11,7 @@ export const Loader: FC<{
     content?: (hook: IDataRetrieverParams) => ReactNode;
     onLoad?: ReactNode | (() => ReactNode);
     onError?: ReactNode | ((exceptions: any[]) => ReactNode);
+    forceRefreshTime?: number;
 }> = ({
     /** An alias for content */
     children,
@@ -18,10 +19,12 @@ export const Loader: FC<{
     content,
     /** The node to show while loading */
     onLoad,
-    /** The node to show if an error occured */
+    /** The node to show if an error occurred */
     onError,
+    /** The time such that if data is older, it will be refreshed */
+    forceRefreshTime,
 }) => {
-    const [l, {isLoading, getExceptions}] = useDataHook();
+    const [l, {isLoading, getExceptions}] = useDataHook(forceRefreshTime);
     const result = (content || children || (() => {}))(l);
 
     if (isLoading && isLoading())

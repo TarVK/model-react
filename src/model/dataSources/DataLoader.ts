@@ -17,11 +17,11 @@ export class DataLoader<T> extends AbstractDataSource<T> implements IDataSource<
     // Whether the loader is currently loading data
     protected loading: boolean = false;
 
-    // Any exception that might have occured when loading data
+    // Any exception that might have occurred when loading data
     protected exception: any;
 
     /**
-     * Creates a new data loader instance
+     * Creates a new data loader instance, used to create a data source for async data getters
      * @param loader The function to load the data with
      * @param initial The initial value of the data
      * @param dirty Whether the initial value should be overwritten when any data is requested
@@ -78,16 +78,26 @@ export class DataLoader<T> extends AbstractDataSource<T> implements IDataSource<
      */
     protected async load(): Promise<void> {
         if (!this.loading) {
-            this.lastLoadTime = Date.now();
+            // Update loading indicators
             this.loading = true;
+            this.lastLoadTime = Date.now();
+
+            // Call listeners so they know we're loading
+            this.callListeners();
+
+            // Load the new data
             try {
                 this.data = await this.loader();
                 this.exception = undefined;
             } catch (e) {
                 this.exception = e;
             }
+
+            // Update indicators
             this.loading = false;
             this.dirty = false;
+
+            // Call listeners to they know we're done loading
             this.callListeners();
         }
     }

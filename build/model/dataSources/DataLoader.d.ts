@@ -10,7 +10,7 @@ export declare class DataLoader<T> extends AbstractDataSource<T> implements IDat
     protected loading: boolean;
     protected exception: any;
     /**
-     * Creates a new data loader instance
+     * Creates a new data loader instance, used to create a data source for async data getters
      * @param loader The function to load the data with
      * @param initial The initial value of the data
      * @param dirty Whether the initial value should be overwritten when any data is requested

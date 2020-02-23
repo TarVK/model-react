@@ -14,9 +14,9 @@ export const useDataHook = (
 ): [
     IDataListener & IDataLoadRequest,
     {
-        /** Retrieves whether any obtained daata is currently loading */
+        /** Retrieves whether any obtained data is currently loading */
         isLoading: () => boolean;
-        /** Retrieves the exceptions that may have occured while loading */
+        /** Retrieves the exceptions that may have occurred while loading */
         getExceptions: () => any[];
     }
 ] => {
@@ -30,18 +30,21 @@ export const useDataHook = (
     // A list of functions to call to remove the passed listener as a dependency
     const dependencyRemovers = useRef([] as (() => void)[]);
 
-    // Remove all dependencies when the element is removed or remerendered
+    // Remove all dependencies when the element is removed or rerendered
     dependencyRemovers.current.forEach(remove => remove());
     useEffect(() => () => dependencyRemovers.current.forEach(remove => remove()), []);
     return [
         // Return the listener which will force an update, and registers whether any data is refreshing
         {
+            // Data listener fields
             call() {
                 update({});
             },
             registerRemover(remover: () => void) {
                 dependencyRemovers.current.push(remover);
             },
+
+            // Data loading fields
             refreshData: true,
             markShouldRefresh() {
                 isRefreshing = true;
@@ -49,7 +52,7 @@ export const useDataHook = (
             registerException(exception: any) {
                 exceptions.push(exception);
             },
-            ...(forceRefreshTime !== undefined && {refreshTime: forceRefreshTime}),
+            ...(forceRefreshTime !== undefined && {refreshTimestamp: forceRefreshTime}),
         },
         // Return the function that retrieves if any data is refreshing
         {isLoading: () => isRefreshing, getExceptions: () => exceptions},

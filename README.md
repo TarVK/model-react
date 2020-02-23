@@ -5,10 +5,11 @@ Model-react provides a simple system to create a data model together with applic
 There are two main situations when usage of this module could be considered:
 
 -   If you render the same data in multiple places and want to manage the data neatly
--   If the data has complex behaviour, possibly separate of any GUI
+-   If the data has complex behavior, possibly separate of any GUI
 
 This module has full TypeScript support, and will work well in a statically typed structured project.
-A demo project written in TypeScript can be found in the examples folder, and shows of several useful constructs in models. The result can be [viewed in browser here](http://tarvk.github.io/model-react/examples/build) but is rather silly. Also note that this demo wasn't made mobile friendly, and generally little time was spent on the looks. This demo was made for the first version of this library and still has to be updated to show all the features of the second version.
+A demo project written in TypeScript can be found in the demo folder, and shows off several useful constructs in models. The result can be [viewed in browser here](http://tarvk.github.io/model-react/demo/build) but is rather silly. Also note that this demo wasn't made mobile friendly, and generally little time was spent on the looks. This demo was made for the first version of this library and still has to be updated to show all the features of the second version.
+Example uses of all components of model-react can be found in the examples folder, or viewed below in the rest of the readme.
 
 # Installation
 
@@ -172,10 +173,10 @@ Where IDateRetrieverParams is defined as:
 type IDataRetrieverParams = IDataLoadRequest | IDataListener;
 type IDataListener = {
     /** The method to call when the source data changes */
-    call: () => void;
+    readonly call: () => void;
     /** A method to register a function to be called in order to remove this listener from a data source
-     *  @param remove The function to casll in order to unregister this listener */
-    registerRemover: (remove: () => void) => void;
+     *  @param remove The function to call in order to unregister this listener */
+    readonly registerRemover: (remove: () => void) => void;
 };
 type IDataLoadRequest = {
     /** Whether data should be loaded if absent or outdated */
@@ -186,10 +187,10 @@ type IDataLoadRequest = {
      *  considering the refresh timestamp passed,
      *  as well a data source's own state.
      *  Should only be called synchronously. */
-    markShouldRefresh?: () => void;
+    readonly markShouldRefresh?: () => void;
     /** A function to pass data retrieval exceptions to
      *  @param exception An exception thrown when refreshing data */
-    registerException?: (error: any) => void;
+    readonly registerException?: (error: any) => void;
 };
 ```
 
@@ -211,8 +212,9 @@ Data sources can use `IDataListeners` to inform about changes of the value of th
 The library offers some simple data sources:
 
 -   Field: A data source whose value can be updated
--   DataLoader: A data source that retrieves its value from an async user callback
--   LoadableField: A data source whose value is loaded from an async user callback, but can be changed like a field
+-   DataLoader: A data source that retrieves its value from an async callback
+-   LoadableField: A data source whose value is loaded from an async callback, but can be changed like a field
+-   DataCacher: A data source that caches combinations of values of other sources
 
 Together with some simple data hooks:
 
@@ -277,6 +279,9 @@ import React from "react";
 import {render} from "react-dom";
 import {DataLoader, useDataHook} from "model-react";
 
+// A random function to generate a short random number
+const random = () => Math.floor(Math.random() * 1e3) / 1e3;
+
 // A delay function to fake some delay that would occur
 const delay = () => new Promise(res => setTimeout(res, 2000));
 
@@ -288,7 +293,7 @@ const SomeData = ({source}) => {
     // Check if the data is loading
     if (isLoading()) return <div>Loading</div>;
 
-    // Check if any error occured
+    // Check if any error occurred
     const errors = getExceptions();
     if (errors.length !== 0) return <div>Data failed to fetch</div>;
 
@@ -305,7 +310,7 @@ const SomeData = ({source}) => {
 export const source = new DataLoader(async () => {
     // Simply returns random data after some delay, would more realistically be an async data fetch
     await delay();
-    return Math.random();
+    return random();
 }, 0); // 0 is the initial value
 
 render(<SomeData source={source} />, document.body);
@@ -320,6 +325,9 @@ The loader switch can be used to cleanly deal with the state of a loadable sourc
 import React from "react";
 import {render} from "react-dom";
 import {DataLoader, LoaderSwitch, useDataHook} from "model-react";
+
+// A random function to generate a short random number
+const random = () => Math.floor(Math.random() * 1e3) / 1e3;
 
 // A delay function to fake some delay that would occur
 const delay = () => new Promise(res => setTimeout(res, 2000));
@@ -345,7 +353,7 @@ const SomeData = ({source}) => {
 export const source = new DataLoader(async () => {
     // Simply returns random data after some delay, would more realistically be an async data fetch
     await delay();
-    return Math.random();
+    return random();
 }, 0); // 0 is the initial value
 
 render(<SomeData source={source} />, document.body);
@@ -360,6 +368,9 @@ The loader is almost the same as the loader switch, except that it will 'host' t
 import React from "react";
 import {render} from "react-dom";
 import {DataLoader, Loader} from "model-react";
+
+// A random function to generate a short random number
+const random = () => Math.floor(Math.random() * 1e3) / 1e3;
 
 // A delay function to fake some delay that would occur
 const delay = () => new Promise(res => setTimeout(res, 2000));
@@ -379,7 +390,7 @@ const SomeData = ({source}) => (
 export const source = new DataLoader(async () => {
     // Simply returns random data after some delay, would more realistically be an async data fetch
     await delay();
-    return Math.random();
+    return random();
 }, 0); // 0 is the initial value
 
 render(<SomeData source={source} />, document.body);
@@ -394,6 +405,9 @@ The loadable field acts like the default field, except that it will update data 
 import React from "react";
 import {render} from "react-dom";
 import {DataLoader, LoadableField, Loader} from "model-react";
+
+// A random function to generate a short random number
+const random = () => Math.floor(Math.random() * 1e3) / 1e3;
 
 // A delay function to fake some delay that would occur
 const delay = () => new Promise(res => setTimeout(res, 2000));
@@ -426,10 +440,10 @@ const SomeOutput = ({field}) => (
 export const loadableSource = new DataLoader(async () => {
     // Simply returns random data after some delay, would more realistically be an async data fetch
     await delay();
-    return `${Math.random()}`;
+    return `${random()}`;
 }, "test");
 
-// Create a loadable field that synchronyses with the data source
+// Create a loadable field that synchronizes with the data source
 const loadableField = new LoadableField(t => loadableSource.get(t));
 
 // Render the elements
@@ -488,11 +502,97 @@ render(
 
 </details>
 
+<details><summary>DataCacher (Caching transformers) + refreshTime</summary>
+Transformers might be heavy to compute (in case the transformation itself is complex), in which case we can cache their result. This will prevent data from being recomputed when it's being accessed again. If any of the sources that it relies on update, it will automatically recompute its value to be up to date.
+
+This example also shows how a refreshTimestamp can be passed to a Loader (can also be passed to hooks and getAsync) to force reload data of a source.
+
+```tsx
+import React from "react";
+import {render} from "react-dom";
+import {Field, DataCacher, DataLoader, useDataHook, Loader} from "model-react";
+
+// A random function to generate a short random number
+const random = () => Math.floor(Math.random() * 1e3) / 1e3;
+
+// A delay function to fake some delay that would occur
+const delay = () => new Promise(res => setTimeout(res, 2000));
+
+// Create some standard components
+const SomeInput = ({field}) => {
+    const [l] = useDataHook();
+    return (
+        <input
+            type="text"
+            value={field.get(l)}
+            onChange={e => field.set(e.target.value)}
+        />
+    );
+};
+const SomeOutput = ({dataRetriever}) => {
+    // We can use a timestamp to force a data reload no matter what the source is
+    const [refreshTime, setRefreshTime] = useState(0);
+    return (
+        <Loader
+            forceRefreshTime={refreshTime}
+            onLoad={<div>Loading</div>}
+            onError={<div>Data failed to fetch</div>}>
+            {l => (
+                <div>
+                    {dataRetriever(l)}
+                    <button onClick={() => setRefreshTime(Date.now())}>Reload</button>
+                </div>
+            )}
+        </Loader>
+    );
+};
+
+// Create multiple sources
+const field1 = new Field("hoi");
+const field2 = new Field("bye");
+const loadable = new DataLoader(async () => {
+    await delay();
+    return random();
+}, 0);
+
+// Create a tranformer and DataCacher that caches the transformer
+const transformer = l =>
+    `${field1.get(l)} - ${field2.get(l)} - ${loadable.get(l)} - ${random()}`;
+const cachedTransformer = new DataCacher(transformer);
+
+// Create a component that might do meaningless rerenders
+// that we don't want to recompute the transform
+const Comp = () => {
+    const [randomVal, setRandomVal] = useState(0);
+    return (
+        <div>
+            <SomeInput field={field1} />
+            <SomeInput field={field2} /> <br />
+            Not cached:
+            <SomeOutput dataRetriever={transformer} />
+            Cached:
+            <SomeOutput dataRetriever={l => cachedTransformer.get(l)} />
+            <br />
+            something to make meaningless updates:
+            {randomVal} <button onClick={() => setRandomVal(random())}>Rerender</button>
+        </div>
+    );
+};
+
+// Render as element
+render(<Comp />, document.body);
+```
+
+</details>
+
 <details><summary>Async</summary>
 This whole system is nice when you want to render your data, but it sucks when you just want to get some data when it's finished loading like you would with promises. As a solution the library provides a function to convert a data source get to a normal asynchronous fetch.
 
 ```js
 import {DataLoader, getAsync} from "model-react";
+
+// A random function to generate a short random number
+const random = () => Math.floor(Math.random() * 1e3) / 1e3;
 
 // A delay function to fake some delay that would occur
 const delay = () => new Promise(res => setTimeout(res, 2000));
@@ -501,7 +601,7 @@ const delay = () => new Promise(res => setTimeout(res, 2000));
 export const loadableSource = new DataLoader(async () => {
     // Simply returns random data after some delay, would more realistically be an async data fetch
     await delay();
-    return `${Math.random()}`;
+    return `${random()}`;
 }, "test");
 
 // Convert a get to a promise fetch:
@@ -514,7 +614,7 @@ getAsync(l => loadableSource.get(l))
 
 <details><summary>Exceptions</summary>
 Data loaders may throw errors, which are handled by the data hooks like you would expect for the most part.
-The interesting behaviour is that the hooks 'collect' multiple exceptions. So the `.catch` on the promise will receive an array of exceptions too. This is done because a single data retriever may have multiple exceptions, if it consists of multiple data sources.
+The interesting behavior is that the hooks 'collect' multiple exceptions. So the `.catch` on the promise will receive an array of exceptions too. This is done because a single data retriever may have multiple exceptions, if it consists of multiple data sources.
 
 ```jsx
 import React from "react";
@@ -526,7 +626,7 @@ const delay = () => new Promise(res => setTimeout(res, 2000));
 
 // Create a data source
 export const loadableSource = new DataLoader(async () => {
-    // Simply returns random data after some delay, would more realistically be an async data fetch
+    // Simply throws an error after some delay, would more realistically be an async data fetch
     await delay();
     throw "error1! ";
 }, "test");
@@ -601,6 +701,9 @@ import React, {FC} from "react";
 import {render} from "react-dom";
 import {DataLoader, useDataHook} from "model-react";
 
+// A random function to generate a short random number
+const random = () => Math.floor(Math.random() * 1e3) / 1e3;
+
 // A delay function to fake some delay that would occur
 const delay = () => new Promise<void>(res => setTimeout(res, 2000));
 
@@ -612,7 +715,7 @@ const SomeData: FC<{source: DataLoader<number>}> = ({source}) => {
     // Check if the data is loading
     if (isLoading()) return <div>Loading</div>;
 
-    // Check if any error occured
+    // Check if any error occurred
     const errors = getExceptions();
     if (errors.length !== 0) return <div>Data failed to fetch</div>;
 
@@ -629,7 +732,7 @@ const SomeData: FC<{source: DataLoader<number>}> = ({source}) => {
 export const source = new DataLoader(async () => {
     // Simply returns random data after some delay, would more realistically be an async data fetch
     await delay();
-    return Math.random();
+    return random();
 }, 0); // 0 is the initial value
 
 render(<SomeData source={source} />, document.body);
@@ -644,6 +747,9 @@ The loader switch can be used to cleanly deal with the state of a loadable sourc
 import React, {FC} from "react";
 import {render} from "react-dom";
 import {DataLoader, LoaderSwitch, useDataHook} from "model-react";
+
+// A random function to generate a short random number
+const random = () => Math.floor(Math.random() * 1e3) / 1e3;
 
 // A delay function to fake some delay that would occur
 const delay = () => new Promise<void>(res => setTimeout(res, 2000));
@@ -668,7 +774,7 @@ const SomeData: FC<{source: DataLoader<number>}> = ({source}) => {
 export const source = new DataLoader(async () => {
     // Simply returns random data after some delay, would more realistically be an async data fetch
     await delay();
-    return Math.random();
+    return random();
 }, 0); // 0 is the initial value
 
 render(<SomeData source={source} />, document.body);
@@ -683,6 +789,9 @@ The loader is almost the same as the loader switch, except that it will 'host' t
 import React, {FC} from "react";
 import {render} from "react-dom";
 import {DataLoader, Loader} from "model-react";
+
+// A random function to generate a short random number
+const random = () => Math.floor(Math.random() * 1e3) / 1e3;
 
 // A delay function to fake some delay that would occur
 const delay = () => new Promise<void>(res => setTimeout(res, 2000));
@@ -702,7 +811,7 @@ const SomeData: FC<{source: DataLoader<number>}> = ({source}) => (
 export const source = new DataLoader(async () => {
     // Simply returns random data after some delay, would more realistically be an async data fetch
     await delay();
-    return Math.random();
+    return random();
 }, 0); // 0 is the initial value
 
 render(<SomeData source={source} />, document.body);
@@ -717,6 +826,9 @@ The loadable field acts like the default field, except that it will update data 
 import React, {FC} from "react";
 import {render} from "react-dom";
 import {DataLoader, LoadableField, Loader} from "model-react";
+
+// A random function to generate a short random number
+const random = () => Math.floor(Math.random() * 1e3) / 1e3;
 
 // A delay function to fake some delay that would occur
 const delay = () => new Promise<void>(res => setTimeout(res, 2000));
@@ -749,10 +861,10 @@ const SomeOutput: FC<{field: LoadableField<string>}> = ({field}) => (
 export const loadableSource = new DataLoader(async () => {
     // Simply returns random data after some delay, would more realistically be an async data fetch
     await delay();
-    return `${Math.random()}`;
+    return `${random()}`;
 }, "test");
 
-// Create a loadable field that synchronyses with the data source
+// Create a loadable field that synchronizes with the data source
 const loadableField = new LoadableField(t => loadableSource.get(t));
 
 // Render the elements
@@ -811,11 +923,104 @@ render(
 
 </details>
 
+<details><summary>DataCacher (Caching transformers) + refreshTime</summary>
+Transformers might be heavy to compute (in case the transformation itself is complex), in which case we can cache their result. This will prevent data from being recomputed when it's being accessed again. If any of the sources that it relies on update, it will automatically recompute its value to be up to date.
+
+This example also shows how a refreshTimestamp can be passed to a Loader (can also be passed to hooks and getAsync) to force reload data of a source.
+
+```tsx
+import React, {FC, useState} from "react";
+import {render} from "react-dom";
+import {
+    Field,
+    DataCacher,
+    DataLoader,
+    useDataHook,
+    Loader,
+    IDataRetriever,
+} from "model-react";
+
+// A random function to generate a short random number
+const random = () => Math.floor(Math.random() * 1e3) / 1e3;
+
+// A delay function to fake some delay that would occur
+const delay = () => new Promise(res => setTimeout(res, 2000));
+
+// Create some standard components
+const SomeInput: FC<{field: Field<string>}> = ({field}) => {
+    const [l] = useDataHook();
+    return (
+        <input
+            type="text"
+            value={field.get(l)}
+            onChange={e => field.set(e.target.value)}
+        />
+    );
+};
+const SomeOutput: FC<{dataRetriever: IDataRetriever<string>}> = ({dataRetriever}) => {
+    // We can use a timestamp to force a data reload no matter what the source is
+    const [refreshTime, setRefreshTime] = useState(0);
+    return (
+        <Loader
+            forceRefreshTime={refreshTime}
+            onLoad={<div>Loading</div>}
+            onError={<div>Data failed to fetch</div>}>
+            {l => (
+                <div>
+                    {dataRetriever(l)}
+                    <button onClick={() => setRefreshTime(Date.now())}>Reload</button>
+                </div>
+            )}
+        </Loader>
+    );
+};
+
+// Create multiple sources
+const field1 = new Field("hoi");
+const field2 = new Field("bye");
+const loadable = new DataLoader(async () => {
+    await delay();
+    return random();
+}, 0);
+
+// Create a tranformer and DataCacher that caches the transformer
+const transformer: IDataRetriever<string> = l =>
+    `${field1.get(l)} - ${field2.get(l)} - ${loadable.get(l)} - ${random()}`;
+const cachedTransformer = new DataCacher(transformer);
+
+// Create a component that might do meaningless rerenders
+// that we don't want to recompute the transform
+const Comp: FC = () => {
+    const [randomVal, setRandomVal] = useState(0);
+    return (
+        <div>
+            <SomeInput field={field1} />
+            <SomeInput field={field2} /> <br />
+            Not cached:
+            <SomeOutput dataRetriever={transformer} />
+            Cached:
+            <SomeOutput dataRetriever={l => cachedTransformer.get(l)} />
+            <br />
+            something to make meaningless updates:
+            {randomVal} <button onClick={() => setRandomVal(random())}>Rerender</button>
+        </div>
+    );
+};
+
+// Render as element
+render(<Comp />, document.body);
+```
+
+</details>
+
 <details><summary>Async</summary>
 This whole system is nice when you want to render your data, but it sucks when you just want to get some data when it's finished loading like you would with promises. As a solution the library provides a function to convert a data source get to a normal asynchronous fetch.
 
 ```ts
 import {DataLoader, getAsync} from "model-react";
+
+// A random function to generate a short random number
+const random = () => Math.floor(Math.random() * 1e3) / 1e3;
 
 // A delay function to fake some delay that would occur
 const delay = () => new Promise(res => setTimeout(res, 2000));
@@ -824,7 +1029,7 @@ const delay = () => new Promise(res => setTimeout(res, 2000));
 export const loadableSource = new DataLoader(async () => {
     // Simply returns random data after some delay, would more realistically be an async data fetch
     await delay();
-    return `${Math.random()}`;
+    return `${random()}`;
 }, "test");
 
 // Convert a get to a promise fetch:
@@ -837,7 +1042,7 @@ getAsync(l => loadableSource.get(l))
 
 <details><summary>Exceptions</summary>
 Data loaders may throw errors, which are handled by the data hooks like you would expect for the most part.
-The interesting behaviour is that the hooks 'collect' multiple exceptions. So the `.catch` on the promise will receive an array of exceptions too. This is done because a single data retriever may have multiple exceptions, if it consists of multiple data sources.
+The interesting behavior is that the hooks 'collect' multiple exceptions. So the `.catch` on the promise will receive an array of exceptions too. This is done because a single data retriever may have multiple exceptions, if it consists of multiple data sources.
 
 ```tsx
 import React from "react";
@@ -849,7 +1054,7 @@ const delay = () => new Promise(res => setTimeout(res, 2000));
 
 // Create a data source
 export const loadableSource = new DataLoader(async () => {
-    // Simply returns random data after some delay, would more realistically be an async data fetch
+    // Simply throws an error after some delay, would more realistically be an async data fetch
     await delay();
     throw "error1! ";
 }, "test");
@@ -895,7 +1100,7 @@ interface Field<T> {
     new (value: T): Field<T>;
 
     /**
-     * Retrieves the value of a source
+     * Retrieves the value of the source
      * @param params Data used to know whether to reload and to notify about state changes
      * @returns The value that's currently available
      */
@@ -932,7 +1137,7 @@ interface DataLoader<T> {
     ): DataLoader<T>;
 
     /**
-     * Retrieves the data of a source
+     * Retrieves the data of the source
      * @param params Data used to know whether to reload and to notify about state changes
      * @returns The data that's currently available
      */
@@ -968,7 +1173,7 @@ interface LoadableField<T> {
     ): LoadableField<T>;
 
     /**
-     * Retrieves the value of a source
+     * Retrieves the value of the source
      * @param params Data used to know whether to reload and to notify about state changes
      * @returns The value that's currently available
      */
@@ -998,6 +1203,34 @@ This results in the field retaining it's last assigned value, unless the loader 
 
 </details>
 
+### DataCacher
+
+A data cacher simply caches a value obtained from other sources. This can be used when you use the data of another source (or multiple sources), but apply a slow transformation on it. The cacher makes sure that not every get request recomputes this value and only recomputes it when one of the sources it depends on asked it to recompute.
+
+#### Interface
+
+```ts
+interface DataCacher<T> {
+    /**
+     * Creates a new data cache, used to reduce number of calls to complex data transformers
+     * @param source The function to use to compute the value
+     */
+    new (
+        source: (
+            params: IDataRetrieverParams, // The data hook to forward the sources
+            current: T | undefined // The currently cached value
+        ) => T
+    ): LoadableField<T>;
+
+    /**
+     * Retrieves the value of the source
+     * @param params Data used to know whether to reload and to notify about state changes
+     * @returns The value that's currently available
+     */
+    get(params?: IDataRetrieverParams): T;
+}
+```
+
 ## Data Hooks
 
 Data hooks are ways of accessing the data, and hooking into their state. These hooks implement the `IDataRetrieverParams` interface that was shown in the usage section.
@@ -1019,19 +1252,13 @@ The main hook that allows you to connect component lifecycles with data sources.
 function useDataHook(
     forceRefreshTime?: number
 ): [
-    /**
-     * The retriever params that can be passed to any data retriever call
-     */
+    // The retriever params that can be passed to any data retriever call
     IDataRetrieverParams,
     {
-        /**
-         * Retrieves whether any obtained data is currently loading
-         */
+        // Retrieves whether any obtained data is currently loading
         isLoading: () => boolean;
 
-        /**
-         * Retrieves the exceptions that may have occured while loading
-         */
+        // Retrieves the exceptions that may have occurred while loading
         getExceptions: () => any[];
     }
 ];
@@ -1062,7 +1289,7 @@ const exceptions = getExceptions();
 const data = source.get(l);
 ```
 
-This is why the Loader and LoaderSwitch component are particularly useful. By design of react's html element resolution, the `isLoading` and `getExceptions` functions passed to the loader will be invoked after the current element has finished executing its code block.
+This is why the Loader and LoaderSwitch component are particularly useful. By design of React's html element resolution, the `isLoading` and `getExceptions` functions passed to the loader will be invoked after the current element has finished executing its code block.
 
 </details>
 
@@ -1144,7 +1371,7 @@ const Loader: FC<{
 
 ## Efficiency
 
-Since this system relies on updating observers, a large number of calls might be made before the data is actually finalized. This might be rather inefficient, and this should be considered when making complex transformers. One could also make their own DataRetriever that does some debouncing to reduce the load, or create a data transformer that makes use of caching. These techniques aren't included in the library however, since they complicate matters while the provided behaviour is sufficient in most situations.
+Since this system relies on updating observers, a large number of calls might be made before the data is actually finalized. This might be rather inefficient, and this should be considered when making complex transformers. One could also make their own DataRetriever that does some debouncing to reduce the load. This technique isn't yet included in the library however, since the provided behavior is sufficient in most situations.
 
 ## Bugs
 
@@ -1156,7 +1383,7 @@ Any contributions are welcome. The library is operational and no changes are pla
 
 ## Environment setup
 
-within both the main directory and examples run:
+within the main directory, examples and demo run:
 
 ```
 yarn install
@@ -1164,7 +1391,7 @@ yarn install
 
 ## Environment usage
 
-To test your code, in both the main directory and examples run:
+To test your code, in both the main directory and examples/demo run:
 
 ```
 yarn start
@@ -1172,7 +1399,7 @@ yarn start
 
 This will start a dev server at localhost:3000 to view the examples which make use of the written code
 
-To build the module or the examples for production, in either folder run:
+To build the module or the examples/demo for production, in either folder run:
 
 ```
 yarn build

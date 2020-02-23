@@ -8,4 +8,5 @@ export declare const Loader: FC<{
     content?: (hook: IDataRetrieverParams) => ReactNode;
     onLoad?: ReactNode | (() => ReactNode);
     onError?: ReactNode | ((exceptions: any[]) => ReactNode);
+    forceRefreshTime?: number;
 }>;
