@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var IDataListener_1 = require("../_types/IDataListener");
 var AbstractDataSource = /** @class */ (function () {
     function AbstractDataSource() {
-        // Data liseteners to notify when data has changed
+        // Data listeners to notify when data has changed
         this.listeners = [];
     }
     /**

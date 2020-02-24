@@ -3,7 +3,7 @@ import { IDataSource } from "../_types/IDataSource";
 import { IDataRetrieverParams } from "../_types/IDataRetrieverParams";
 export declare class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<T> {
     protected source: (params: IDataRetrieverParams, current: T | undefined) => T;
-    protected dependencyRemover: () => void | undefined;
+    protected dependencyRemovers: (() => void)[];
     protected cached: T;
     protected loading: boolean;
     protected exceptions: any[];

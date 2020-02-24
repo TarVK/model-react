@@ -1,6 +1,6 @@
 {
     "name": "model-react",
-    "version": "2.0.4",
+    "version": "2.0.5",
     "description": "A system to create data models to be used with react hooks",
     "main": "build/index.js",
     "types": "build/index.d.ts",

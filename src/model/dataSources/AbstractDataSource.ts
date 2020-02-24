@@ -3,7 +3,7 @@ import {IDataListener, isDataListener} from "../_types/IDataListener";
 import {IDataRetrieverParams} from "../_types/IDataRetrieverParams";
 
 export abstract class AbstractDataSource<T> implements IDataSource<T> {
-    // Data liseteners to notify when data has changed
+    // Data listeners to notify when data has changed
     protected listeners: IDataListener[] = [];
 
     /**

@@ -8,7 +8,7 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
     protected source: (params: IDataRetrieverParams, current: T | undefined) => T;
 
     // The function to remove the dependency hook
-    protected dependencyRemover: () => void | undefined;
+    protected dependencyRemovers: (() => void)[] = [];
 
     // The currently cached data
     protected cached: T;
@@ -45,20 +45,29 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
             params.refreshData &&
             params.refreshTimestamp > this.lastLoadTime &&
             params.refreshTimestamp;
-        if (this.dependencyRemover && !refreshTimestamp) return;
+        if (this.dependencyRemovers.length !== 0 && !refreshTimestamp) return;
 
-        // If a change occurs, remove the previous dependency listener and call own listeners
-        const onChange = () => {
-            if (!this.dependencyRemover) return;
-            this.dependencyRemover();
-            this.dependencyRemover = undefined;
-            this.callListeners();
-        };
+        // Remove the old dependency listeners if there are any
+        this.dependencyRemovers.forEach(remove => remove());
+        const dependencyRemoves = (this.dependencyRemovers = []);
 
-        // Reset the data
+        // Reset the state data
         this.exceptions = [];
         this.loading = false;
         this.lastLoadTime = Date.now();
+
+        // If a change occurs, remove the previous dependency listener and call own listeners
+        const onChange = () => {
+            // Make sure this isn't an outdated dependency listener
+            if (dependencyRemoves !== this.dependencyRemovers) return;
+
+            // Remove the currently dependencies, allowing for reload
+            this.dependencyRemovers.forEach(remove => remove());
+            this.dependencyRemovers = [];
+
+            // Inform our listeners
+            this.callListeners();
+        };
 
         // Retrieve the new value and setup the new listener
         this.cached = this.source(
@@ -73,7 +82,7 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
                     this.exceptions.push(exception);
                 },
                 registerRemover: remover => {
-                    this.dependencyRemover = remover;
+                    dependencyRemoves.push(remover);
                 },
             },
             this.cached

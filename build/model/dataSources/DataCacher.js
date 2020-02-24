@@ -23,6 +23,8 @@ var DataCacher = /** @class */ (function (_super) {
      */
     function DataCacher(source) {
         var _this = _super.call(this) || this;
+        // The function to remove the dependency hook
+        _this.dependencyRemovers = [];
         // Status variables
         _this.loading = false;
         _this.lastLoadTime = 0;
@@ -40,20 +42,26 @@ var DataCacher = /** @class */ (function (_super) {
             params.refreshData &&
             params.refreshTimestamp > this.lastLoadTime &&
             params.refreshTimestamp;
-        if (this.dependencyRemover && !refreshTimestamp)
+        if (this.dependencyRemovers.length !== 0 && !refreshTimestamp)
             return;
-        // If a change occurs, remove the previous dependency listener and call own listeners
-        var onChange = function () {
-            if (!_this.dependencyRemover)
-                return;
-            _this.dependencyRemover();
-            _this.dependencyRemover = undefined;
-            _this.callListeners();
-        };
-        // Reset the data
+        // Remove the old dependency listeners if there are any
+        this.dependencyRemovers.forEach(function (remove) { return remove(); });
+        var dependencyRemoves = (this.dependencyRemovers = []);
+        // Reset the state data
         this.exceptions = [];
         this.loading = false;
         this.lastLoadTime = Date.now();
+        // If a change occurs, remove the previous dependency listener and call own listeners
+        var onChange = function () {
+            // Make sure this isn't an outdated dependency listener
+            if (dependencyRemoves !== _this.dependencyRemovers)
+                return;
+            // Remove the currently dependencies, allowing for reload
+            _this.dependencyRemovers.forEach(function (remove) { return remove(); });
+            _this.dependencyRemovers = [];
+            // Inform our listeners
+            _this.callListeners();
+        };
         // Retrieve the new value and setup the new listener
         this.cached = this.source({
             refreshData: true,
@@ -66,7 +74,7 @@ var DataCacher = /** @class */ (function (_super) {
                 _this.exceptions.push(exception);
             },
             registerRemover: function (remover) {
-                _this.dependencyRemover = remover;
+                dependencyRemoves.push(remover);
             },
         }, this.cached);
     };
