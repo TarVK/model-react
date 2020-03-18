@@ -18,4 +18,9 @@ const demo = () =>
         .catch(error => console.error(error));
 
 // Export as button to properly demo
-export default <button children="Demo" onClick={demo} />;
+export default (
+    <div>
+        <button children="Demo" onClick={demo} />
+        See console
+    </div>
+);

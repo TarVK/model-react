@@ -10,8 +10,11 @@ import loader from "./examples/Loader";
 import loadableField from "./examples/LoadableField";
 import combiningData from "./examples/CombiningData";
 import dataCacher from "./examples/DataCacher";
-import async from "./examples/Async";
+import getAsync from "./examples/getAsync";
+import getState from "./examples/getState";
 import exceptions from "./examples/Exceptions";
+import actionState from "./examples/ActionState";
+import useActionState from "./examples/useActionState";
 
 const pages = [
     {name: "QuickStart", element: quickStart},
@@ -22,8 +25,11 @@ const pages = [
     {name: "LoaderField", element: loadableField},
     {name: "CombiningData", element: combiningData},
     {name: "DataCacher", element: dataCacher},
-    {name: "Async", element: async},
+    {name: "getAsync", element: getAsync},
+    {name: "get state", element: getState},
     {name: "Exceptions", element: exceptions},
+    {name: "ActionState", element: actionState},
+    {name: "useActionState", element: useActionState},
 ];
 
 // Renders the available pages
