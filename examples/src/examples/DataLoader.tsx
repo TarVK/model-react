@@ -9,8 +9,8 @@ const delay = () => new Promise<void>(res => setTimeout(res, 2000));
 
 // Pass a loadable data source to an element, and let the element check the state
 const SomeData: FC<{source: DataLoader<number>}> = ({source}) => {
-    const [l, {isLoading, getExceptions}] = useDataHook();
-    const data = source.get(l);
+    const [h, {isLoading, getExceptions}] = useDataHook();
+    const data = source.get(h);
 
     // Check if the data is loading
     if (isLoading()) return <div>Loading</div>;

@@ -13,8 +13,8 @@ const doSomething = async (error?: boolean) => {
 
 // Create some component that uses doSomething
 const Something: FC<{error?: boolean}> = ({error}) => {
-    const [l, c] = useDataHook();
-    const [addAction, reset, result] = useActionState<number>(l);
+    const [h, c] = useDataHook();
+    const [addAction, reset, result] = useActionState<number>(h);
     return (
         <LoaderSwitch
             {...c}
@@ -35,8 +35,8 @@ const Something: FC<{error?: boolean}> = ({error}) => {
 // Another component that uses doSomething, but inline
 const SomethingInline: FC = () => (
     <Loader onLoad={"Loading"} onError={err => `Errored: ${err}`}>
-        {l => {
-            const [addAction, reset, result] = useActionState<number>(l);
+        {h => {
+            const [addAction, reset, result] = useActionState<number>(h);
             return (
                 <>
                     <button onClick={() => addAction(doSomething())}>

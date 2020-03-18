@@ -1,9 +1,8 @@
 import ReactDOM from "react-dom";
 import React, {FunctionComponent, useState, useCallback} from "react";
-import {Field, IDataRetrieverParams, useDataHook} from "model-react";
+import {Field, IDataHook, useDataHook} from "model-react";
 
 // This example doesn't demonstrate the benefits of the system well, but it's a small example that might be easier to grasp.
-
 class TodoItem {
     public ID = Math.floor(Math.random() * 1e6);
 
@@ -28,11 +27,11 @@ class TodoItem {
 
     /**
      * Retrieves the text of the item
-     * @param p The retrieval parameters for the data
+     * @param hook The data hook
      * @returns The text
      */
-    public getText(p?: IDataRetrieverParams): string {
-        return this.text.get(p);
+    public getText(hook: IDataHook): string {
+        return this.text.get(hook);
     }
 }
 
@@ -42,11 +41,11 @@ class TodoList {
 
     /**
      * Retrieves all of the items on the todolist
-     * @param p The retrieval parameters for the data
+     * @param hook The data hook
      * @returns All items
      */
-    public getItems(p?: IDataRetrieverParams): TodoItem[] {
-        return this.items.get(p);
+    public getItems(hook: IDataHook): TodoItem[] {
+        return this.items.get(hook);
     }
 
     /**
@@ -55,7 +54,7 @@ class TodoList {
      * @returns Whether the item was successfully added (doesn't allow duplicate items)
      */
     public addItem(item: TodoItem): boolean {
-        const items = this.items.get();
+        const items = this.items.get(null);
 
         // Make sure the item isn't already present
         if (items.includes(item)) return false;
@@ -71,7 +70,7 @@ class TodoList {
      * @returns Whether the item was present and could be removed
      */
     public removeItem(item: TodoItem): boolean {
-        const items = this.items.get();
+        const items = this.items.get(null);
 
         // Get the items with the item removed/
         const remainingItems = items.filter(i => i !== item);
@@ -89,11 +88,11 @@ const TodoItemComp: FunctionComponent<{
     todoItem: TodoItem;
     onDelete: (item: TodoItem) => void;
 }> = ({todoItem, onDelete}) => {
-    const [l] = useDataHook();
+    const [h] = useDataHook();
     return (
         <div>
             <input
-                value={todoItem.getText(l)}
+                value={todoItem.getText(h)}
                 onChange={e => todoItem.setText(e.target.value)}
             />
             <button onClick={() => onDelete(todoItem)}>Remove</button>
@@ -102,7 +101,7 @@ const TodoItemComp: FunctionComponent<{
 };
 
 const TodoComp: FunctionComponent<{todoList: TodoList}> = ({todoList}) => {
-    const [l] = useDataHook();
+    const [h] = useDataHook();
     const [insertText, setInsertText] = useState("");
     const onDelete = useCallback((item: TodoItem) => todoList.removeItem(item), []);
 
@@ -116,7 +115,7 @@ const TodoComp: FunctionComponent<{todoList: TodoList}> = ({todoList}) => {
                 }}>
                 Add
             </button>
-            {todoList.getItems(l).map(item => (
+            {todoList.getItems(h).map(item => (
                 <TodoItemComp key={item.ID} todoItem={item} onDelete={onDelete} />
             ))}
         </div>

@@ -3,4 +3,4 @@
  * @param getter The getter to get the loading state from
  * @returns Whether the getter is loading
  */
-export declare const isLoading: (getter: (l: import("../_types/IDataHook").IStrictDataHook) => void) => boolean;
+export declare const isLoading: (getter: (h: import("../_types/IDataHook").IStrictDataHook) => void) => boolean;

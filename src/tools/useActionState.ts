@@ -4,12 +4,12 @@ import {ActionState} from "../model/dataSources/ActionState";
 
 /**
  * Creates a function to use the async state of a
- * @param l The data hook to forward the state to
+ * @param hook The data hook to forward the state to
  * @param latest Whether to only retrieve the last added action
  * @returns A function that promises can be wrapped with to track their state, a function to reset the state (mainly errors), and all the results
  */
 export function useActionState<T = void>(
-    l: IDataHook,
+    hook: IDataHook,
     latest?: false
 ): [
     (action: Promise<T> | (() => Promise<T>), reset?: boolean) => Promise<T>,
@@ -19,12 +19,12 @@ export function useActionState<T = void>(
 
 /**
  * Creates a function to use the async state of a
- * @param l The data hook to forward the state to
+ * @param hook The data hook to forward the state to
  * @param latest Whether to only retrieve the last added action
  * @returns A function that promises can be wrapped with to track their state, a function to reset the state (mainly errors), and the last result
  */
 export function useActionState<T = void>(
-    l: IDataHook,
+    hook: IDataHook,
     latest: true
 ): [
     (action: Promise<T> | (() => Promise<T>), reset?: boolean) => Promise<T>,
@@ -33,7 +33,7 @@ export function useActionState<T = void>(
 ];
 
 export function useActionState<T = void>(
-    l: IDataHook,
+    hook: IDataHook,
     latest: boolean = false
 ): [
     (action: Promise<T> | (() => Promise<T>), reset?: boolean) => Promise<T>,
@@ -45,8 +45,8 @@ export function useActionState<T = void>(
 
     // Read the state
     let result: T[] | T | undefined;
-    if (latest) result = actionState.current.get(l);
-    else result = actionState.current.getLatest(l);
+    if (latest) result = actionState.current.get(hook);
+    else result = actionState.current.getLatest(hook);
 
     // Return functions to track the data
     return [

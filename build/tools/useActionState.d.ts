@@ -1,15 +1,15 @@
 import { IDataHook } from "../model/_types/IDataHook";
 /**
  * Creates a function to use the async state of a
- * @param l The data hook to forward the state to
+ * @param hook The data hook to forward the state to
  * @param latest Whether to only retrieve the last added action
  * @returns A function that promises can be wrapped with to track their state, a function to reset the state (mainly errors), and all the results
  */
-export declare function useActionState<T = void>(l: IDataHook, latest?: false): [(action: Promise<T> | (() => Promise<T>), reset?: boolean) => Promise<T>, () => void, T[]];
+export declare function useActionState<T = void>(hook: IDataHook, latest?: false): [(action: Promise<T> | (() => Promise<T>), reset?: boolean) => Promise<T>, () => void, T[]];
 /**
  * Creates a function to use the async state of a
- * @param l The data hook to forward the state to
+ * @param hook The data hook to forward the state to
  * @param latest Whether to only retrieve the last added action
  * @returns A function that promises can be wrapped with to track their state, a function to reset the state (mainly errors), and the last result
  */
-export declare function useActionState<T = void>(l: IDataHook, latest: true): [(action: Promise<T> | (() => Promise<T>), reset?: boolean) => Promise<T>, () => void, T | undefined];
+export declare function useActionState<T = void>(hook: IDataHook, latest: true): [(action: Promise<T> | (() => Promise<T>), reset?: boolean) => Promise<T>, () => void, T | undefined];

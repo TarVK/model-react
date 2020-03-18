@@ -5,7 +5,7 @@ import {IDataHook} from "../_types/IDataHook";
  * @param getter The getter to get the loading state from
  * @returns Whether the getter is loading
  */
-export const isLoading = (getter: (l: IDataHook) => void): boolean => {
+export const isLoading = (getter: (h: IDataHook) => void): boolean => {
     // Track whether data is loading
     let isLoading = false;
 

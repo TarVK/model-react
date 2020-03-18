@@ -13,7 +13,7 @@ export const loadableSource = new DataLoader(async () => {
 
 // Convert a get to a promise fetch:
 const demo = () =>
-    getAsync(l => loadableSource.get(l))
+    getAsync(h => loadableSource.get(h))
         .then(result => console.log(result))
         .catch(error => console.error(error));
 

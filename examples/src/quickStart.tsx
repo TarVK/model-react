@@ -1,58 +1,58 @@
-import { Field, useDataHook, IDataRetrieverParams } from "model-react";
-import React, { FC } from "react";
+import {Field, useDataHook, IDataHook} from "model-react";
+import React, {FC} from "react";
 
 class Person {
-  protected name = new Field("");
-  protected age = new Field(0);
-  public constructor(name: string, age: number) {
-    this.name.set(name);
-    this.age.set(age);
-  }
-  public setName(name: string): void {
-    this.name.set(name);
-  }
-  public getName(p: IDataRetrieverParams): string {
-    return this.name.get(p);
-  }
-  public setAge(age: number): void {
-    this.age.set(age);
-  }
-  public getAge(p: IDataRetrieverParams): number {
-    return this.age.get(p);
-  }
+    protected name = new Field("");
+    protected age = new Field(0);
+    public constructor(name: string, age: number) {
+        this.name.set(name);
+        this.age.set(age);
+    }
+    public setName(name: string): void {
+        this.name.set(name);
+    }
+    public getName(h: IDataHook): string {
+        return this.name.get(h);
+    }
+    public setAge(age: number): void {
+        this.age.set(age);
+    }
+    public getAge(h: IDataHook): number {
+        return this.age.get(h);
+    }
 }
 
-const PersonEditor: FC<{ person: Person }> = ({ person }) => {
-  const [l] = useDataHook();
-  return (
-    <div>
-      <input
-        value={person.getName(l)}
-        onChange={e => person.setName(e.target.value)}
-      />
-      <input
-        type="number"
-        value={person.getAge(l)}
-        onChange={e => person.setAge(Number(e.target.value))}
-      />
-    </div>
-  );
+const PersonEditor: FC<{person: Person}> = ({person}) => {
+    const [h] = useDataHook();
+    return (
+        <div>
+            <input
+                value={person.getName(h)}
+                onChange={e => person.setName(e.target.value)}
+            />
+            <input
+                type="number"
+                value={person.getAge(h)}
+                onChange={e => person.setAge(Number(e.target.value))}
+            />
+        </div>
+    );
 };
 
-const PersonProfile: FC<{ person: Person }> = ({ person }) => {
-  const [l] = useDataHook();
-  return (
-    <div>
-      Name: {person.getName(l)} <br />
-      Age: {person.getAge(l)}
-    </div>
-  );
+const PersonProfile: FC<{person: Person}> = ({person}) => {
+    const [h] = useDataHook();
+    return (
+        <div>
+            Name: {person.getName(h)} <br />
+            Age: {person.getAge(h)}
+        </div>
+    );
 };
 
 const john = new Person("John", 1);
 export default (
-  <div>
-    <PersonEditor person={john} />
-    <PersonProfile person={john} />
-  </div>
+    <div>
+        <PersonEditor person={john} />
+        <PersonProfile person={john} />
+    </div>
 );

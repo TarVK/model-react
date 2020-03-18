@@ -13,14 +13,14 @@ export const loadableSource = new DataLoader(async () => {
 
 // Create a function to force load the data
 const loadData = () => {
-    getAsync(l => loadableSource.get(l))
+    getAsync(h => loadableSource.get(h))
         .then(result => console.log(result))
         .catch(error => console.error(error));
 };
 
 // Create demo that gets the exceptions and loading state without forcing load
-const getExceptionsDemo = () => console.log(getExceptions(l => loadableSource.get(l)));
-const isLoadingDemo = () => console.log(isLoading(l => loadableSource.get(l)));
+const getExceptionsDemo = () => console.log(getExceptions(h => loadableSource.get(h)));
+const isLoadingDemo = () => console.log(isLoading(h => loadableSource.get(h)));
 
 // Export as button to properly demo
 export default (

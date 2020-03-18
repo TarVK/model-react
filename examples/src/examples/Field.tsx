@@ -3,11 +3,11 @@ import {Field, useDataHook} from "model-react";
 
 // Pass a field as a prop to the element, and use the data hook to stay synced with it
 const SomeInput: FC<{field: Field<string>}> = ({field}) => {
-    const [l] = useDataHook();
+    const [h] = useDataHook();
     return (
         <input
             type="text"
-            value={field.get(l)}
+            value={field.get(h)}
             onChange={e => field.set(e.target.value)}
         />
     );
@@ -15,8 +15,8 @@ const SomeInput: FC<{field: Field<string>}> = ({field}) => {
 
 // You can then have another element that uses the same field somewhere, and it will stay synced
 const SomeOutput: FC<{field: Field<string>}> = ({field}) => {
-    const [l] = useDataHook();
-    return <div>{field.get(l)}</div>;
+    const [h] = useDataHook();
+    return <div>{field.get(h)}</div>;
 };
 
 // Create a field anywhere, it may be part of an object, or be on its own

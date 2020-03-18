@@ -16,10 +16,10 @@ const SomeReload: FC<{source: DataLoader<string>}> = ({source}) => (
 // since it must load the initial data from a loadable source
 const SomeInput: FC<{field: LoadableField<string>}> = ({field}) => (
     <Loader onLoad="Loading">
-        {l => (
+        {h => (
             <input
                 type="text"
-                value={field.get(l)}
+                value={field.get(h)}
                 onChange={e => field.set(e.target.value)}
             />
         )}
@@ -27,7 +27,7 @@ const SomeInput: FC<{field: LoadableField<string>}> = ({field}) => (
 );
 const SomeOutput: FC<{field: LoadableField<string>}> = ({field}) => (
     <Loader onLoad="Loading" onError={e => `The following errors were thrown: ${e}`}>
-        {l => <span>{field.get(l)}</span>}
+        {h => <span>{field.get(h)}</span>}
     </Loader>
 );
 
@@ -39,7 +39,7 @@ export const loadableSource = new DataLoader(async () => {
 }, "test");
 
 // Create a loadable field that synchronizes with the data source
-const loadableField = new LoadableField(t => loadableSource.get(t));
+const loadableField = new LoadableField(h => loadableSource.get(h));
 
 // Render the elements
 export default (

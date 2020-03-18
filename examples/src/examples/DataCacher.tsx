@@ -16,11 +16,11 @@ const delay = () => new Promise(res => setTimeout(res, 2000));
 
 // Create some standard components
 const SomeInput: FC<{field: Field<string>}> = ({field}) => {
-    const [l] = useDataHook();
+    const [h] = useDataHook();
     return (
         <input
             type="text"
-            value={field.get(l)}
+            value={field.get(h)}
             onChange={e => field.set(e.target.value)}
         />
     );
@@ -33,9 +33,9 @@ const SomeOutput: FC<{dataRetriever: IDataRetriever<string>}> = ({dataRetriever}
             forceRefreshTime={refreshTime}
             onLoad={<div>Loading</div>}
             onError={<div>Data failed to fetch</div>}>
-            {l => (
+            {h => (
                 <div>
-                    {dataRetriever(l)}
+                    {dataRetriever(h)}
                     <button onClick={() => setRefreshTime(Date.now())}>Reload</button>
                 </div>
             )}
@@ -52,8 +52,8 @@ const loadable = new DataLoader(async () => {
 }, 0);
 
 // Create a tranformer and DataCacher that caches the transformer
-const transformer: IDataRetriever<string> = l =>
-    `${field1.get(l)} - ${field2.get(l)} - ${loadable.get(l)} - ${random()}`;
+const transformer: IDataRetriever<string> = h =>
+    `${field1.get(h)} - ${field2.get(h)} - ${loadable.get(h)} - ${random()}`;
 const cachedTransformer = new DataCacher(transformer);
 
 // Create a component that might do meaningless rerenders
@@ -67,7 +67,7 @@ const Comp: FC = () => {
             Not cached:
             <SomeOutput dataRetriever={transformer} />
             Cached:
-            <SomeOutput dataRetriever={l => cachedTransformer.get(l)} />
+            <SomeOutput dataRetriever={h => cachedTransformer.get(h)} />
             <br />
             something to make meaningless updates:
             {randomVal} <button onClick={() => setRandomVal(random())}>Rerender</button>

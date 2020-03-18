@@ -38,6 +38,9 @@ ReactDOM.render(
         <div style={{display: "flex"}}>
             {/* The index */}
             <div style={{backgroundColor: "#9db8e6", padding: 5, marginRight: 5}}>
+                <Link to={`/about`}>
+                    <h3>About</h3>
+                </Link>
                 {pages.map(({name}) => (
                     <div key={name}>
                         <Link to={`/${name}`}>{name}</Link>
@@ -53,7 +56,18 @@ ReactDOM.render(
                             {element}
                         </Route>
                     ))}
-                    <Route path="/">{quickStart}</Route>
+                    <Route path={["/", "/about"]}>
+                        <p>
+                            These are purely example files to show capabilities of the
+                            library.
+                            <br />
+                            Please have a look at the source code since the examples
+                            results are rather meaningless on their own. <br />
+                            <a href="https://github.com/TarVK/model-react/tree/master/examples/src/examples">
+                                Source code
+                            </a>
+                        </p>
+                    </Route>
                 </Switch>
             </div>
         </div>

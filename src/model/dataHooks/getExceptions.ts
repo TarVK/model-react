@@ -5,7 +5,7 @@ import {IDataHook} from "../_types/IDataHook";
  * @param getter The getter to get the loading state from
  * @returns The exceptions that were thrown by the loader
  */
-export const getExceptions = (getter: (l: IDataHook) => void): any[] => {
+export const getExceptions = (getter: (h: IDataHook) => void): any[] => {
     // Track the exceptions
     const exceptions = [];
 

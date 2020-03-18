@@ -1,4 +1,5 @@
-import React, {FC, ReactNode} from "react";
+import {FC, ReactNode} from "react";
+import * as React from "react"; // Required for fragment as separate import due to some config settings
 import {IDataHook} from "../model/_types/IDataHook";
 import {useDataHook} from "../model/dataHooks/useDataHook";
 
@@ -23,8 +24,8 @@ export const Loader: FC<{
     /** The time such that if data is older, it will be refreshed */
     forceRefreshTime,
 }) => {
-    const [l, {isLoading, getExceptions}] = useDataHook(forceRefreshTime);
-    const result = (content || children || (() => {}))(l);
+    const [h, {isLoading, getExceptions}] = useDataHook(forceRefreshTime);
+    const result = (content || children || (() => {}))(h);
 
     if (isLoading && isLoading())
         return <>{onLoad instanceof Function ? onLoad() : onLoad}</>;

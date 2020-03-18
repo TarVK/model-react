@@ -12,12 +12,12 @@ export const loadableSource = new DataLoader(async () => {
 }, "test");
 
 // Create a transformer to have multiple sources: (or the same one multiple times)
-const getSomeData: IDataRetriever<string> = l =>
-    `${loadableSource.get(l)} - ${loadableSource.get(l)}`;
+const getSomeData: IDataRetriever<string> = h =>
+    `${loadableSource.get(h)} - ${loadableSource.get(h)}`;
 
 // Convert a get to a promise fetch:
 const demo = () =>
-    getAsync(l => getSomeData(l))
+    getAsync(h => getSomeData(h))
         .then(result => console.log(result))
         .catch(error => console.error(error));
 
@@ -25,7 +25,7 @@ const demo = () =>
 export default (
     <>
         <Loader onLoad="Loading" onError={e => `The following errors were thrown: ${e}`}>
-            {l => getSomeData(l)}
+            {h => getSomeData(h)}
         </Loader>
         <br />
         <button children="demo" onClick={demo} />

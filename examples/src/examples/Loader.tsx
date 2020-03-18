@@ -11,7 +11,7 @@ const delay = () => new Promise<void>(res => setTimeout(res, 2000));
 const SomeData: FC<{source: DataLoader<number>}> = ({source}) => (
     <div>
         <Loader onLoad={<div>Loading</div>} onError={<div>Data failed to fetch</div>}>
-            {l => source.get(l) // The data hook is created by the loader
+            {h => source.get(h) // The data hook is created by the loader
             }
         </Loader>
         <button onClick={() => source.markDirty()}>reload</button>

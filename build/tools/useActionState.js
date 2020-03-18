@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = require("react");
 var ActionState_1 = require("../model/dataSources/ActionState");
-function useActionState(l, latest) {
+function useActionState(hook, latest) {
     if (latest === void 0) { latest = false; }
     var actionState = react_1.useRef(undefined);
     if (!actionState.current)
@@ -10,9 +10,9 @@ function useActionState(l, latest) {
     // Read the state
     var result;
     if (latest)
-        result = actionState.current.get(l);
+        result = actionState.current.get(hook);
     else
-        result = actionState.current.getLatest(l);
+        result = actionState.current.getLatest(hook);
     // Return functions to track the data
     return [
         /**

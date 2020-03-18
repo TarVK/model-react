@@ -9,14 +9,14 @@ const delay = () => new Promise<void>(res => setTimeout(res, 2000));
 
 // Pass a loadable data source to an element, and use a loader switch to handle the state
 const SomeData: FC<{source: DataLoader<number>}> = ({source}) => {
-    const [l, c] = useDataHook();
+    const [h, c] = useDataHook();
     return (
         <div>
             <LoaderSwitch
                 {...c} // Passes the state
                 onLoad={<div>Loading</div>}
                 onError={<div>Data failed to fetch</div>}>
-                {source.get(l)}
+                {source.get(h)}
             </LoaderSwitch>
             <button onClick={() => source.markDirty()}>reload</button>
         </div>

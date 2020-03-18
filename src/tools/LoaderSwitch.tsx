@@ -1,4 +1,5 @@
-import React, {FC, ReactNode} from "react";
+import {FC, ReactNode} from "react";
+import * as React from "react"; // Required for fragment as separate import due to some config settings
 
 /**
  * A component to handle the loading or error state of loadable data sources
