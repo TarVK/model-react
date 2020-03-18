@@ -10,7 +10,7 @@ exports.isLoading = function (getter) {
     var isLoading = false;
     // Perform the poll
     getter({
-        markShouldRefresh: function () {
+        markIsLoading: function () {
             isLoading = true;
         },
         refreshData: false,

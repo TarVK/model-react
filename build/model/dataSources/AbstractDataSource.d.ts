@@ -1,14 +1,14 @@
 import { IDataSource } from "../_types/IDataSource";
 import { IDataListener } from "../_types/IDataListener";
-import { IDataRetrieverParams } from "../_types/IDataRetrieverParams";
+import { IDataHook } from "../_types/IDataHook";
 export declare abstract class AbstractDataSource<T> implements IDataSource<T> {
     protected listeners: IDataListener[];
     /**
      * Retrieves the value of a source
-     * @param params Data used to know whether to reload and to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The value that's currently available
      */
-    abstract get(params?: IDataRetrieverParams): T;
+    abstract get(hook: IDataHook): T;
     /**
      * Adds a listener for this field
      * @param listener The listener to add

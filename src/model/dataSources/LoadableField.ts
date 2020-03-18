@@ -1,12 +1,11 @@
-import {IDataSource} from "../_types/IDataSource";
 import {IDataRetriever} from "../_types/IDataRetriever";
-import {IDataRetrieverParams} from "../_types/IDataRetrieverParams";
+import {IDataHook} from "../_types/IDataHook";
 import {Field} from "./Field";
 
 const defaultUpdater = (newLoaded: any, previousLoaded: any, current: any) =>
     newLoaded === previousLoaded ? current : newLoaded;
 
-export class LoadableField<T> extends Field<T> implements IDataSource<T> {
+export class LoadableField<T> extends Field<T> {
     // The previous data retrieved from the loader
     protected loader: IDataRetriever<T>;
     protected previousLoaded: T | undefined = undefined;
@@ -30,28 +29,28 @@ export class LoadableField<T> extends Field<T> implements IDataSource<T> {
             current: T
         ) => T = defaultUpdater
     ) {
-        super(loader());
+        super(loader(null));
         this.loader = loader;
         this.updater = defaultUpdater;
     }
 
     /**
      * Retrieves the value of a source
-     * @param params Data used to know whether to reload and to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The value that's currently available
      */
-    public get(params?: IDataRetrieverParams): T {
-        this.updatevalue(params);
-        return super.get(params);
+    public get(hook: IDataHook): T {
+        this.updateValue(hook);
+        return super.get(hook);
     }
 
     /**
      * Retrieves the data from the loader,
      * and desides whether it should overwrite the field value
-     * @param params Data used to know whether to reload and to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      */
-    protected updatevalue(params?: IDataRetrieverParams): void {
-        const value = this.loader(params);
+    protected updateValue(hook: IDataHook): void {
+        const value = this.loader(hook);
         this.value = this.updater(value, this.previousLoaded, this.value);
         this.previousLoaded = value;
     }

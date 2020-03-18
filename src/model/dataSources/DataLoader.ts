@@ -1,9 +1,8 @@
 import {AbstractDataSource} from "./AbstractDataSource";
-import {IDataSource} from "../_types/IDataSource";
 import {IDataLoadRequest, isDataLoadRequest} from "../_types/IDataLoadRequest";
-import {IDataRetrieverParams} from "../_types/IDataRetrieverParams";
+import {IDataHook} from "../_types/IDataHook";
 
-export class DataLoader<T> extends AbstractDataSource<T> implements IDataSource<T> {
+export class DataLoader<T> extends AbstractDataSource<T> {
     // The currently loaded data
     protected data: T;
 
@@ -41,14 +40,16 @@ export class DataLoader<T> extends AbstractDataSource<T> implements IDataSource<
     }
 
     /**
-     * Retrieves the data of a source
-     * @param params Data used to know whether to reload and to notify about state changes
-     * @returns The data that's currently available
+     * Retrieves the value of a source
+     * @param hook Data to hook into the meta state and to notify about state changes
+     * @returns The value that's currently available
      */
-    public get(params?: IDataRetrieverParams): T {
-        super.addListener(params);
+    public get(hook: IDataHook): T {
+        super.addListener(hook);
+
         // Handle any load request
-        if (isDataLoadRequest(params)) this.handleDataLoadRequest(params);
+        if (isDataLoadRequest(hook)) this.handleDataLoadRequest(hook);
+
         // Return the current data
         return this.data;
     }
@@ -61,12 +62,9 @@ export class DataLoader<T> extends AbstractDataSource<T> implements IDataSource<
         // Check whether we should refresh the data
         const shouldRefresh =
             this.dirty ||
-            this.loading ||
             (request.refreshTimestamp && request.refreshTimestamp > this.lastLoadTime);
-        if (shouldRefresh) {
-            if (request.markShouldRefresh) request.markShouldRefresh();
-            if (request.refreshData) this.load();
-        }
+        if (shouldRefresh && request.refreshData) this.load();
+        if (this.loading && request.markIsLoading) request.markIsLoading();
 
         // Forward exceptions
         if (this.exception && request.registerException)

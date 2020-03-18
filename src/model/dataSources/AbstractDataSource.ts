@@ -1,6 +1,6 @@
 import {IDataSource} from "../_types/IDataSource";
 import {IDataListener, isDataListener} from "../_types/IDataListener";
-import {IDataRetrieverParams} from "../_types/IDataRetrieverParams";
+import {IDataHook} from "../_types/IDataHook";
 
 export abstract class AbstractDataSource<T> implements IDataSource<T> {
     // Data listeners to notify when data has changed
@@ -8,10 +8,10 @@ export abstract class AbstractDataSource<T> implements IDataSource<T> {
 
     /**
      * Retrieves the value of a source
-     * @param params Data used to know whether to reload and to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The value that's currently available
      */
-    public abstract get(params?: IDataRetrieverParams): T;
+    public abstract get(hook: IDataHook): T;
 
     /**
      * Adds a listener for this field

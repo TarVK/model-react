@@ -33,7 +33,7 @@ var DataCacher = /** @class */ (function (_super) {
     }
     /**
      * Updates the data if there is no dependency yet, or if a newer freshTimestamp is supplied
-     * @param params Data used to know whether to reload
+     * @param hook Data to know whether to reload
      */
     DataCacher.prototype.updateIfRequired = function (params) {
         var _this = this;
@@ -67,7 +67,7 @@ var DataCacher = /** @class */ (function (_super) {
             refreshData: true,
             refreshTimestamp: refreshTimestamp,
             call: onChange,
-            markShouldRefresh: function () {
+            markIsLoading: function () {
                 _this.loading = true;
             },
             registerException: function (exception) {
@@ -80,25 +80,25 @@ var DataCacher = /** @class */ (function (_super) {
     };
     /**
      * Forwards the state of the retriever being cached
-     * @param params Data used to notify about state changes
+     * @param hook Data used to notify about state changes
      */
-    DataCacher.prototype.forwardState = function (params) {
-        if (IDataLoadRequest_1.isDataLoadRequest(params)) {
-            if (params.registerException)
-                this.exceptions.forEach(function (exception) { return params.registerException(exception); });
-            if (this.loading && params.markShouldRefresh)
-                params.markShouldRefresh();
+    DataCacher.prototype.forwardState = function (hook) {
+        if (IDataLoadRequest_1.isDataLoadRequest(hook)) {
+            if (hook.registerException)
+                this.exceptions.forEach(function (exception) { return hook.registerException(exception); });
+            if (this.loading && hook.markIsLoading)
+                hook.markIsLoading();
         }
     };
     /**
-     * Retrieves the data of a source
-     * @param params Data used to know whether to reload and to notify about state changes
-     * @returns The data that's currently available
+     * Retrieves the value of a source
+     * @param hook Data to hook into the meta state and to notify about state changes
+     * @returns The value that's currently available
      */
-    DataCacher.prototype.get = function (params) {
-        _super.prototype.addListener.call(this, params);
-        this.updateIfRequired(params);
-        this.forwardState(params);
+    DataCacher.prototype.get = function (hook) {
+        _super.prototype.addListener.call(this, hook);
+        this.updateIfRequired(hook);
+        this.forwardState(hook);
         return this.cached;
     };
     return DataCacher;

@@ -40,7 +40,7 @@ exports.useDataHook = function (forceRefreshTime) {
                 dependencyRemovers.current.push(remover);
             }, 
             // Data loading fields
-            refreshData: true, markShouldRefresh: function () {
+            refreshData: true, markIsLoading: function () {
                 isRefreshing = true;
             },
             registerException: function (exception) {

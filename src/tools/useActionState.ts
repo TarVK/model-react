@@ -1,4 +1,4 @@
-import {IDataRetrieverParams} from "../model/_types/IDataRetrieverParams";
+import {IDataHook} from "../model/_types/IDataHook";
 import {useRef} from "react";
 import {ActionState} from "../model/dataSources/ActionState";
 
@@ -9,7 +9,7 @@ import {ActionState} from "../model/dataSources/ActionState";
  * @returns A function that promises can be wrapped with to track their state, a function to reset the state (mainly errors), and all the results
  */
 export function useActionState<T = void>(
-    l: IDataRetrieverParams,
+    l: IDataHook,
     latest?: false
 ): [
     (action: Promise<T> | (() => Promise<T>), reset?: boolean) => Promise<T>,
@@ -24,7 +24,7 @@ export function useActionState<T = void>(
  * @returns A function that promises can be wrapped with to track their state, a function to reset the state (mainly errors), and the last result
  */
 export function useActionState<T = void>(
-    l: IDataRetrieverParams,
+    l: IDataHook,
     latest: true
 ): [
     (action: Promise<T> | (() => Promise<T>), reset?: boolean) => Promise<T>,
@@ -33,7 +33,7 @@ export function useActionState<T = void>(
 ];
 
 export function useActionState<T = void>(
-    l: IDataRetrieverParams,
+    l: IDataHook,
     latest: boolean = false
 ): [
     (action: Promise<T> | (() => Promise<T>), reset?: boolean) => Promise<T>,

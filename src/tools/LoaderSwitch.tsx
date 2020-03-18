@@ -1,5 +1,4 @@
-import {FC, ReactNode} from "react";
-import * as React from "react";
+import React, {FC, ReactNode} from "react";
 
 /**
  * A component to handle the loading or error state of loadable data sources

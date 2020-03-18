@@ -1,8 +1,7 @@
-import {IDataSource} from "../_types/IDataSource";
 import {AbstractDataSource} from "./AbstractDataSource";
-import {IDataRetrieverParams} from "../_types/IDataRetrieverParams";
+import {IDataHook} from "../_types/IDataHook";
 
-export class Field<T> extends AbstractDataSource<T> implements IDataSource<T> {
+export class Field<T> extends AbstractDataSource<T> {
     // The data stored by the field
     protected value: T;
 
@@ -17,13 +16,14 @@ export class Field<T> extends AbstractDataSource<T> implements IDataSource<T> {
 
     /**
      * Retrieves the value of a source
-     * @param params Data used to know whether to reload and to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The value that's currently available
      */
-    public get(params?: IDataRetrieverParams): T {
-        super.addListener(params);
+    public get(hook: IDataHook): T {
+        super.addListener(hook);
         return this.value;
     }
+
     /**
      * Sets the new value of the field
      * @param value The new value

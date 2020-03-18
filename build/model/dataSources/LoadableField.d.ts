@@ -1,8 +1,7 @@
-import { IDataSource } from "../_types/IDataSource";
 import { IDataRetriever } from "../_types/IDataRetriever";
-import { IDataRetrieverParams } from "../_types/IDataRetrieverParams";
+import { IDataHook } from "../_types/IDataHook";
 import { Field } from "./Field";
-export declare class LoadableField<T> extends Field<T> implements IDataSource<T> {
+export declare class LoadableField<T> extends Field<T> {
     protected loader: IDataRetriever<T>;
     protected previousLoaded: T | undefined;
     protected updater: (newLoaded: T, previousLoaded: T | undefined, current: T) => T;
@@ -20,14 +19,14 @@ export declare class LoadableField<T> extends Field<T> implements IDataSource<T>
     current: T) => T);
     /**
      * Retrieves the value of a source
-     * @param params Data used to know whether to reload and to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The value that's currently available
      */
-    get(params?: IDataRetrieverParams): T;
+    get(hook: IDataHook): T;
     /**
      * Retrieves the data from the loader,
      * and desides whether it should overwrite the field value
-     * @param params Data used to know whether to reload and to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      */
-    protected updatevalue(params?: IDataRetrieverParams): void;
+    protected updateValue(hook: IDataHook): void;
 }

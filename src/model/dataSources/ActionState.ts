@@ -1,7 +1,7 @@
 import {AbstractDataSource} from "./AbstractDataSource";
 import {IDataSource} from "../_types/IDataSource";
 import {isDataLoadRequest} from "../_types/IDataLoadRequest";
-import {IDataRetrieverParams} from "../_types/IDataRetrieverParams";
+import {IDataHook} from "../_types/IDataHook";
 
 export class ActionState<T = void> extends AbstractDataSource<T[]>
     implements IDataSource<T[]> {
@@ -22,42 +22,42 @@ export class ActionState<T = void> extends AbstractDataSource<T[]>
     }
 
     /**
-     * Retrieves the results of the actions
-     * @param params Data used to know whether to reload and to notify about state changes
-     * @returns All the action data
+     * Retrieves the value of a source
+     * @param hook Data to hook into the meta state and to notify about state changes
+     * @returns The value that's currently available
      */
-    public get(params?: IDataRetrieverParams): T[] {
-        super.addListener(params);
-        this.forwardState(params);
+    public get(hook: IDataHook): T[] {
+        super.addListener(hook);
+        this.forwardState(hook);
         return this.actions.filter(({loading}) => !loading).map(({result}) => result);
     }
 
     /**
      * Retrieves the last added action
-     * @param params Data used to know whether to reload and to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The action data
      */
-    public getLatest(params?: IDataRetrieverParams): T | undefined {
-        super.addListener(params);
-        this.forwardState(params, true);
+    public getLatest(hook: IDataHook): T | undefined {
+        super.addListener(hook);
+        this.forwardState(hook, true);
         return this.actions.length && this.actions[this.actions.length - 1].result;
     }
 
     /**
      * Forwards the state of the retriever being cached
-     * @param params Data used to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      */
-    protected forwardState(params?: IDataRetrieverParams, last: boolean = false): void {
-        if (isDataLoadRequest(params)) {
+    protected forwardState(hook: IDataHook, last: boolean = false): void {
+        if (isDataLoadRequest(hook)) {
             const actions = last
                 ? this.actions.slice(this.actions.length - 1)
                 : this.actions;
-            if (params.registerException)
+            if (hook.registerException)
                 actions.forEach(
-                    ({exception, threw}) => threw && params.registerException(exception)
+                    ({exception, threw}) => threw && hook.registerException(exception)
                 );
-            if (params.markShouldRefresh && actions.find(({loading}) => loading))
-                params.markShouldRefresh();
+            if (hook.markIsLoading && actions.find(({loading}) => loading))
+                hook.markIsLoading();
         }
     }
 

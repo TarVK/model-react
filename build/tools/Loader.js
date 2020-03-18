@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var React = require("react");
+var react_1 = require("react");
 var useDataHook_1 = require("../model/dataHooks/useDataHook");
 /**
  * A component to handle the loading or error state of loadable data sources
@@ -20,12 +20,12 @@ exports.Loader = function (_a) {
     var _b = useDataHook_1.useDataHook(forceRefreshTime), l = _b[0], _c = _b[1], isLoading = _c.isLoading, getExceptions = _c.getExceptions;
     var result = (content || children || (function () { }))(l);
     if (isLoading && isLoading())
-        return React.createElement(React.Fragment, null, onLoad instanceof Function ? onLoad() : onLoad);
+        return react_1.default.createElement(react_1.default.Fragment, null, onLoad instanceof Function ? onLoad() : onLoad);
     if (getExceptions) {
         var exceptions = getExceptions();
         if (exceptions.length > 0)
-            return React.createElement(React.Fragment, null, onError instanceof Function ? onError(exceptions) : onError);
+            return react_1.default.createElement(react_1.default.Fragment, null, onError instanceof Function ? onError(exceptions) : onError);
     }
-    return React.createElement(React.Fragment, null, result);
+    return react_1.default.createElement(react_1.default.Fragment, null, result);
 };
 //# sourceMappingURL=Loader.js.map

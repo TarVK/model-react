@@ -26,7 +26,7 @@ var LoadableField = /** @class */ (function (_super) {
      */
     function LoadableField(loader, updater) {
         if (updater === void 0) { updater = defaultUpdater; }
-        var _this = _super.call(this, loader()) || this;
+        var _this = _super.call(this, loader(null)) || this;
         _this.previousLoaded = undefined;
         _this.loader = loader;
         _this.updater = defaultUpdater;
@@ -34,20 +34,20 @@ var LoadableField = /** @class */ (function (_super) {
     }
     /**
      * Retrieves the value of a source
-     * @param params Data used to know whether to reload and to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The value that's currently available
      */
-    LoadableField.prototype.get = function (params) {
-        this.updatevalue(params);
-        return _super.prototype.get.call(this, params);
+    LoadableField.prototype.get = function (hook) {
+        this.updateValue(hook);
+        return _super.prototype.get.call(this, hook);
     };
     /**
      * Retrieves the data from the loader,
      * and desides whether it should overwrite the field value
-     * @param params Data used to know whether to reload and to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      */
-    LoadableField.prototype.updatevalue = function (params) {
-        var value = this.loader(params);
+    LoadableField.prototype.updateValue = function (hook) {
+        var value = this.loader(hook);
         this.value = this.updater(value, this.previousLoaded, this.value);
         this.previousLoaded = value;
     };

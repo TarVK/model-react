@@ -46,7 +46,7 @@ export const useDataHook = (
 
             // Data loading fields
             refreshData: true,
-            markShouldRefresh() {
+            markIsLoading() {
                 isRefreshing = true;
             },
             registerException(exception: any) {

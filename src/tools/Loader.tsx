@@ -1,14 +1,13 @@
-import {FC, ReactNode} from "react";
-import {IDataRetrieverParams} from "../model/_types/IDataRetrieverParams";
-import * as React from "react";
+import React, {FC, ReactNode} from "react";
+import {IDataHook} from "../model/_types/IDataHook";
 import {useDataHook} from "../model/dataHooks/useDataHook";
 
 /**
  * A component to handle the loading or error state of loadable data sources
  */
 export const Loader: FC<{
-    children?: (hook: IDataRetrieverParams) => ReactNode;
-    content?: (hook: IDataRetrieverParams) => ReactNode;
+    children?: (hook: IDataHook) => ReactNode;
+    content?: (hook: IDataHook) => ReactNode;
     onLoad?: ReactNode | (() => ReactNode);
     onError?: ReactNode | ((exceptions: any[]) => ReactNode);
     forceRefreshTime?: number;

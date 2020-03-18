@@ -4,9 +4,9 @@ import { IDataRetriever } from "./IDataRetriever";
  */
 export declare type IDataSource<T> = {
     /**
-     * Retrieves the data of a source
-     * @param params Data used to know whether to reload and to notify about state changes
-     * @returns The data that's currently available
+     * Retrieves the value of a source
+     * @param hook Data to hook into the meta state and to notify about state changes
+     * @returns The value that's currently available
      */
     get: IDataRetriever<T>;
 };

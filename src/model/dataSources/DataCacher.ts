@@ -1,11 +1,11 @@
 import {AbstractDataSource} from "./AbstractDataSource";
 import {IDataSource} from "../_types/IDataSource";
-import {IDataRetrieverParams} from "../_types/IDataRetrieverParams";
+import {IDataHook} from "../_types/IDataHook";
 import {isDataLoadRequest} from "../_types/IDataLoadRequest";
 
 export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<T> {
     // The source of the data
-    protected source: (params: IDataRetrieverParams, current: T | undefined) => T;
+    protected source: (params: IDataHook, current: T | undefined) => T;
 
     // The function to remove the dependency hook
     protected dependencyRemovers: (() => void)[] = [];
@@ -25,7 +25,7 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
     constructor(
         source: (
             /** The data hook to forward the sources */
-            params: IDataRetrieverParams,
+            params: IDataHook,
             /** The currently cached value */
             current: T | undefined
         ) => T
@@ -36,9 +36,9 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
 
     /**
      * Updates the data if there is no dependency yet, or if a newer freshTimestamp is supplied
-     * @param params Data used to know whether to reload
+     * @param hook Data to know whether to reload
      */
-    protected updateIfRequired(params?: IDataRetrieverParams): void {
+    protected updateIfRequired(params?: IDataHook): void {
         // Make sure we don't have a dependency already, unless we want to force reload
         const refreshTimestamp =
             isDataLoadRequest(params) &&
@@ -75,7 +75,7 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
                 refreshData: true,
                 refreshTimestamp,
                 call: onChange,
-                markShouldRefresh: () => {
+                markIsLoading: () => {
                     this.loading = true;
                 },
                 registerException: exception => {
@@ -91,25 +91,25 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
 
     /**
      * Forwards the state of the retriever being cached
-     * @param params Data used to notify about state changes
+     * @param hook Data used to notify about state changes
      */
-    protected forwardState(params?: IDataRetrieverParams): void {
-        if (isDataLoadRequest(params)) {
-            if (params.registerException)
-                this.exceptions.forEach(exception => params.registerException(exception));
-            if (this.loading && params.markShouldRefresh) params.markShouldRefresh();
+    protected forwardState(hook: IDataHook): void {
+        if (isDataLoadRequest(hook)) {
+            if (hook.registerException)
+                this.exceptions.forEach(exception => hook.registerException(exception));
+            if (this.loading && hook.markIsLoading) hook.markIsLoading();
         }
     }
 
     /**
-     * Retrieves the data of a source
-     * @param params Data used to know whether to reload and to notify about state changes
-     * @returns The data that's currently available
+     * Retrieves the value of a source
+     * @param hook Data to hook into the meta state and to notify about state changes
+     * @returns The value that's currently available
      */
-    public get(params?: IDataRetrieverParams): T {
-        super.addListener(params);
-        this.updateIfRequired(params);
-        this.forwardState(params);
+    public get(hook: IDataHook): T {
+        super.addListener(hook);
+        this.updateIfRequired(hook);
+        this.forwardState(hook);
         return this.cached;
     }
 }

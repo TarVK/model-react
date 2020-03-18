@@ -75,15 +75,15 @@ var DataLoader = /** @class */ (function (_super) {
         return _this;
     }
     /**
-     * Retrieves the data of a source
-     * @param params Data used to know whether to reload and to notify about state changes
-     * @returns The data that's currently available
+     * Retrieves the value of a source
+     * @param hook Data to hook into the meta state and to notify about state changes
+     * @returns The value that's currently available
      */
-    DataLoader.prototype.get = function (params) {
-        _super.prototype.addListener.call(this, params);
+    DataLoader.prototype.get = function (hook) {
+        _super.prototype.addListener.call(this, hook);
         // Handle any load request
-        if (IDataLoadRequest_1.isDataLoadRequest(params))
-            this.handleDataLoadRequest(params);
+        if (IDataLoadRequest_1.isDataLoadRequest(hook))
+            this.handleDataLoadRequest(hook);
         // Return the current data
         return this.data;
     };
@@ -94,14 +94,11 @@ var DataLoader = /** @class */ (function (_super) {
     DataLoader.prototype.handleDataLoadRequest = function (request) {
         // Check whether we should refresh the data
         var shouldRefresh = this.dirty ||
-            this.loading ||
             (request.refreshTimestamp && request.refreshTimestamp > this.lastLoadTime);
-        if (shouldRefresh) {
-            if (request.markShouldRefresh)
-                request.markShouldRefresh();
-            if (request.refreshData)
-                this.load();
-        }
+        if (shouldRefresh && request.refreshData)
+            this.load();
+        if (this.loading && request.markIsLoading)
+            request.markIsLoading();
         // Forward exceptions
         if (this.exception && request.registerException)
             request.registerException(this.exception);

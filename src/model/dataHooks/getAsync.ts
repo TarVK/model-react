@@ -33,7 +33,7 @@ export const getAsync = async <T>(
                 registerRemover(remover: () => void) {
                     listenerRemovers.push(remover);
                 },
-                markShouldRefresh() {
+                markIsLoading() {
                     isRefreshing = true;
                 },
                 refreshData: true,

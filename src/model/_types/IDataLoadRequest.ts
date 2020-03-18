@@ -8,12 +8,10 @@ export type IDataLoadRequest = {
      */
     readonly refreshTimestamp?: number;
     /**
-     * Marks that the retrieved data should refresh,
-     * considering the refresh timestamp passed,
-     * as well a data source's own state.
+     * Marks that the retrieved data is currently still loading asynchronously,
      * Should only be called synchronously.
      */
-    readonly markShouldRefresh?: () => void;
+    readonly markIsLoading?: () => void;
     /**
      * A function to pass data retrieval exceptions to
      * @param exception An exception thrown when refreshing data

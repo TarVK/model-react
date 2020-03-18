@@ -27,13 +27,13 @@ var ActionState = /** @class */ (function (_super) {
         return _this;
     }
     /**
-     * Retrieves the results of the actions
-     * @param params Data used to know whether to reload and to notify about state changes
-     * @returns All the action data
+     * Retrieves the value of a source
+     * @param hook Data to hook into the meta state and to notify about state changes
+     * @returns The value that's currently available
      */
-    ActionState.prototype.get = function (params) {
-        _super.prototype.addListener.call(this, params);
-        this.forwardState(params);
+    ActionState.prototype.get = function (hook) {
+        _super.prototype.addListener.call(this, hook);
+        this.forwardState(hook);
         return this.actions.filter(function (_a) {
             var loading = _a.loading;
             return !loading;
@@ -44,34 +44,34 @@ var ActionState = /** @class */ (function (_super) {
     };
     /**
      * Retrieves the last added action
-     * @param params Data used to know whether to reload and to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The action data
      */
-    ActionState.prototype.getLatest = function (params) {
-        _super.prototype.addListener.call(this, params);
-        this.forwardState(params, true);
+    ActionState.prototype.getLatest = function (hook) {
+        _super.prototype.addListener.call(this, hook);
+        this.forwardState(hook, true);
         return this.actions.length && this.actions[this.actions.length - 1].result;
     };
     /**
      * Forwards the state of the retriever being cached
-     * @param params Data used to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      */
-    ActionState.prototype.forwardState = function (params, last) {
+    ActionState.prototype.forwardState = function (hook, last) {
         if (last === void 0) { last = false; }
-        if (IDataLoadRequest_1.isDataLoadRequest(params)) {
+        if (IDataLoadRequest_1.isDataLoadRequest(hook)) {
             var actions = last
                 ? this.actions.slice(this.actions.length - 1)
                 : this.actions;
-            if (params.registerException)
+            if (hook.registerException)
                 actions.forEach(function (_a) {
                     var exception = _a.exception, threw = _a.threw;
-                    return threw && params.registerException(exception);
+                    return threw && hook.registerException(exception);
                 });
-            if (params.markShouldRefresh && actions.find(function (_a) {
+            if (hook.markIsLoading && actions.find(function (_a) {
                 var loading = _a.loading;
                 return loading;
             }))
-                params.markShouldRefresh();
+                hook.markIsLoading();
         }
     };
     // Managing the actions

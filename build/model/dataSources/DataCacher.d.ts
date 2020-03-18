@@ -1,8 +1,8 @@
 import { AbstractDataSource } from "./AbstractDataSource";
 import { IDataSource } from "../_types/IDataSource";
-import { IDataRetrieverParams } from "../_types/IDataRetrieverParams";
+import { IDataHook } from "../_types/IDataHook";
 export declare class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<T> {
-    protected source: (params: IDataRetrieverParams, current: T | undefined) => T;
+    protected source: (params: IDataHook, current: T | undefined) => T;
     protected dependencyRemovers: (() => void)[];
     protected cached: T;
     protected loading: boolean;
@@ -14,23 +14,23 @@ export declare class DataCacher<T> extends AbstractDataSource<T> implements IDat
      */
     constructor(source: (
     /** The data hook to forward the sources */
-    params: IDataRetrieverParams, 
+    params: IDataHook, 
     /** The currently cached value */
     current: T | undefined) => T);
     /**
      * Updates the data if there is no dependency yet, or if a newer freshTimestamp is supplied
-     * @param params Data used to know whether to reload
+     * @param hook Data to know whether to reload
      */
-    protected updateIfRequired(params?: IDataRetrieverParams): void;
+    protected updateIfRequired(params?: IDataHook): void;
     /**
      * Forwards the state of the retriever being cached
-     * @param params Data used to notify about state changes
+     * @param hook Data used to notify about state changes
      */
-    protected forwardState(params?: IDataRetrieverParams): void;
+    protected forwardState(hook: IDataHook): void;
     /**
-     * Retrieves the data of a source
-     * @param params Data used to know whether to reload and to notify about state changes
-     * @returns The data that's currently available
+     * Retrieves the value of a source
+     * @param hook Data to hook into the meta state and to notify about state changes
+     * @returns The value that's currently available
      */
-    get(params?: IDataRetrieverParams): T;
+    get(hook: IDataHook): T;
 }

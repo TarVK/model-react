@@ -75,7 +75,7 @@ exports.getAsync = function (getter, forceRefreshTime) { return __awaiter(_this,
                         registerRemover: function (remover) {
                             listenerRemovers.push(remover);
                         },
-                        markShouldRefresh: function () {
+                        markIsLoading: function () {
                             isRefreshing = true;
                         }, refreshData: true, registerException: function (exception) {
                             exceptions.push(exception);

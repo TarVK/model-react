@@ -1,6 +1,6 @@
 import { AbstractDataSource } from "./AbstractDataSource";
 import { IDataSource } from "../_types/IDataSource";
-import { IDataRetrieverParams } from "../_types/IDataRetrieverParams";
+import { IDataHook } from "../_types/IDataHook";
 export declare class ActionState<T = void> extends AbstractDataSource<T[]> implements IDataSource<T[]> {
     protected actions: {
         result: T | undefined;
@@ -14,22 +14,22 @@ export declare class ActionState<T = void> extends AbstractDataSource<T[]> imple
      */
     constructor();
     /**
-     * Retrieves the results of the actions
-     * @param params Data used to know whether to reload and to notify about state changes
-     * @returns All the action data
+     * Retrieves the value of a source
+     * @param hook Data to hook into the meta state and to notify about state changes
+     * @returns The value that's currently available
      */
-    get(params?: IDataRetrieverParams): T[];
+    get(hook: IDataHook): T[];
     /**
      * Retrieves the last added action
-     * @param params Data used to know whether to reload and to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The action data
      */
-    getLatest(params?: IDataRetrieverParams): T | undefined;
+    getLatest(hook: IDataHook): T | undefined;
     /**
      * Forwards the state of the retriever being cached
-     * @param params Data used to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      */
-    protected forwardState(params?: IDataRetrieverParams, last?: boolean): void;
+    protected forwardState(hook: IDataHook, last?: boolean): void;
     /**
      * Adds an action to be tracked
      * @param action The to be called and tracked, or just the result promise of the action

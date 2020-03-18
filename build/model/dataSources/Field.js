@@ -27,11 +27,11 @@ var Field = /** @class */ (function (_super) {
     }
     /**
      * Retrieves the value of a source
-     * @param params Data used to know whether to reload and to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The value that's currently available
      */
-    Field.prototype.get = function (params) {
-        _super.prototype.addListener.call(this, params);
+    Field.prototype.get = function (hook) {
+        _super.prototype.addListener.call(this, hook);
         return this.value;
     };
     /**
