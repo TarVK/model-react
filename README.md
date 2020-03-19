@@ -1101,10 +1101,10 @@ interface Field<T> {
 
     /**
      * Retrieves the value of the source
-     * @param params Data used to know whether to reload and to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The value that's currently available
      */
-    get(params?: IDataRetrieverParams): T;
+    get(hook: IDataHook): T;
 
     /**
      * Sets the new value of the field
@@ -1138,10 +1138,10 @@ interface DataLoader<T> {
 
     /**
      * Retrieves the data of the source
-     * @param params Data used to know whether to reload and to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The data that's currently available
      */
-    get(params?: IDataRetrieverParams): T;
+    get(hook: IDataHook): T;
 
     /**
      * Indicates that this data is no longer up to date and should be reloaded
@@ -1174,10 +1174,10 @@ interface LoadableField<T> {
 
     /**
      * Retrieves the value of the source
-     * @param params Data used to know whether to reload and to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The value that's currently available
      */
-    get(params?: IDataRetrieverParams): T;
+    get(hook: IDataHook): T;
 
     /**
      * Sets the new value of the field
@@ -1217,17 +1217,62 @@ interface DataCacher<T> {
      */
     new (
         source: (
-            params: IDataRetrieverParams, // The data hook to forward the sources
+            hook: IDataHook, // The data hook to forward the sources
             current: T | undefined // The currently cached value
         ) => T
     ): LoadableField<T>;
 
     /**
      * Retrieves the value of the source
-     * @param params Data used to know whether to reload and to notify about state changes
+     * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The value that's currently available
      */
-    get(params?: IDataRetrieverParams): T;
+    get(hook: IDataHook): T;
+}
+```
+
+### ActionState
+
+A action state is able to keep track of the state of asynchronous actions. This is used to convert promises to meta data that can be read by data hooks. This can for instance be useful when wanting track whether the model is currently saving to the api, such that loaders can be shown accordingly.
+
+#### Interface
+
+```ts
+interface ActionState<T = void> {
+    /**
+     * Creates a new action state, used to track the state of async actions/function calls
+     */
+    new(): ActionState<T = void>;
+
+    /**
+     * Retrieves the value of a source
+     * @param hook Data to hook into the meta state and to notify about state changes
+     * @returns The value that's currently available
+     */
+    get(hook: IDataHook): T[];
+
+    /**
+     * Retrieves the last added action
+     * @param hook Data to hook into the meta state and to notify about state changes
+     * @returns The action data
+     */
+    getLatest(hook: IDataHook): T | undefined;
+
+    /**
+     * Adds an action to be tracked
+     * @param action The to be called and tracked, or just the result promise of the action
+     * @param reset Whether to remove the old data
+     * @returns The result of the action
+     */
+    addAction(
+        action: Promise<T> | (() => Promise<T>),
+        reset: boolean = false
+    ): Promise<T>;
+
+    /**
+     * Removes the results of previous actions
+     */
+    reset(): void;
 }
 ```
 
@@ -1321,6 +1366,36 @@ Since a data retriever may consist of multiple data sources, multiple errors may
 
 </details>
 
+### isLoading
+
+isLoading can be used to extract the info of whether a data retriever is currently loading. It won't load any data itself like getAsync does, but just extracts a retriever's state.
+
+#### Interface
+
+```ts
+/**
+ * Retrieves whether data is loading from a data getter
+ * @param getter The getter to get the loading state from
+ * @returns Whether the getter is loading
+ */
+function isLoading(getter: (h: IDataHook) => void): boolean;
+```
+
+### getExceptions
+
+getExceptions can be used to extract the exceptions a data retriever might have thrown while loading. It won't load any data itself like getAsync does, but just extracts a retriever's state.
+
+#### Interface
+
+```ts
+/**
+ * Retrieves the exceptions that were thrown by the data getter
+ * @param getter The getter to get the loading state from
+ * @returns The exceptions that were thrown by the getter
+ */
+function getExceptions(getter: (h: IDataHook) => void): any[];
+```
+
 ## Tools
 
 Model-react provides a couple of simple components that make dealing with loadable sources easier
@@ -1357,9 +1432,9 @@ The loader component can be used in the same situations as the loader switch, bu
 ```ts
 const Loader: FC<{
     /** An alias for content */
-    children?: (hook: IDataRetrieverParams) => ReactNode;
+    children?: (hook: IDataHook) => ReactNode;
     /** The content to show when there are no exceptions and data loaded */
-    content?: (hook: IDataRetrieverParams) => ReactNode;
+    content?: (hook: IDataHook) => ReactNode;
     /** The node to show while loading */
     onLoad?: ReactNode | (() => ReactNode);
     /** The node to show if an error occured */
@@ -1367,19 +1442,71 @@ const Loader: FC<{
 }>;
 ```
 
+### useActionState
+
+useActionState can be used to create a local ActionState data source. This source can be used to capture the state of asynchronous actions, in order to use the Loader or LoaderSwitch to visualize the loading state and or exceptions.
+
+#### Interface
+
+```ts
+/**
+ * Creates a function to use the async state of a
+ * @param hook The data hook to forward the state to
+ * @param latest Whether to only retrieve the last added action
+ * @returns A function that promises can be wrapped with to track their state, a function to reset the state (mainly errors), and all the results
+ */
+export function useActionState<T = void>(
+    hook: IDataHook,
+    latest?: false
+): [
+    (
+        /** The action to add, whose value will be returned */
+        action: Promise<T> | (() => Promise<T>),
+        /** Whether to reset the state of previously added actions */
+        reset?: boolean
+    ) => Promise<T>,
+    () => void,
+    T[]
+];
+```
+
+<details>
+<summary> Or get only get the last of the action values by specifying true for parameter latest </summary>
+
+```ts
+/**
+ * Creates a function to use the async state of a
+ * @param hook The data hook to forward the state to
+ * @param latest Whether to only retrieve the last added action
+ * @returns A function that promises can be wrapped with to track their state, a function to reset the state (mainly errors), and the last result
+ */
+export function useActionState<T = void>(
+    hook: IDataHook,
+    latest: true
+): [
+    (
+        /** The action to add, whose value will be returned */
+        action: Promise<T> | (() => Promise<T>),
+        /** Whether to reset the state of previously added actions */
+        reset?: boolean
+    ) => Promise<T>,
+    () => void,
+    T | undefined
+];
+```
+
+</details>
+
 # Limitations
 
 ## Efficiency
 
 Since this system relies on updating observers, a large number of calls might be made before the data is actually finalized. This might be rather inefficient, and this should be considered when making complex transformers. One could also make their own DataRetriever that does some debouncing to reduce the load. This technique isn't yet included in the library however, since the provided behavior is sufficient in most situations.
 
-## Bugs
-
-The system on its own is rather simple and reliable. The usage might be a bit prone to bugs however, since providing `IDataRetrieverParams` when retrieving a value from a data source is optional. This is intentional as there are many situations where no parameters are required. It does however mean that typescript doesn't complain when you actually forget to pass the listener of a data hook in a react component, resulting in the component not updating when it should.
-
 # Contributing
 
 Any contributions are welcome. The library is operational and no changes are planned. However, if any bugs are found, or someone wants to add features or examples, they are welcome to.
+In addition, I would like to add unit tests at some point, to ensure everything works as intended.
 
 ## Environment setup
 

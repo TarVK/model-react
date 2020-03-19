@@ -1,4 +1,4 @@
-import {Field, IDataRetrieverParams} from "model-react";
+import {Field, IDataHook} from "model-react";
 
 export class User {
     // The name of the user
@@ -14,10 +14,10 @@ export class User {
 
     /**
      * Retrieves the name of the user
-     * @param p The retrieval parameters for the data
+     * @param h The data hook
      * @returns The user's name
      */
-    public getName(p?: IDataRetrieverParams): string {
-        return this.name.get(p);
+    public getName(h?: IDataHook): string {
+        return this.name.get(h);
     }
 }

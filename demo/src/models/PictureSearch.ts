@@ -1,6 +1,6 @@
 import {Picture} from "./Picture";
 import {application} from "./application";
-import {Field, IDataRetrieverParams, DataLoader} from "model-react";
+import {Field, IDataHook, DataLoader} from "model-react";
 
 type Image = {picture: string; name: string};
 export class PictureSearch {
@@ -10,7 +10,7 @@ export class PictureSearch {
     // The search results
     protected results = new DataLoader<Image[]>(
         async () => {
-            const search = this.search.get();
+            const search = this.search.get(null);
             if (!search) return [];
 
             // Get some images from an api
@@ -71,11 +71,11 @@ export class PictureSearch {
     // Data getters
     /**
      * Retrieves the search results
-     * @param p The retrieval parameters for the data
+     * @param h The data hook
      * @returns The results
      */
-    public getPictures(p?: IDataRetrieverParams): Image[] {
-        return this.results.get(p);
+    public getPictures(h?: IDataHook): Image[] {
+        return this.results.get(h);
     }
 
     // Search management
@@ -89,11 +89,11 @@ export class PictureSearch {
 
     /**
      * Retrieves the current search text
-     * @param p The retrieval parameters for the data
+     * @param h The data hook
      * @returns The search text
      */
-    public getSearch(p?: IDataRetrieverParams): string {
-        return this.search.get(p);
+    public getSearch(h: IDataHook): string {
+        return this.search.get(h);
     }
 
     /**

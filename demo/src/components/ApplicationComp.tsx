@@ -1,4 +1,4 @@
-import React, {FunctionComponent} from "react";
+import React, {FC} from "react";
 import {PictureSearch} from "./PictureSearchComp";
 import {MainPictureComp} from "./MainPictureComp";
 import {PictureListComp} from "./PictureListComp";
@@ -8,12 +8,12 @@ import {LeftSidebarComp} from "./LeftSidebarComp";
 import {useDataHook} from "model-react";
 import {application} from "../models/application";
 
-export const ApplicationComp: FunctionComponent = ({}) => {
-    const [l] = useDataHook();
+export const ApplicationComp: FC = () => {
+    const [h] = useDataHook();
     return (
         <Box css={{height: "100%"}}>
-            {application.isPictureSearchOpened(l) && <PictureSearch />}
-            {application.isLabeling(l) && <LabelSelectorComp />}
+            {application.isPictureSearchOpened(h) && <PictureSearch />}
+            {application.isLabeling(h) && <LabelSelectorComp />}
             <FlexLayout css={{height: "100%"}}>
                 <Box css={{width: 300}}>
                     <LeftSidebarComp />

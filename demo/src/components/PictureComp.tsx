@@ -1,11 +1,11 @@
-import React, {FunctionComponent} from "react";
+import React, {FC} from "react";
 import {Picture} from "../models/Picture";
 import {LabelComp} from "./LabelComp";
 import {Box, Input, Button, FlexLayout, Icon} from "@deity/falcon-ui";
 import {useDataHook} from "model-react";
 import {application} from "../models/application";
 
-const Img: FunctionComponent<{src: string; onClick?: () => void}> = ({src, onClick}) => (
+const Img: FC<{src: string; onClick?: () => void}> = ({src, onClick}) => (
     <Box
         onClick={onClick}
         bg="black"
@@ -21,8 +21,8 @@ const Img: FunctionComponent<{src: string; onClick?: () => void}> = ({src, onCli
     />
 );
 
-export const PictureComp: FunctionComponent<{picture: Picture}> = ({picture}) => {
-    const [l] = useDataHook();
+export const PictureComp: FC<{picture: Picture}> = ({picture}) => {
+    const [h] = useDataHook();
     return (
         <Box mb="sm" bg="secondary" border="regular" borderRadius="medium">
             <FlexLayout>
@@ -30,7 +30,7 @@ export const PictureComp: FunctionComponent<{picture: Picture}> = ({picture}) =>
                 <Input
                     flex={1}
                     css={{cursor: "pointer"}}
-                    value={picture.getName(l)}
+                    value={picture.getName(h)}
                     onChange={e => picture.setName(e.target.value)}
                 />
 
@@ -46,7 +46,7 @@ export const PictureComp: FunctionComponent<{picture: Picture}> = ({picture}) =>
             <FlexLayout>
                 {/* image */}
                 <Img
-                    src={picture.getPicture(l)}
+                    src={picture.getPicture(h)}
                     onClick={() => application.selectPicture(picture)}
                 />
 
@@ -62,14 +62,14 @@ export const PictureComp: FunctionComponent<{picture: Picture}> = ({picture}) =>
                             </Button>
                         </Box>
                     </FlexLayout>
-                    {picture.getLabels(l).map(label => (
+                    {picture.getLabels(h).map(label => (
                         <LabelComp
                             key={label.ID}
                             label={label}
                             onDelete={() => picture.removeLabel(label)}
                         />
                     ))}
-                    Total label characters: {picture.getLabelLengthSum(l)}
+                    Total label characters: {picture.getLabelLengthSum(h)}
                 </Box>
             </FlexLayout>
         </Box>

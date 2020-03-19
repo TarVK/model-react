@@ -1,12 +1,12 @@
-import React, {FunctionComponent} from "react";
+import React, {FC} from "react";
 import {LabelComp} from "./LabelComp";
 import {Label} from "../models/Label";
 import {Button, FlexLayout, Box, Icon} from "@deity/falcon-ui";
 import {useDataHook} from "model-react";
 import {application} from "../models/application";
 
-export const LabelListComp: FunctionComponent = ({}) => {
-    const [l] = useDataHook();
+export const LabelListComp: FC = () => {
+    const [h] = useDataHook();
 
     return (
         <>
@@ -23,7 +23,7 @@ export const LabelListComp: FunctionComponent = ({}) => {
                     </Button>
                 </Box>
             </FlexLayout>
-            {application.getLabels(l).map(labelModel => (
+            {application.getLabels(h).map(labelModel => (
                 <LabelComp
                     key={labelModel.ID}
                     label={labelModel}

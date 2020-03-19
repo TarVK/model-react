@@ -1,4 +1,4 @@
-import {Field, IDataRetrieverParams} from "model-react";
+import {Field, IDataHook} from "model-react";
 import {Label} from "./Label";
 import {application} from "./application";
 import {User} from "./User";
@@ -41,29 +41,29 @@ export class Picture {
 
     /**
      * Retrieves the name of the picture
-     * @param p The retrieval parameters for the data
+     * @param h The data hook
      * @returns The name
      */
-    public getName(p?: IDataRetrieverParams): string {
-        return this.name.get(p);
+    public getName(h: IDataHook): string {
+        return this.name.get(h);
     }
 
     /**
      * Retrieves the author name
-     * @param p The retrieval parameters for the data
+     * @param h The data hook
      * @returns The name
      */
-    public getAuthorName(p?: IDataRetrieverParams): string {
-        return this.author.getName(p);
+    public getAuthorName(h: IDataHook): string {
+        return this.author.getName(h);
     }
 
     /**
      * Retrieves a full title of the image including author
-     * @param p The retrieval parameters for the data
+     * @param h The data hook
      * @returns The title of the image
      */
-    public getTitle(p?: IDataRetrieverParams): string {
-        return `${this.getName(p)} by ${this.getAuthorName(p)}`;
+    public getTitle(h: IDataHook): string {
+        return `${this.getName(h)} by ${this.getAuthorName(h)}`;
     }
 
     // Picture management
@@ -77,22 +77,23 @@ export class Picture {
 
     /**
      * Retrieves the picture to use
+     * @param h The data hook
      * @returns The picture
      */
-    public getPicture(p?: IDataRetrieverParams): string {
-        return this.picture.get(p);
+    public getPicture(h: IDataHook): string {
+        return this.picture.get(h);
     }
 
     // Label management
     /**
      * Retrieves all declared labels
-     * @param p The retrieval parameters for the data
+     * @param h The data hook
      * @returns The labels
      */
-    public getLabels(p?: IDataRetrieverParams): Label[] {
+    public getLabels(h: IDataHook): Label[] {
         // Retrieved the attached labels that aren't removed from the application yet
-        const allLabels = application.getLabels(p);
-        const thisLabels = this.labels.get(p);
+        const allLabels = application.getLabels(h);
+        const thisLabels = this.labels.get(h);
         const presentLabels = thisLabels.filter(label => allLabels.includes(label));
 
         // Remove any labels that don't exist anymore for good
@@ -108,7 +109,7 @@ export class Picture {
      */
     public addLabel(label: Label): void {
         // Verify the label isn't present already
-        const labels = this.labels.get();
+        const labels = this.labels.get(null);
         if (labels.includes(label)) return;
 
         // Insert the label
@@ -120,18 +121,18 @@ export class Picture {
      * @param label The label to remove
      */
     public removeLabel(label: Label): void {
-        const labels = this.labels.get();
+        const labels = this.labels.get(null);
         this.labels.set(labels.filter(l => l !== label));
     }
 
     /**
      * Retrieves the sum of label lengths
-     * @param p The retrieval parameters for the data
+     * @param h The data hook
      * @returns The sum
      */
-    public getLabelLengthSum(p?: IDataRetrieverParams): number {
+    public getLabelLengthSum(h: IDataHook): number {
         return this.labels
-            .get(p)
-            .reduce((total, label) => total + label.getText(p).length, 0);
+            .get(h)
+            .reduce((total, label) => total + label.getText(h).length, 0);
     }
 }

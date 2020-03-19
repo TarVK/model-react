@@ -1,11 +1,11 @@
-import React, {FunctionComponent} from "react";
+import React, {FC} from "react";
 import {PictureComp} from "./PictureComp";
 import {Box, FlexLayout, Button, Icon} from "@deity/falcon-ui";
 import {application} from "../models/application";
 import {useDataHook} from "model-react";
 
-export const PictureListComp: FunctionComponent = ({}) => {
-    const [l] = useDataHook();
+export const PictureListComp: FC = () => {
+    const [h] = useDataHook();
 
     return (
         <Box p="md">
@@ -19,7 +19,7 @@ export const PictureListComp: FunctionComponent = ({}) => {
                     </Button>
                 </Box>
             </FlexLayout>
-            {application.getPictures(l).map(picture => (
+            {application.getPictures(h).map(picture => (
                 <PictureComp key={picture.ID} picture={picture} />
             ))}
         </Box>

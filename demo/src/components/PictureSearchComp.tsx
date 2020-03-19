@@ -1,10 +1,10 @@
-import React, {FunctionComponent, memo} from "react";
+import React, {FC, memo} from "react";
 import {theme} from "../theme";
 import {Box, Backdrop, Input, Icon, FlexLayout, Button} from "@deity/falcon-ui";
 import {useDataHook, LoaderSwitch} from "model-react";
 import {application} from "../models/application";
 
-const Img: FunctionComponent<{src: string; onClick: () => void}> = ({src, onClick}) => (
+const Img: FC<{src: string; onClick: () => void}> = ({src, onClick}) => (
     <Box
         onClick={onClick}
         css={{
@@ -22,8 +22,8 @@ const Img: FunctionComponent<{src: string; onClick: () => void}> = ({src, onClic
 
 // Using memo as an example to show this element isn't rerendered by the model when the search changes
 // (It is rerendered by PictureSearch, the component, when it rerenders because of a search though, when not using memo)
-const Results: FunctionComponent = memo(() => {
-    const [l, p] = useDataHook();
+const Results: FC = memo(() => {
+    const [h, p] = useDataHook();
     const pictureSearch = application.getPictureSearch();
 
     // Return the results
@@ -34,7 +34,7 @@ const Results: FunctionComponent = memo(() => {
             onError={error => <Box m="md">{error}</Box>}>
             <Box flex={1} css={{width: "100%", overflowY: "auto", overflowX: "hidden"}}>
                 {/* uncomment this to show rerenders: {Math.random()} */}
-                {pictureSearch.getPictures(l).map((picture, i) => (
+                {pictureSearch.getPictures(h).map((picture, i) => (
                     <Img
                         key={picture.name}
                         src={picture.picture}
@@ -49,8 +49,8 @@ const Results: FunctionComponent = memo(() => {
     );
 });
 
-export const PictureSearch: FunctionComponent = ({}) => {
-    const [l] = useDataHook();
+export const PictureSearch: FC = () => {
+    const [h] = useDataHook();
     const pictureSearch = application.getPictureSearch();
     return (
         <>
@@ -73,7 +73,7 @@ export const PictureSearch: FunctionComponent = ({}) => {
                     <Input
                         placeholder="Search Rick and Morty characters, E.G. Rick"
                         flex={1}
-                        value={pictureSearch.getSearch(l)}
+                        value={pictureSearch.getSearch(h)}
                         onChange={e => pictureSearch.setSearch(e.target.value)}
                         ref={input => input && input.focus()}
                         onKeyUp={e => {

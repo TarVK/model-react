@@ -15,7 +15,7 @@ export class ActionState<T = void> extends AbstractDataSource<T[]>
     }[] = [];
 
     /**
-     * Creates a new action state instance, used to track the state of async actions/function calls
+     * Creates a new action state, used to track the state of async actions/function calls
      */
     constructor() {
         super();

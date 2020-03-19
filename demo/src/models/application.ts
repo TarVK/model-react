@@ -2,7 +2,7 @@ import {Picture} from "./Picture";
 import {User} from "./User";
 import {Label} from "./Label";
 import {PictureSearch} from "./PictureSearch";
-import {Field, IDataRetrieverParams} from "model-react";
+import {Field, IDataHook} from "model-react";
 
 class Application {
     // The pictures loaded in the application
@@ -40,11 +40,11 @@ class Application {
 
     /**
      * Whether or not we have a target to add a label to
-     * @param p The retrieval parameters for the data
+     * @param h The data hook
      * @returns Whether we should display label selection
      */
-    public isLabeling(p?: IDataRetrieverParams): boolean {
-        return this.pictureToAddLabelTo.get(p) != null;
+    public isLabeling(h: IDataHook): boolean {
+        return this.pictureToAddLabelTo.get(h) != null;
     }
 
     /**
@@ -52,19 +52,19 @@ class Application {
      * @param label The label to add
      */
     public addLabelToPicture(label: Label): void {
-        if (this.pictureToAddLabelTo.get() && label)
-            this.pictureToAddLabelTo.get().addLabel(label);
+        if (this.pictureToAddLabelTo.get(null) && label)
+            this.pictureToAddLabelTo.get(null).addLabel(label);
         this.pictureToAddLabelTo.set(null);
     }
 
     // Picture search management
     /**
-     * Retrieves whether the picture search is opeened
-     * @param p The retrieval parameters for the data
+     * Retrieves whether the picture search is opened
+     * @param h The data hook
      * @returns Whether opened
      */
-    public isPictureSearchOpened(p?: IDataRetrieverParams): boolean {
-        return this.pictureSearchOpened.get(p);
+    public isPictureSearchOpened(h: IDataHook): boolean {
+        return this.pictureSearchOpened.get(h);
     }
 
     /**
@@ -87,28 +87,28 @@ class Application {
      */
     public selectPicture(picture: Picture): void {
         // Only allow stored pictures to be selected
-        if (!this.getPictures().includes(picture)) return;
+        if (!this.getPictures(null).includes(picture)) return;
 
         this.selectedPicture.set(picture);
     }
 
     /**
      * Retrieves the selected picture
-     * @param p The retrieval parameters for the data
+     * @param h The data hook
      * @returns The selected picture
      */
-    public getSelectedPicture(p?: IDataRetrieverParams): Picture {
-        return this.selectedPicture.get(p);
+    public getSelectedPicture(h: IDataHook): Picture {
+        return this.selectedPicture.get(h);
     }
 
     // Picture management
     /**
      * Retrieves the pictures in the app
-     * @param p The retrieval parameters for the data
+     * @param h The data hook
      * @returns The pictures
      */
-    public getPictures(p?: IDataRetrieverParams): Picture[] {
-        return this.pictures.get(p);
+    public getPictures(h: IDataHook): Picture[] {
+        return this.pictures.get(h);
     }
 
     /**
@@ -117,10 +117,10 @@ class Application {
      */
 
     public addPicture(picture: Picture): void {
-        this.pictures.set([picture, ...this.pictures.get()]);
+        this.pictures.set([picture, ...this.pictures.get(null)]);
 
         // Select this picture if nothing is selected
-        const selectedPicture = this.getSelectedPicture();
+        const selectedPicture = this.getSelectedPicture(null);
         if (!selectedPicture) this.selectPicture(picture);
     }
 
@@ -129,11 +129,11 @@ class Application {
      * @param picture The picture to remove
      */
     public removePicture(picture: Picture): void {
-        const remainingPictures = this.pictures.get().filter(p => p !== picture);
+        const remainingPictures = this.pictures.get(null).filter(p => p !== picture);
         this.pictures.set(remainingPictures);
 
         // Select another picture if this picture was selected
-        if (picture && picture == this.getSelectedPicture()) {
+        if (picture && picture == this.getSelectedPicture(null)) {
             const selectPicture = remainingPictures[0];
             if (selectPicture) this.selectPicture(selectPicture);
         }
@@ -142,11 +142,11 @@ class Application {
     // Label management
     /**
      * Retrieves all declared labels
-     * @param p The retrieval parameters for the data
+     * @param h The data hook
      * @returns The labels
      */
-    public getLabels(p?: IDataRetrieverParams): Label[] {
-        return this.labels.get(p);
+    public getLabels(h: IDataHook): Label[] {
+        return this.labels.get(h);
     }
 
     /**
@@ -154,7 +154,7 @@ class Application {
      * @param label The label to add
      */
     public addLabel(label: Label): void {
-        this.labels.set([label, ...this.labels.get()]);
+        this.labels.set([label, ...this.labels.get(null)]);
     }
 
     /**
@@ -162,7 +162,7 @@ class Application {
      * @param label The label to remove
      */
     public removeLabel(label: Label): void {
-        this.labels.set(this.labels.get().filter(l => l != label));
+        this.labels.set(this.labels.get(null).filter(l => l != label));
     }
 
     // Model retrieval methods

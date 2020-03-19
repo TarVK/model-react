@@ -1,21 +1,21 @@
-import React, {FunctionComponent, useRef} from "react";
+import React, {FC, useRef} from "react";
 import {Label} from "../models/Label";
 import {Button, Input, Icon, FlexLayout} from "@deity/falcon-ui";
 import {useDataHook} from "model-react";
 
-export const LabelComp: FunctionComponent<{
+export const LabelComp: FC<{
     label: Label;
     onDelete?: () => void;
     select?: boolean;
 }> = ({label: labelModel, onDelete, select}) => {
-    const [l] = useDataHook();
+    const [h] = useDataHook();
     const ref = useRef(null);
 
     return (
         <FlexLayout mb="xs">
             <Input
                 flex={1}
-                value={labelModel.getText(l)}
+                value={labelModel.getText(h)}
                 mr="sm"
                 ref={input => {
                     if (!ref.current && select) {

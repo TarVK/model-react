@@ -1,4 +1,4 @@
-import {Field, IDataRetrieverParams} from "model-react";
+import {Field, IDataHook} from "model-react";
 
 export class Label {
     public ID = Math.floor(Math.random() * 1e6);
@@ -8,11 +8,11 @@ export class Label {
 
     /**
      * Retrieves the text of the label
-     * @param p The retrieval parameters for the data
+     * @param h The data hook
      * @returns The text
      */
-    public getText(p?: IDataRetrieverParams): string {
-        return this.text.get(p);
+    public getText(h: IDataHook): string {
+        return this.text.get(h);
     }
 
     /**

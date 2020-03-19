@@ -1,9 +1,9 @@
-import React, {FunctionComponent} from "react";
+import React, {FC} from "react";
 import {application} from "../models/application";
 import {useDataHook} from "model-react";
 import {Box, FlexLayout} from "@deity/falcon-ui";
 
-const Img: FunctionComponent<{src: string; onClick?: () => void}> = ({src, onClick}) => (
+const Img: FC<{src: string; onClick?: () => void}> = ({src, onClick}) => (
     <Box
         onClick={onClick}
         flex={1}
@@ -18,9 +18,9 @@ const Img: FunctionComponent<{src: string; onClick?: () => void}> = ({src, onCli
     />
 );
 
-export const MainPictureComp: FunctionComponent = ({}) => {
-    const [l] = useDataHook();
-    const selectedPicture = application.getSelectedPicture(l);
+export const MainPictureComp: FC = () => {
+    const [h] = useDataHook();
+    const selectedPicture = application.getSelectedPicture(h);
     return (
         <Box
             css={{width: "100%", height: "100%"}}
@@ -29,8 +29,8 @@ export const MainPictureComp: FunctionComponent = ({}) => {
             borderRight="regular">
             {selectedPicture ? (
                 <FlexLayout flexDirection="column" css={{height: "100%"}}>
-                    <Box p="md">{selectedPicture.getTitle(l)}</Box>
-                    <Img src={selectedPicture.getPicture(l)} />
+                    <Box p="md">{selectedPicture.getTitle(h)}</Box>
+                    <Img src={selectedPicture.getPicture(h)} />
                 </FlexLayout>
             ) : (
                 <Box p="lg">Please select a picture on the right</Box>

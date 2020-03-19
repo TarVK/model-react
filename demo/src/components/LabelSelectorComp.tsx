@@ -1,24 +1,24 @@
-import React, {FunctionComponent} from "react";
+import React, {FC} from "react";
 import {Label} from "../models/Label";
 import {Box, Backdrop} from "@deity/falcon-ui";
 import {useDataHook} from "model-react";
 import {application} from "../models/application";
 
-const LabelChoice: FunctionComponent<{labelModel: Label; onClick: () => void}> = ({
+const LabelChoice: FC<{labelModel: Label; onClick: () => void}> = ({
     labelModel,
     onClick,
 }) => {
-    const [l] = useDataHook();
+    const [h] = useDataHook();
     return (
         <Box mb="xs" css={{cursor: "pointer"}} onClick={onClick}>
-            {labelModel.getText(l)}
+            {labelModel.getText(h)}
         </Box>
     );
 };
 
-export const LabelSelectorComp: FunctionComponent = () => {
-    const [l] = useDataHook();
-    const labels = application.getLabels(l);
+export const LabelSelectorComp: FC = () => {
+    const [h] = useDataHook();
+    const labels = application.getLabels(h);
 
     return (
         <>
