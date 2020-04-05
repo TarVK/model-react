@@ -22,7 +22,7 @@ const loadData = () => {
 const getExceptionsDemo = () => console.log(getExceptions(h => loadableSource.get(h)));
 const isLoadingDemo = () => console.log(isLoading(h => loadableSource.get(h)));
 
-// Export as button to properly demo
+// Export as buttons to properly demo
 export default (
     <div>
         <button children="getExceptions" onClick={getExceptionsDemo} />

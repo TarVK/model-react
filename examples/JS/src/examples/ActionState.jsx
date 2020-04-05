@@ -1,18 +1,18 @@
-import React, {FC, ReactNode} from "react";
-import {useDataHook, ActionState, IDataHook, LoaderSwitch, isLoading} from "model-react";
+import React from "react";
+import {useDataHook, ActionState, LoaderSwitch, isLoading} from "model-react";
 
 // A delay function to fake some delay that would occur
-const delay = () => new Promise<void>(res => setTimeout(res, 2000));
+const delay = () => new Promise(res => setTimeout(res, 2000));
 
 // Action state sources only really make sense in combination with some async action functions
 class Something {
-    protected saving = new ActionState<void>();
     /**
      * Checks whether the data is saving
      * @param hook The hook to add the loading state to
      * @returns Whether we are currently saving data
      */
-    public isSaving(hook: IDataHook): boolean {
+    isSaving(hook) {
+        this.saving = new ActionState();
         this.saving.get(hook);
         return isLoading(h => this.saving.get(h));
     }
@@ -21,7 +21,7 @@ class Something {
      * Performs fake save
      * @param withError Whether the fake save should mock an error
      */
-    public async save(withError: boolean = false): Promise<void> {
+    async save(withError = false) {
         return await this.saving.addAction(async () => {
             // Something async in here
             await delay();
@@ -33,11 +33,7 @@ class Something {
 const smthInstance = new Something();
 
 // Create some element that may use the state
-const SaveButton: FC<{smth: Something; error?: boolean; children: ReactNode}> = ({
-    smth,
-    error = false,
-    children,
-}) => {
+const SaveButton = ({smth, error = false, children}) => {
     const [h, c] = useDataHook();
     smth.isSaving(h); // Pass the saving data to the hook
     return (
@@ -52,7 +48,7 @@ const SaveButton: FC<{smth: Something; error?: boolean; children: ReactNode}> = 
     );
 };
 
-// Render some 'app' element that shows an input and output using the same field
+// Export some element that shows two of these save buttons, one of which causes an error
 export default (
     <div>
         <SaveButton smth={smthInstance}>Save</SaveButton>

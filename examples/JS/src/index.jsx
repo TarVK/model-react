@@ -8,7 +8,7 @@ import dataLoader from "./examples/DataLoader";
 import loaderSwitch from "./examples/LoaderSwitch";
 import loader from "./examples/Loader";
 import loadableField from "./examples/LoadableField";
-import combiningData from "./examples/CombiningData";
+import combiningData from "./examples/combiningData";
 import dataCacher from "./examples/DataCacher";
 import getAsync from "./examples/getAsync";
 import getState from "./examples/getState";
@@ -23,11 +23,11 @@ const pages = [
     {name: "LoaderSwitch", element: loaderSwitch},
     {name: "Loader", element: loader},
     {name: "LoaderField", element: loadableField},
-    {name: "CombiningData", element: combiningData},
+    {name: "combiningData", element: combiningData},
     {name: "DataCacher", element: dataCacher},
     {name: "getAsync", element: getAsync},
-    {name: "get state", element: getState},
     {name: "Exceptions", element: exceptions},
+    {name: "getState", element: getState},
     {name: "ActionState", element: actionState},
     {name: "useActionState", element: useActionState},
 ];

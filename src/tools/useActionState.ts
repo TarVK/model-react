@@ -12,7 +12,12 @@ export function useActionState<T = void>(
     hook: IDataHook,
     latest?: false
 ): [
-    (action: Promise<T> | (() => Promise<T>), reset?: boolean) => Promise<T>,
+    (
+        /** The action to add, whose value will be returned */
+        action: Promise<T> | (() => Promise<T>), 
+        /** Whether to reset the state of previously added actions */
+        reset?: boolean
+    ) => Promise<T>,
     () => void,
     T[]
 ];
@@ -27,7 +32,12 @@ export function useActionState<T = void>(
     hook: IDataHook,
     latest: true
 ): [
-    (action: Promise<T> | (() => Promise<T>), reset?: boolean) => Promise<T>,
+    (
+        /** The action to add, whose value will be returned */
+        action: Promise<T> | (() => Promise<T>), 
+        /** Whether to reset the state of previously added actions */
+        reset?: boolean
+    ) => Promise<T>,
     () => void,
     T | undefined
 ];

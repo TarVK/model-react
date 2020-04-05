@@ -23,11 +23,11 @@ const demo = () =>
 
 // Render as element
 export default (
-    <>
+    <div>
         <Loader onLoad="Loading" onError={e => `The following errors were thrown: ${e}`}>
             {h => getSomeData(h)}
         </Loader>
         <br />
         <button children="demo" onClick={demo} />
-    </>
+    </div>
 );

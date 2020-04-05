@@ -25,7 +25,7 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
     constructor(
         source: (
             /** The data hook to forward the sources */
-            params: IDataHook,
+            hook: IDataHook,
             /** The currently cached value */
             current: T | undefined
         ) => T

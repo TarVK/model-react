@@ -5,6 +5,7 @@ Model-react provides a simple system to create a data model together with applic
 There are two main situations when usage of this module could be considered:
 
 -   If you render the same data in multiple places and want to manage the data neatly
+-   If you have many data fetches that you want to handle in a clean manner
 -   If the data has complex behavior, possibly separate of any GUI
 
 This module has full TypeScript support, and will work well in a statically typed structured project.
@@ -36,28 +37,28 @@ class Person {
     setName(name) {
         this.name.set(name);
     }
-    getName(p) {
-        return this.name.get(p);
+    getName(h) {
+        return this.name.get(h);
     }
     setAge(age) {
         this.age.set(age);
     }
-    getAge(p) {
-        return this.age.get(p);
+    getAge(h) {
+        return this.age.get(h);
     }
 }
 
 const PersonEditor = ({person}) => {
-    const [l] = useDataHook();
+    const [h] = useDataHook();
     return (
         <div>
             <input
-                value={person.getName(l)}
+                value={person.getName(h)}
                 onChange={e => person.setName(e.target.value)}
             />
             <input
                 type="number"
-                value={person.getAge(l)}
+                value={person.getAge(h)}
                 onChange={e => person.setAge(Number(e.target.value))}
             />
         </div>
@@ -65,11 +66,11 @@ const PersonEditor = ({person}) => {
 };
 
 const PersonProfile = ({person}) => {
-    const [l] = useDataHook();
+    const [h] = useDataHook();
     return (
         <div>
-            Name: {person.getName(l)} <br />
-            Age: {person.getAge(l)}
+            Name: {person.getName(h)} <br />
+            Age: {person.getAge(h)}
         </div>
     );
 };
@@ -105,28 +106,28 @@ class Person {
     public setName(name: string): void {
         this.name.set(name);
     }
-    public getName(p: IDataRetrieverParams): string {
-        return this.name.get(p);
+    public getName(h: IDataHook): string {
+        return this.name.get(h);
     }
     public setAge(age: number): void {
         this.age.set(age);
     }
-    public getAge(p: IDataRetrieverParams): number {
-        return this.age.get(p);
+    public getAge(h: IDataHook): number {
+        return this.age.get(h);
     }
 }
 
 const PersonEditor: FC<{person: Person}> = ({person}) => {
-    const [l] = useDataHook();
+    const [h] = useDataHook();
     return (
         <div>
             <input
-                value={person.getName(l)}
+                value={person.getName(h)}
                 onChange={e => person.setName(e.target.value)}
             />
             <input
                 type="number"
-                value={person.getAge(l)}
+                value={person.getAge(h)}
                 onChange={e => person.setAge(Number(e.target.value))}
             />
         </div>
@@ -134,11 +135,11 @@ const PersonEditor: FC<{person: Person}> = ({person}) => {
 };
 
 const PersonProfile: FC<{person: Person}> = ({person}) => {
-    const [l] = useDataHook();
+    const [h] = useDataHook();
     return (
         <div>
-            Name: {person.getName(l)} <br />
-            Age: {person.getAge(l)}
+            Name: {person.getName(h)} <br />
+            Age: {person.getAge(h)}
         </div>
     );
 };
@@ -164,13 +165,14 @@ Model-react primarily consists of 1 design pattern, together with surrounding to
 Model data (data of some data model) that should be accessible from a react component, should implement the IDataRetriever interface:
 
 ```ts
-type IDataRetriever<T> = (params?: IDataRetrieverParams) => T;
+type IDataRetriever<T> = (hook: IDataHook) => T;
 ```
 
-Where IDateRetrieverParams is defined as:
+Where IDataHook is defined as:
 
 ```ts
-type IDataRetrieverParams = IDataLoadRequest | IDataListener;
+type IDataHook = IStrictDataHook | null;
+type IStrictDataHook = IDataLoadRequest | IDataListener;
 type IDataListener = {
     /** The method to call when the source data changes */
     readonly call: () => void;
@@ -194,13 +196,13 @@ type IDataLoadRequest = {
 };
 ```
 
-This retriever will simply return the current value of the model, and allow you to pass contextual data.
+This retriever will simply return the current value of the model, and allow you to pass a hook.
 This data can be used by a `IDataSource`:
 
 ```ts
 export type IDataSource<T> = {
     /** Retrieves the data of a source
-     *  @param params Data used to know whether to reload and to notify about state changes
+     *  @param hook Data to hook into the meta state and to notify about state changes
      *  @returns The data that's currently available */
     get: IDataRetriever<T>;
 };
@@ -215,16 +217,20 @@ The library offers some simple data sources:
 -   DataLoader: A data source that retrieves its value from an async callback
 -   LoadableField: A data source whose value is loaded from an async callback, but can be changed like a field
 -   DataCacher: A data source that caches combinations of values of other sources
+-   ActionState: A data source to track states of arbitrary async function calls
 
 Together with some simple data hooks:
 
 -   useDataHook: The react hook that makes an element rerender when data changes, and tracks whether the data source is still loading, or errored while loading
 -   getAsync: A function to convert a `IDataRetriever` into a promise that resolves when all data finished loading
+-   isLoading: A function to extract the loading state out of a `IDataRetriever`
+-   getExceptions: A function to extract the exceptions out of a `IDataRetriever`
 
 And some additional tools:
 
 -   Loader: A react component that uses a render prop to pass the data hook, and renders alternative elements while your data is loading
 -   LoaderSwitch: A react component that allows you to pass data of your data hook to render alternative elements while your data is loading
+-   useActionState: A react hook to easily track the state of arbitrary async function calls, such that a `Loader` or `LoaderSwitch` can be used to show the state.
 
 ## Examples
 
@@ -241,11 +247,11 @@ import {Field, useDataHook} from "model-react";
 
 // Pass a field as a prop to the element, and use the data hook to stay synced with it
 const SomeInput = ({field}) => {
-    const [l] = useDataHook();
+    const [h] = useDataHook();
     return (
         <input
             type="text"
-            value={field.get(l)}
+            value={field.get(h)}
             onChange={e => field.set(e.target.value)}
         />
     );
@@ -253,8 +259,8 @@ const SomeInput = ({field}) => {
 
 // You can then have another element that uses the same field somewhere, and it will stay synced
 const SomeOutput = ({field}) => {
-    const [l] = useDataHook();
-    return <div>{field.get(l)}</div>;
+    const [h] = useDataHook();
+    return <div>{field.get(h)}</div>;
 };
 
 // Create a field anywhere, it may be part of an object, or be on its own
@@ -287,8 +293,8 @@ const delay = () => new Promise(res => setTimeout(res, 2000));
 
 // Pass a loadable data source to an element, and let the element check the state
 const SomeData = ({source}) => {
-    const [l, {isLoading, getExceptions}] = useDataHook();
-    const data = source.get(l);
+    const [h, {isLoading, getExceptions}] = useDataHook();
+    const data = source.get(h);
 
     // Check if the data is loading
     if (isLoading()) return <div>Loading</div>;
@@ -334,7 +340,7 @@ const delay = () => new Promise(res => setTimeout(res, 2000));
 
 // Pass a loadable data source to an element, and use a loader switch to handle the state
 const SomeData = ({source}) => {
-    const [l, c] = useDataHook();
+    const [h, c] = useDataHook();
 
     return (
         <div>
@@ -342,7 +348,7 @@ const SomeData = ({source}) => {
                 {...c} // Passes the state
                 onLoad={<div>Loading</div>}
                 onError={<div>Data failed to fetch</div>}>
-                {source.get(l)}
+                {source.get(h)}
             </LoaderSwitch>
             <button onClick={() => source.markDirty()}>reload</button>
         </div>
@@ -379,7 +385,7 @@ const delay = () => new Promise(res => setTimeout(res, 2000));
 const SomeData = ({source}) => (
     <div>
         <Loader onLoad={<div>Loading</div>} onError={<div>Data failed to fetch</div>}>
-            {l => source.get(l) // The data hook is created by the loader
+            {h => source.get(h) // The data hook is created by the loader
             }
         </Loader>
         <button onClick={() => source.markDirty()}>reload</button>
@@ -421,10 +427,10 @@ const SomeReload = ({source}) => (
 // since it must load the initial data from a loadable source
 const SomeInput = ({field}) => (
     <Loader onLoad="Loading">
-        {l => (
+        {h => (
             <input
                 type="text"
-                value={field.get(l)}
+                value={field.get(h)}
                 onChange={e => field.set(e.target.value)}
             />
         )}
@@ -432,7 +438,7 @@ const SomeInput = ({field}) => (
 );
 const SomeOutput = ({field}) => (
     <Loader onLoad="Loading" onError={e => `The following errors were thrown: ${e}`}>
-        {l => <span>{field.get(l)}</span>}
+        {h => <span>{field.get(h)}</span>}
     </Loader>
 );
 
@@ -444,7 +450,7 @@ export const loadableSource = new DataLoader(async () => {
 }, "test");
 
 // Create a loadable field that synchronizes with the data source
-const loadableField = new LoadableField(t => loadableSource.get(t));
+const loadableField = new LoadableField(h => loadableSource.get(h));
 
 // Render the elements
 render(
@@ -459,8 +465,8 @@ render(
 
 </details>
 
-<details><summary>Combining data (transformers)</summary>
-We can easily combine data of different data sources in this system, everything will behave as if it's only a single source.
+<details><summary>Combining/transforming data</summary>
+We can easily combine and 'post process' (transform) data of different data sources in this system, everything will behave as if it's only a regular source.
 
 ```jsx
 import React from "react";
@@ -468,18 +474,18 @@ import {render} from "react-dom";
 import {Field, useDataHook} from "model-react";
 
 const SomeInput = ({field}) => {
-    const [l] = useDataHook();
+    const [h] = useDataHook();
     return (
         <input
             type="text"
-            value={field.get(l)}
+            value={field.get(h)}
             onChange={e => field.set(e.target.value)}
         />
     );
 };
 const SomeOutput = ({dataRetriever}) => {
-    const [l] = useDataHook();
-    return <div>{dataRetriever(l)}</div>;
+    const [h] = useDataHook();
+    return <div>{dataRetriever(h)}</div>;
 };
 
 // Create multiple fields
@@ -487,7 +493,7 @@ const field1 = new Field("hoi");
 const field2 = new Field("bye");
 
 // Create a 'transformer' that combines or transforms source data
-const transformer = l => `${field1.get(l)} - ${field2.get(l)}`;
+const transformer = h => `${field1.get(h)} - ${field2.get(h)}`;
 
 // Render some 'app' element that shows the two fields and combined output
 render(
@@ -507,7 +513,7 @@ Transformers might be heavy to compute (in case the transformation itself is com
 
 This example also shows how a refreshTimestamp can be passed to a Loader (can also be passed to hooks and getAsync) to force reload data of a source.
 
-```tsx
+```jsx
 import React, {useState} from "react";
 import {render} from "react-dom";
 import {Field, DataCacher, DataLoader, useDataHook, Loader} from "model-react";
@@ -520,11 +526,11 @@ const delay = () => new Promise(res => setTimeout(res, 2000));
 
 // Create some standard components
 const SomeInput = ({field}) => {
-    const [l] = useDataHook();
+    const [h] = useDataHook();
     return (
         <input
             type="text"
-            value={field.get(l)}
+            value={field.get(h)}
             onChange={e => field.set(e.target.value)}
         />
     );
@@ -556,8 +562,8 @@ const loadable = new DataLoader(async () => {
 }, 0);
 
 // Create a tranformer and DataCacher that caches the transformer
-const transformer = l =>
-    `${field1.get(l)} - ${field2.get(l)} - ${loadable.get(l)} - ${random()}`;
+const transformer = h =>
+    `${field1.get(h)} - ${field2.get(h)} - ${loadable.get(h)} - ${random()}`;
 const cachedTransformer = new DataCacher(transformer);
 
 // Create a component that might do meaningless rerenders
@@ -565,17 +571,17 @@ const cachedTransformer = new DataCacher(transformer);
 const Comp = () => {
     const [randomVal, setRandomVal] = useState(0);
     return (
-        <div>
+        <>
             <SomeInput field={field1} />
             <SomeInput field={field2} /> <br />
             Not cached:
             <SomeOutput dataRetriever={transformer} />
             Cached:
-            <SomeOutput dataRetriever={l => cachedTransformer.get(l)} />
+            <SomeOutput dataRetriever={h => cachedTransformer.get(h)} />
             <br />
             something to make meaningless updates:
             {randomVal} <button onClick={() => setRandomVal(random())}>Rerender</button>
-        </div>
+        </>
     );
 };
 
@@ -585,7 +591,7 @@ render(<Comp />, document.body);
 
 </details>
 
-<details><summary>Async</summary>
+<details><summary>getAsync</summary>
 This whole system is nice when you want to render your data, but it sucks when you just want to get some data when it's finished loading like you would with promises. As a solution the library provides a function to convert a data source get to a normal asynchronous fetch.
 
 ```js
@@ -605,7 +611,7 @@ export const loadableSource = new DataLoader(async () => {
 }, "test");
 
 // Convert a get to a promise fetch:
-getAsync(l => loadableSource.get(l))
+getAsync(h => loadableSource.get(h))
     .then(result => console.log(result))
     .catch(error => console.error(error));
 ```
@@ -632,18 +638,201 @@ export const loadableSource = new DataLoader(async () => {
 }, "test");
 
 // Create a transformer to have multiple sources: (or the same one multiple times)
-const getSomeData = l => `${loadableSource.get(l)} - ${loadableSource.get(l)}`;
+const getSomeData = h => `${loadableSource.get(h)} - ${loadableSource.get(h)}`;
 
 // Convert a get to a promise fetch:
-getAsync(l => getSomeData(l))
+getAsync(h => getSomeData(h))
     .then(result => console.log(result))
     .catch(error => console.error(error));
 
 // Render as element
 render(
     <Loader onLoad="Loading" onError={e => `The following errors were thrown: ${e}`}>
-        {l => getSomeData(l)}
+        {h => getSomeData(h)}
     </Loader>,
+    document.body
+);
+```
+
+</details>
+
+<details><summary>get meta state</summary>
+Data sources have a meta state that stores whether data is currently loading and whether exceptions occurred during loading. Sometimes you want to access said state from previous load requests in a synchronous way, which is what the isLoading and getExceptions hooks exist for. These don't instruct data sources to load any new data, but just check the state from data that might have been previously loaded.
+
+```jsx
+import {render} from "react-dom";
+import React from "react";
+import {DataLoader, getAsync, getExceptions, isLoading} from "model-react";
+
+// A delay function to fake some delay that would occur
+const delay = () => new Promise(res => setTimeout(res, 4000));
+
+// Create a data source
+export const loadableSource = new DataLoader(async () => {
+    // Simply returns random data after some delay, would more realistically be an async data fetch
+    await delay();
+    throw "Fake error";
+}, "test");
+
+// Create a function to force load the data
+const loadData = () => {
+    getAsync(h => loadableSource.get(h))
+        .then(result => console.log(result))
+        .catch(error => console.error(error));
+};
+
+// Create demo that gets the exceptions and loading state without forcing load
+const getExceptionsDemo = () => console.log(getExceptions(h => loadableSource.get(h)));
+const isLoadingDemo = () => console.log(isLoading(h => loadableSource.get(h)));
+
+// Render as buttons to properly demo
+render(
+    <div>
+        <button children="getExceptions" onClick={getExceptionsDemo} />
+        <button children="isLoading" onClick={isLoadingDemo} />
+        <button children="load data" onClick={loadData} />
+    </div>,
+    document.body
+);
+```
+
+</details>
+
+<details><summary>ActionState</summary>
+Action State is an advanced data source that can be used to convert the state of a promise into a meta state compatible with model-react. You can add a promise or so called 'action'/'action response' to the data source, at which point any passed hook will receive whether the promise is still loading, and any exceptions it might have thrown. This is useful for hooking into the state of asynchronous actions that aren't intended to just fetch data, but intended to change data.
+
+```jsx
+import {render} from "react-dom";
+import React from "react";
+import {useDataHook, ActionState, LoaderSwitch, isLoading} from "model-react";
+
+// A delay function to fake some delay that would occur
+const delay = () => new Promise(res => setTimeout(res, 2000));
+
+// Action state sources only really make sense in combination with some async action functions
+class Something {
+    /**
+     * Checks whether the data is saving
+     * @param hook The hook to add the loading state to
+     * @returns Whether we are currently saving data
+     */
+    isSaving(hook) {
+        this.saving = new ActionState();
+        this.saving.get(hook);
+        return isLoading(h => this.saving.get(h));
+    }
+
+    /**
+     * Performs fake save
+     * @param withError Whether the fake save should mock an error
+     */
+    async save(withError = false) {
+        return await this.saving.addAction(async () => {
+            // Something async in here
+            await delay();
+            if (withError) throw "Error";
+            console.log("Saved");
+        }, true); // the true resets previous actions
+    }
+}
+const smthInstance = new Something();
+
+// Create some element that may use the state
+const SaveButton = ({smth, error = false, children}) => {
+    const [h, c] = useDataHook();
+    smth.isSaving(h); // Pass the saving data to the hook
+    return (
+        <button
+            onClick={() => {
+                if (!c.isLoading()) smth.save(error);
+            }}>
+            <LoaderSwitch {...c} onLoad={"Saving"} onError={err => `Errored: ${err}`}>
+                {children}
+            </LoaderSwitch>
+        </button>
+    );
+};
+
+// Render some element that shows two of these save buttons, one of which causes an error
+render(
+    <div>
+        <SaveButton smth={smthInstance}>Save</SaveButton>
+        <br />
+        <SaveButton smth={smthInstance} error>
+            Save with error
+        </SaveButton>
+    </div>,
+    document.body
+);
+```
+
+</details>
+
+<details><summary>useActionState</summary>
+useActionState is a react hook to create a new ActionState instance, to convert any arbitrary asynchronous action to a data source. It's beneficial to create an ActionState within the data model if possible, since it keeps the state synchronized, but this hook can still be useful for external actions.
+
+```tsx
+import {render} from "react-dom";
+import React from "react";
+import {useDataHook, useActionState, LoaderSwitch, Loader} from "model-react";
+
+// A delay function to fake some delay that would occur
+const delay = () => new Promise(res => setTimeout(res, 2000));
+
+// A fake async action
+const doSomething = async error => {
+    await delay();
+    if (error) throw "Error";
+    return Math.random();
+};
+
+// Create some component that uses doSomething
+const Something = ({error}) => {
+    const [h, c] = useDataHook();
+    const [addAction, reset, result] = useActionState(h);
+    return (
+        <LoaderSwitch
+            {...c}
+            onLoad={"Loading"}
+            onError={err => (
+                <>
+                    Errored: {err} <button onClick={reset}>reset</button>
+                </>
+            )}>
+            <button onClick={() => addAction(doSomething(error))}>
+                perform action {error && " with error"}
+            </button>
+            The result is: {result}
+        </LoaderSwitch>
+    );
+};
+
+// Another component that uses doSomething, but inline
+const SomethingInline = () => (
+    <Loader onLoad={"Loading"} onError={err => `Errored: ${err}`}>
+        {h => {
+            const [addAction, reset, result] = useActionState(h);
+            return (
+                <div>
+                    <button onClick={() => addAction(doSomething())}>
+                        perform action
+                    </button>
+                    The result is: {result}
+                </div>
+            );
+        }}
+    </Loader>
+);
+
+// Multiple elements to show that data is not synchronized (ActionState in class form can be used for this)
+render(
+    <div>
+        <Something />
+        <br />
+        <Something error />
+        <br />
+        <SomethingInline />
+    </div>,
     document.body
 );
 ```
@@ -657,17 +846,17 @@ The examples described below can be directly tested on [codesandbox](https://cod
 <details><summary>Field</summary>
 
 ```tsx
-import React, {FC} from "react";
 import {render} from "react-dom";
+import React, {FC} from "react";
 import {Field, useDataHook} from "model-react";
 
 // Pass a field as a prop to the element, and use the data hook to stay synced with it
 const SomeInput: FC<{field: Field<string>}> = ({field}) => {
-    const [l] = useDataHook();
+    const [h] = useDataHook();
     return (
         <input
             type="text"
-            value={field.get(l)}
+            value={field.get(h)}
             onChange={e => field.set(e.target.value)}
         />
     );
@@ -675,8 +864,8 @@ const SomeInput: FC<{field: Field<string>}> = ({field}) => {
 
 // You can then have another element that uses the same field somewhere, and it will stay synced
 const SomeOutput: FC<{field: Field<string>}> = ({field}) => {
-    const [l] = useDataHook();
-    return <div>{field.get(l)}</div>;
+    const [h] = useDataHook();
+    return <div>{field.get(h)}</div>;
 };
 
 // Create a field anywhere, it may be part of an object, or be on its own
@@ -697,8 +886,8 @@ render(
 <details><summary>DataLoader</summary>
 
 ```tsx
-import React, {FC} from "react";
 import {render} from "react-dom";
+import React, {FC} from "react";
 import {DataLoader, useDataHook} from "model-react";
 
 // A random function to generate a short random number
@@ -709,8 +898,8 @@ const delay = () => new Promise<void>(res => setTimeout(res, 2000));
 
 // Pass a loadable data source to an element, and let the element check the state
 const SomeData: FC<{source: DataLoader<number>}> = ({source}) => {
-    const [l, {isLoading, getExceptions}] = useDataHook();
-    const data = source.get(l);
+    const [h, {isLoading, getExceptions}] = useDataHook();
+    const data = source.get(h);
 
     // Check if the data is loading
     if (isLoading()) return <div>Loading</div>;
@@ -744,8 +933,8 @@ render(<SomeData source={source} />, document.body);
 The loader switch can be used to cleanly deal with the state of a loadable source
 
 ```tsx
-import React, {FC} from "react";
 import {render} from "react-dom";
+import React, {FC} from "react";
 import {DataLoader, LoaderSwitch, useDataHook} from "model-react";
 
 // A random function to generate a short random number
@@ -756,14 +945,14 @@ const delay = () => new Promise<void>(res => setTimeout(res, 2000));
 
 // Pass a loadable data source to an element, and use a loader switch to handle the state
 const SomeData: FC<{source: DataLoader<number>}> = ({source}) => {
-    const [l, c] = useDataHook();
+    const [h, c] = useDataHook();
     return (
         <div>
             <LoaderSwitch
                 {...c} // Passes the state
                 onLoad={<div>Loading</div>}
                 onError={<div>Data failed to fetch</div>}>
-                {source.get(l)}
+                {source.get(h)}
             </LoaderSwitch>
             <button onClick={() => source.markDirty()}>reload</button>
         </div>
@@ -786,8 +975,8 @@ render(<SomeData source={source} />, document.body);
 The loader is almost the same as the loader switch, except that it will 'host' the listener
 
 ```tsx
-import React, {FC} from "react";
 import {render} from "react-dom";
+import React, {FC} from "react";
 import {DataLoader, Loader} from "model-react";
 
 // A random function to generate a short random number
@@ -800,7 +989,7 @@ const delay = () => new Promise<void>(res => setTimeout(res, 2000));
 const SomeData: FC<{source: DataLoader<number>}> = ({source}) => (
     <div>
         <Loader onLoad={<div>Loading</div>} onError={<div>Data failed to fetch</div>}>
-            {l => source.get(l) // The data hook is created by the loader
+            {h => source.get(h) // The data hook is created by the loader
             }
         </Loader>
         <button onClick={() => source.markDirty()}>reload</button>
@@ -823,8 +1012,8 @@ render(<SomeData source={source} />, document.body);
 The loadable field acts like the default field, except that it will update data according to another source, which takes precedence over the local value
 
 ```tsx
-import React, {FC} from "react";
 import {render} from "react-dom";
+import React, {FC} from "react";
 import {DataLoader, LoadableField, Loader} from "model-react";
 
 // A random function to generate a short random number
@@ -842,10 +1031,10 @@ const SomeReload: FC<{source: DataLoader<string>}> = ({source}) => (
 // since it must load the initial data from a loadable source
 const SomeInput: FC<{field: LoadableField<string>}> = ({field}) => (
     <Loader onLoad="Loading">
-        {l => (
+        {h => (
             <input
                 type="text"
-                value={field.get(l)}
+                value={field.get(h)}
                 onChange={e => field.set(e.target.value)}
             />
         )}
@@ -853,7 +1042,7 @@ const SomeInput: FC<{field: LoadableField<string>}> = ({field}) => (
 );
 const SomeOutput: FC<{field: LoadableField<string>}> = ({field}) => (
     <Loader onLoad="Loading" onError={e => `The following errors were thrown: ${e}`}>
-        {l => <span>{field.get(l)}</span>}
+        {h => <span>{field.get(h)}</span>}
     </Loader>
 );
 
@@ -865,7 +1054,7 @@ export const loadableSource = new DataLoader(async () => {
 }, "test");
 
 // Create a loadable field that synchronizes with the data source
-const loadableField = new LoadableField(t => loadableSource.get(t));
+const loadableField = new LoadableField(h => loadableSource.get(h));
 
 // Render the elements
 render(
@@ -880,27 +1069,27 @@ render(
 
 </details>
 
-<details><summary>Combining data (transformers)</summary>
-We can easily combine data of different data sources in this system, everything will behave as if it's only a single source.
+<details><summary>Combining/transforming data</summary>
+We can easily combine and 'post process' (transform) data of different data sources in this system, everything will behave as if it's only a regular source.
 
 ```tsx
-import React, {FC} from "react";
 import {render} from "react-dom";
+import React, {FC} from "react";
 import {Field, useDataHook, IDataRetriever} from "model-react";
 
 const SomeInput: FC<{field: Field<string>}> = ({field}) => {
-    const [l] = useDataHook();
+    const [h] = useDataHook();
     return (
         <input
             type="text"
-            value={field.get(l)}
+            value={field.get(h)}
             onChange={e => field.set(e.target.value)}
         />
     );
 };
 const SomeOutput: FC<{dataRetriever: IDataRetriever<string>}> = ({dataRetriever}) => {
-    const [l] = useDataHook();
-    return <div>{dataRetriever(l)}</div>;
+    const [h] = useDataHook();
+    return <div>{dataRetriever(h)}</div>;
 };
 
 // Create multiple fields
@@ -908,7 +1097,7 @@ const field1 = new Field("hoi");
 const field2 = new Field("bye");
 
 // Create a 'transformer' that combines or transforms source data
-const transformer: IDataRetriever<string> = l => `${field1.get(l)} - ${field2.get(l)}`;
+const transformer: IDataRetriever<string> = h => `${field1.get(h)} - ${field2.get(h)}`;
 
 // Render some 'app' element that shows the two fields and combined output
 render(
@@ -929,8 +1118,8 @@ Transformers might be heavy to compute (in case the transformation itself is com
 This example also shows how a refreshTimestamp can be passed to a Loader (can also be passed to hooks and getAsync) to force reload data of a source.
 
 ```tsx
-import React, {FC, useState} from "react";
 import {render} from "react-dom";
+import React, {FC, useState} from "react";
 import {
     Field,
     DataCacher,
@@ -944,15 +1133,15 @@ import {
 const random = () => Math.floor(Math.random() * 1e3) / 1e3;
 
 // A delay function to fake some delay that would occur
-const delay = () => new Promise(res => setTimeout(res, 2000));
+const delay = () => new Promise<void>(res => setTimeout(res, 2000));
 
 // Create some standard components
 const SomeInput: FC<{field: Field<string>}> = ({field}) => {
-    const [l] = useDataHook();
+    const [h] = useDataHook();
     return (
         <input
             type="text"
-            value={field.get(l)}
+            value={field.get(h)}
             onChange={e => field.set(e.target.value)}
         />
     );
@@ -965,9 +1154,9 @@ const SomeOutput: FC<{dataRetriever: IDataRetriever<string>}> = ({dataRetriever}
             forceRefreshTime={refreshTime}
             onLoad={<div>Loading</div>}
             onError={<div>Data failed to fetch</div>}>
-            {l => (
+            {h => (
                 <div>
-                    {dataRetriever(l)}
+                    {dataRetriever(h)}
                     <button onClick={() => setRefreshTime(Date.now())}>Reload</button>
                 </div>
             )}
@@ -984,8 +1173,8 @@ const loadable = new DataLoader(async () => {
 }, 0);
 
 // Create a tranformer and DataCacher that caches the transformer
-const transformer: IDataRetriever<string> = l =>
-    `${field1.get(l)} - ${field2.get(l)} - ${loadable.get(l)} - ${random()}`;
+const transformer: IDataRetriever<string> = h =>
+    `${field1.get(h)} - ${field2.get(h)} - ${loadable.get(h)} - ${random()}`;
 const cachedTransformer = new DataCacher(transformer);
 
 // Create a component that might do meaningless rerenders
@@ -999,7 +1188,7 @@ const Comp: FC = () => {
             Not cached:
             <SomeOutput dataRetriever={transformer} />
             Cached:
-            <SomeOutput dataRetriever={l => cachedTransformer.get(l)} />
+            <SomeOutput dataRetriever={h => cachedTransformer.get(h)} />
             <br />
             something to make meaningless updates:
             {randomVal} <button onClick={() => setRandomVal(random())}>Rerender</button>
@@ -1013,7 +1202,7 @@ render(<Comp />, document.body);
 
 </details>
 
-<details><summary>Async</summary>
+<details><summary>getAsync</summary>
 This whole system is nice when you want to render your data, but it sucks when you just want to get some data when it's finished loading like you would with promises. As a solution the library provides a function to convert a data source get to a normal asynchronous fetch.
 
 ```ts
@@ -1023,7 +1212,7 @@ import {DataLoader, getAsync} from "model-react";
 const random = () => Math.floor(Math.random() * 1e3) / 1e3;
 
 // A delay function to fake some delay that would occur
-const delay = () => new Promise(res => setTimeout(res, 2000));
+const delay = () => new Promise<void>(res => setTimeout(res, 2000));
 
 // Create a data source
 export const loadableSource = new DataLoader(async () => {
@@ -1033,7 +1222,7 @@ export const loadableSource = new DataLoader(async () => {
 }, "test");
 
 // Convert a get to a promise fetch:
-getAsync(l => loadableSource.get(l))
+getAsync(h => loadableSource.get(h))
     .then(result => console.log(result))
     .catch(error => console.error(error));
 ```
@@ -1045,34 +1234,226 @@ Data loaders may throw errors, which are handled by the data hooks like you woul
 The interesting behavior is that the hooks 'collect' multiple exceptions. So the `.catch` on the promise will receive an array of exceptions too. This is done because a single data retriever may have multiple exceptions, if it consists of multiple data sources.
 
 ```tsx
-import React from "react";
 import {render} from "react-dom";
+import React from "react";
 import {DataLoader, getAsync, Loader, IDataRetriever} from "model-react";
 
 // A delay function to fake some delay that would occur
-const delay = () => new Promise(res => setTimeout(res, 2000));
+const delay = () => new Promise<void>(res => setTimeout(res, 2000));
 
 // Create a data source
 export const loadableSource = new DataLoader(async () => {
-    // Simply throws an error after some delay, would more realistically be an async data fetch
+    // Simply returns random data after some delay, would more realistically be an async data fetch
     await delay();
-    throw "error1! ";
+    throw "error! ";
 }, "test");
 
 // Create a transformer to have multiple sources: (or the same one multiple times)
-const getSomeData: IDataRetriever<string> = l =>
-    `${loadableSource.get(l)} - ${loadableSource.get(l)}`;
+const getSomeData: IDataRetriever<string> = h =>
+    `${loadableSource.get(h)} - ${loadableSource.get(h)}`;
 
 // Convert a get to a promise fetch:
-getAsync(l => getSomeData(l))
-    .then(result => console.log(result))
-    .catch(error => console.error(error));
+const demo = () =>
+    getAsync(h => getSomeData(h))
+        .then(result => console.log(result))
+        .catch(error => console.error(error));
 
 // Render as element
 render(
-    <Loader onLoad="Loading" onError={e => `The following errors were thrown: ${e}`}>
-        {l => getSomeData(l)}
-    </Loader>,
+    <div>
+        <Loader onLoad="Loading" onError={e => `The following errors were thrown: ${e}`}>
+            {h => getSomeData(h)}
+        </Loader>
+        <br />
+        <button children="demo" onClick={demo} />
+    </div>,
+    document.body
+);
+```
+
+</details>
+
+<details><summary>get meta state</summary>
+Data sources have a meta state that stores whether data is currently loading and whether exceptions occurred during loading. Sometimes you want to access said state from previous load requests in a synchronous way, which is what the isLoading and getExceptions hooks exist for. These don't instruct data sources to load any new data, but just check the state from data that might have been previously loaded.
+
+```tsx
+import {render} from "react-dom";
+import React from "react";
+import {DataLoader, getAsync, getExceptions, isLoading} from "model-react";
+
+// A delay function to fake some delay that would occur
+const delay = () => new Promise<void>(res => setTimeout(res, 4000));
+
+// Create a data source
+export const loadableSource = new DataLoader(async () => {
+    // Simply returns random data after some delay, would more realistically be an async data fetch
+    await delay();
+    throw "Fake error";
+}, "test");
+
+// Create a function to force load the data
+const loadData = () => {
+    getAsync(h => loadableSource.get(h))
+        .then(result => console.log(result))
+        .catch(error => console.error(error));
+};
+
+// Create demo that gets the exceptions and loading state without forcing load
+const getExceptionsDemo = () => console.log(getExceptions(h => loadableSource.get(h)));
+const isLoadingDemo = () => console.log(isLoading(h => loadableSource.get(h)));
+
+// Render as buttons to properly demo
+render(
+    <div>
+        <button children="getExceptions" onClick={getExceptionsDemo} />
+        <button children="isLoading" onClick={isLoadingDemo} />
+        <button children="load data" onClick={loadData} />
+    </div>,
+    document.body
+);
+```
+
+</details>
+
+<details><summary>ActionState</summary>
+Action State is an advanced data source that can be used to convert the state of a promise into a meta state compatible with model-react. You can add a promise or so called 'action'/'action response' to the data source, at which point any passed hook will receive whether the promise is still loading, and any exceptions it might have thrown. This is useful for hooking into the state of asynchronous actions that aren't intended to just fetch data, but intended to change data.
+
+```tsx
+import {render} from "react-dom";
+import React, {FC, ReactNode} from "react";
+import {useDataHook, ActionState, IDataHook, LoaderSwitch, isLoading} from "model-react";
+
+// A delay function to fake some delay that would occur
+const delay = () => new Promise<void>(res => setTimeout(res, 2000));
+
+// Action state sources only really make sense in combination with some async action functions
+class Something {
+    protected saving = new ActionState<void>();
+    /**
+     * Checks whether the data is saving
+     * @param hook The hook to add the loading state to
+     * @returns Whether we are currently saving data
+     */
+    public isSaving(hook: IDataHook): boolean {
+        this.saving.get(hook);
+        return isLoading(h => this.saving.get(h));
+    }
+
+    /**
+     * Performs fake save
+     * @param withError Whether the fake save should mock an error
+     */
+    public async save(withError: boolean = false): Promise<void> {
+        return await this.saving.addAction(async () => {
+            // Something async in here
+            await delay();
+            if (withError) throw "Error";
+            console.log("Saved");
+        }, true); // the true resets previous actions
+    }
+}
+const smthInstance = new Something();
+
+// Create some element that may use the state
+const SaveButton: FC<{smth: Something; error?: boolean; children: ReactNode}> = ({
+    smth,
+    error = false,
+    children,
+}) => {
+    const [h, c] = useDataHook();
+    smth.isSaving(h); // Pass the saving data to the hook
+    return (
+        <button
+            onClick={() => {
+                if (!c.isLoading()) smth.save(error);
+            }}>
+            <LoaderSwitch {...c} onLoad={"Saving"} onError={err => `Errored: ${err}`}>
+                {children}
+            </LoaderSwitch>
+        </button>
+    );
+};
+
+// Render some element that shows two of these save buttons, one of which causes an error
+render(
+    <div>
+        <SaveButton smth={smthInstance}>Save</SaveButton>
+        <br />
+        <SaveButton smth={smthInstance} error>
+            Save with error
+        </SaveButton>
+    </div>,
+    document.body
+);
+```
+
+</details>
+
+<details><summary>useActionState</summary>
+useActionState is a react hook to create a new ActionState instance, to convert any arbitrary asynchronous action to a data source. It's beneficial to create an ActionState within the data model if possible, since it keeps the state synchronized, but this hook can still be useful for external actions.
+
+```tsx
+import {render} from "react-dom";
+import React, {FC} from "react";
+import {useDataHook, useActionState, LoaderSwitch, Loader} from "model-react";
+
+// A delay function to fake some delay that would occur
+const delay = () => new Promise<void>(res => setTimeout(res, 2000));
+
+// A fake async action
+const doSomething = async (error?: boolean) => {
+    await delay();
+    if (error) throw "Error";
+    return Math.random();
+};
+
+// Create some component that uses doSomething
+const Something: FC<{error?: boolean}> = ({error}) => {
+    const [h, c] = useDataHook();
+    const [addAction, reset, result] = useActionState<number>(h);
+    return (
+        <LoaderSwitch
+            {...c}
+            onLoad={"Loading"}
+            onError={err => (
+                <>
+                    Errored: {err} <button onClick={reset}>reset</button>
+                </>
+            )}>
+            <button onClick={() => addAction(doSomething(error))}>
+                perform action {error && " with error"}
+            </button>
+            The result is: {result}
+        </LoaderSwitch>
+    );
+};
+
+// Another component that uses doSomething, but inline
+const SomethingInline: FC = () => (
+    <Loader onLoad={"Loading"} onError={err => `Errored: ${err}`}>
+        {h => {
+            const [addAction, reset, result] = useActionState<number>(h);
+            return (
+                <div>
+                    <button onClick={() => addAction(doSomething())}>
+                        perform action
+                    </button>
+                    The result is: {result}
+                </div>
+            );
+        }}
+    </Loader>
+);
+
+// Multiple elements to show that data is not synchronized (ActionState in class form can be used for this)
+render(
+    <div>
+        <Something />
+        <br />
+        <Something error />
+        <br />
+        <SomethingInline />
+    </div>,
     document.body
 );
 ```
@@ -1515,6 +1896,22 @@ within the main directory, examples and demo run:
 ```
 yarn install
 ```
+
+In addition, if trying to run the examples with the local model-react instance, replace:
+
+```
+"model-react": "^3.0.0",
+"react": "^16.8.6",
+```
+
+by
+
+```
+"model-react": "link:../..",
+"react": "link:../../node_modules/react",
+```
+
+in the example's package.json before calling yarn install
 
 ## Environment usage
 
