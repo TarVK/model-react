@@ -23,8 +23,8 @@
     },
     "homepage": "https://github.com/TarVK/model-react#readme",
     "dependencies": {
-        "model-react": "link:../..",
-        "react": "link:../node_modules/react",
+        "model-react": "^3.0.0",
+        "react": "^16.12.0",
         "react-dom": "^16.12.0",
         "react-router-dom": "5.1.2"
     },
