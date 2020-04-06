@@ -9,7 +9,7 @@ There are two main situations when usage of this module could be considered:
 -   If the data has complex behavior, possibly separate of any GUI
 
 This module has full TypeScript support, and will work well in a statically typed structured project.
-A demo project written in TypeScript can be found in the demo folder, and shows off several useful constructs in models. The result can be [viewed in browser here](http://tarvk.github.io/model-react/demo/build) but is rather silly. Also note that this demo wasn't made mobile friendly, and generally little time was spent on the looks. This demo was made for the first version of this library and still has to be updated to show all the features of the second version.
+A demo project written in TypeScript can be found in the demo folder, and shows off several useful constructs in models. The result can be [viewed in browser here](http://tarvk.github.io/model-react/demo/build) but is rather silly. Also note that this demo wasn't made to be mobile friendly, and generally little time was spent on the looks. This demo was made for the first version of this library and still has to be updated to show all the features of the latest version.
 Example uses of all components of model-react can be found in the examples folder, or viewed below in the rest of the readme.
 
 # Installation
@@ -22,7 +22,7 @@ npm install model-react --save
 
 ## JavaScript
 
-The example described below can be directly tested on [codesandbox](https://codesandbox.io/s/model-react-v2-quickstart-javascript-4gp3y?fontsize=14&hidenavigation=1&module=%2Fsrc%2FquickStart.js&theme=dark).
+The example described below can be directly tested on [codesandbox](https://codesandbox.io/s/github/TarVK/model-react/tree/master/examples/JS?file=/src/index.jsx).
 
 ```jsx
 import {Field, useDataHook} from "model-react";
@@ -87,7 +87,7 @@ ReactDOM.render(
 
 ## TypeScript
 
-The example described below can be directly tested on [codesandbox](https://codesandbox.io/s/model-react-v2-quickstart-typescript-e7v86?fontsize=14&hidenavigation=1&module=%2Fsrc%2FquickStart.tsx&theme=dark).
+The example described below can be directly tested on [codesandbox](https://codesandbox.io/s/github/TarVK/model-react/tree/master/examples/TS?file=/src/index.tsx).
 
 <details><summary>Code</summary>
 
@@ -236,7 +236,7 @@ And some additional tools:
 
 ### JavaScript
 
-The examples described below can be directly tested on [codesandbox](https://codesandbox.io/s/model-react-v2-quickstart-javascript-4gp3y?fontsize=14&hidenavigation=1&module=%2Fsrc%2FquickStart.js&theme=dark).
+The examples described below can be directly tested on [codesandbox](https://codesandbox.io/s/github/TarVK/model-react/tree/master/examples/JS?file=/src/index.jsx).
 
 <details><summary>Field</summary>
 
@@ -841,7 +841,7 @@ render(
 
 ### TypeScript
 
-The examples described below can be directly tested on [codesandbox](https://codesandbox.io/s/model-react-v2-quickstart-typescript-e7v86?fontsize=14&hidenavigation=1&module=%2Fsrc%2FquickStart.tsx&theme=dark).
+The examples described below can be directly tested on [codesandbox](https://codesandbox.io/s/github/TarVK/model-react/tree/master/examples/TS?file=/src/index.tsx).
 
 <details><summary>Field</summary>
 

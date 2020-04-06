@@ -18,7 +18,7 @@ var IDataLoadRequest_1 = require("../_types/IDataLoadRequest");
 var ActionState = /** @class */ (function (_super) {
     __extends(ActionState, _super);
     /**
-     * Creates a new action state instance, used to track the state of async actions/function calls
+     * Creates a new action state, used to track the state of async actions/function calls
      */
     function ActionState() {
         var _this = _super.call(this) || this;

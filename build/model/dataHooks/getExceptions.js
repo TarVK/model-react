@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Retrieves the exceptions that were thrown by the data getter
  * @param getter The getter to get the loading state from
- * @returns The exceptions that were thrown by the loader
+ * @returns The exceptions that were thrown by the getter
  */
 exports.getExceptions = function (getter) {
     // Track the exceptions

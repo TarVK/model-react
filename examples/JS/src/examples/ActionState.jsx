@@ -7,12 +7,18 @@ const delay = () => new Promise(res => setTimeout(res, 2000));
 // Action state sources only really make sense in combination with some async action functions
 class Something {
     /**
+     * Creates a new Something instance
+     */
+    constructor() {
+        this.saving = new ActionState();
+    }
+
+    /**
      * Checks whether the data is saving
      * @param hook The hook to add the loading state to
      * @returns Whether we are currently saving data
      */
     isSaving(hook) {
-        this.saving = new ActionState();
         this.saving.get(hook);
         return isLoading(h => this.saving.get(h));
     }
