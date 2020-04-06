@@ -1,7 +1,7 @@
 {
-    "name": "model-react-v2-quickstart-typescript",
+    "name": "model-react-v3-quickstart-javascript",
     "version": "0.0.1",
-    "description": "A typescript quickstart demo for model-react V2",
+    "description": "A javascript quickstart demo for model-react V2",
     "private": true,
     "scripts": {
         "start": "webpack-dev-server --env dev",
