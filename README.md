@@ -22,7 +22,7 @@ npm install model-react --save
 
 ## JavaScript
 
-The example described below can be directly tested on [codesandbox](https://codesandbox.io/s/github/TarVK/model-react/tree/master/examples/JS?file=/src/index.jsx).
+The example described below can be directly tested on [codesandbox](https://codesandbox.io/s/github/TarVK/model-react/tree/master/examples/JS?file=/src/quickStart.jsx).
 
 ```jsx
 import {Field, useDataHook} from "model-react";
@@ -87,7 +87,7 @@ ReactDOM.render(
 
 ## TypeScript
 
-The example described below can be directly tested on [codesandbox](https://codesandbox.io/s/github/TarVK/model-react/tree/master/examples/TS?file=/src/index.tsx).
+The example described below can be directly tested on [codesandbox](https://codesandbox.io/s/github/TarVK/model-react/tree/master/examples/TS?file=/src/quickStart.jsx).
 
 <details><summary>Code</summary>
 
