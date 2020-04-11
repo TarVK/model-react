@@ -24,7 +24,7 @@ export const useDataHook = (
     const [, update] = useState();
 
     // A variable to track whether any retrieved data is refreshing, and exceptions
-    let isRefreshing: boolean;
+    let isRefreshing: boolean = false;
     let exceptions: any[] = [];
 
     // A list of functions to call to remove the passed listener as a dependency

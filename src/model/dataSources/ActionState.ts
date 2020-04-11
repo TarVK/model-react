@@ -40,7 +40,9 @@ export class ActionState<T = void> extends AbstractDataSource<T[]>
     public getLatest(hook: IDataHook): T | undefined {
         super.addListener(hook);
         this.forwardState(hook, true);
-        return this.actions.length && this.actions[this.actions.length - 1].result;
+        return this.actions.length !== 0
+            ? this.actions[this.actions.length - 1].result
+            : undefined;
     }
 
     /**
