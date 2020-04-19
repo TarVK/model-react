@@ -2,7 +2,7 @@
 
 Model-react provides a simple system to create a data model together with applicable actions for the data (methods), and easily use this data in react components.
 
-There are two main situations when usage of this module could be considered:
+There are three main situations when usage of this module could be considered:
 
 -   If you render the same data in multiple places and want to manage the data neatly
 -   If you have many data fetches that you want to handle in a clean manner
