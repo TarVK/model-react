@@ -76,7 +76,7 @@ const PersonProfile = ({person}) => {
 };
 
 const john = new Person("John", 1);
-ReactDOM.render(
+render(
     <div>
         <PersonEditor person={john} />
         <PersonProfile person={john} />
@@ -145,7 +145,7 @@ const PersonProfile: FC<{person: Person}> = ({person}) => {
 };
 
 const john = new Person("John", 1);
-ReactDOM.render(
+render(
     <div>
         <PersonEditor person={john} />
         <PersonProfile person={john} />
@@ -1861,7 +1861,7 @@ export function useActionState<T = void>(
  * @param latest Whether to only retrieve the last added action
  * @returns A function that promises can be wrapped with to track their state, a function to reset the state (mainly errors), and the last result
  */
-export function useActionState<T = void>(
+function useActionState<T = void>(
     hook: IDataHook,
     latest: true
 ): [
