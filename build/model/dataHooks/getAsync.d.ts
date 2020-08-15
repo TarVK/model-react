@@ -7,3 +7,4 @@ import { IDataListener } from "../_types/IDataListener";
  * @returns A promise with the result after all data sources finished loading/refreshing
  */
 export declare const getAsync: <T>(getter: (hook: IDataLoadRequest & IDataListener) => T, forceRefreshTime?: number) => Promise<T>;
+//# sourceMappingURL=getAsync.d.ts.map

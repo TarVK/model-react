@@ -5,6 +5,7 @@
         "rootDir": "./src/",
         "sourceMap": true,
         "declaration": true,
+        "declarationMap": true,
         "module": "commonjs",
         "target": "es5",
         "jsx": "react",

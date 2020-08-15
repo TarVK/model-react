@@ -5,3 +5,4 @@ import { IDataHook } from "./IDataHook";
  * @returns The value that's currently available
  */
 export declare type IDataRetriever<T> = (hook: IDataHook) => T;
+//# sourceMappingURL=IDataRetriever.d.ts.map

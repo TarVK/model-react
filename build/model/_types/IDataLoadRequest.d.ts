@@ -24,3 +24,4 @@ export declare type IDataLoadRequest = {
  * @returns Whether the data represents a data load request
  */
 export declare const isDataLoadRequest: (data: any) => data is IDataLoadRequest;
+//# sourceMappingURL=IDataLoadRequest.d.ts.map

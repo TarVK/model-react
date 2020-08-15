@@ -19,3 +19,4 @@ export declare abstract class AbstractDataSource<T> implements IDataSource<T> {
      */
     protected callListeners(): void;
 }
+//# sourceMappingURL=AbstractDataSource.d.ts.map

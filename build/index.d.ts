@@ -16,3 +16,4 @@ export * from "./model/dataSources/ActionState";
 export * from "./tools/Loader";
 export * from "./tools/LoaderSwitch";
 export * from "./tools/useActionState";
+//# sourceMappingURL=index.d.ts.map

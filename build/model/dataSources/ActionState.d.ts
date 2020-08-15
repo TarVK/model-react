@@ -42,3 +42,4 @@ export declare class ActionState<T = void> extends AbstractDataSource<T[]> imple
      */
     reset(): void;
 }
+//# sourceMappingURL=ActionState.d.ts.map

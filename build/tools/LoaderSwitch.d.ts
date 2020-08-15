@@ -10,3 +10,4 @@ export declare const LoaderSwitch: FC<{
     isLoading?: () => boolean;
     getExceptions?: () => any[];
 }>;
+//# sourceMappingURL=LoaderSwitch.d.ts.map

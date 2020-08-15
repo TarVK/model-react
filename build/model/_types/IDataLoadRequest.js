@@ -9,6 +9,6 @@ exports.isDataLoadRequest = function (data) {
     return data &&
         (data.refreshData !== undefined ||
             data.registerException instanceof Function ||
-            data.markShouldRefresh instanceof Function);
+            data.markIsLoading instanceof Function);
 };
 //# sourceMappingURL=IDataLoadRequest.js.map

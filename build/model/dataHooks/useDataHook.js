@@ -23,13 +23,17 @@ exports.useDataHook = function (forceRefreshTime) {
     // A fake state in order to fore an update
     var _a = react_1.useState(), update = _a[1];
     // A variable to track whether any retrieved data is refreshing, and exceptions
-    var isRefreshing;
+    var isRefreshing = false;
     var exceptions = [];
     // A list of functions to call to remove the passed listener as a dependency
     var dependencyRemovers = react_1.useRef([]);
     // Remove all dependencies when the element is removed or rerendered
-    dependencyRemovers.current.forEach(function (remove) { return remove(); });
-    react_1.useEffect(function () { return function () { return dependencyRemovers.current.forEach(function (remove) { return remove(); }); }; }, []);
+    var removeDependencies = function () {
+        dependencyRemovers.current.forEach(function (remove) { return remove(); });
+        dependencyRemovers.current = [];
+    };
+    react_1.useEffect(function () { return removeDependencies; }, []);
+    removeDependencies();
     return [
         __assign({ 
             // Data listener fields

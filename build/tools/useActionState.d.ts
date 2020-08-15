@@ -21,3 +21,4 @@ export declare function useActionState<T = void>(hook: IDataHook, latest: true):
 action: Promise<T> | (() => Promise<T>), 
 /** Whether to reset the state of previously added actions */
 reset?: boolean) => Promise<T>, () => void, T | undefined];
+//# sourceMappingURL=useActionState.d.ts.map

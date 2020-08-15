@@ -19,3 +19,4 @@ export declare class Field<T> extends AbstractDataSource<T> {
      */
     set(value: T): void;
 }
+//# sourceMappingURL=Field.d.ts.map

@@ -10,3 +10,4 @@ export declare const Loader: FC<{
     onError?: ReactNode | ((exceptions: any[]) => ReactNode);
     forceRefreshTime?: number;
 }>;
+//# sourceMappingURL=Loader.d.ts.map
