@@ -10,9 +10,9 @@ function useActionState(hook, latest) {
     // Read the state
     var result;
     if (latest)
-        result = actionState.current.get(hook);
-    else
         result = actionState.current.getLatest(hook);
+    else
+        result = actionState.current.get(hook);
     // Return functions to track the data
     return [
         /**

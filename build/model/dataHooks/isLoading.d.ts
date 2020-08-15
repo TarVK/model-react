@@ -4,3 +4,4 @@
  * @returns Whether the getter is loading
  */
 export declare const isLoading: (getter: (h: import("../_types/IDataHook").IStrictDataHook) => void) => boolean;
+//# sourceMappingURL=isLoading.d.ts.map

@@ -18,3 +18,4 @@ export declare type IDataListener = {
  * @returns Whether the data represents a listener
  */
 export declare const isDataListener: (data: any) => data is IDataListener;
+//# sourceMappingURL=IDataListener.d.ts.map

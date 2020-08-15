@@ -385,7 +385,8 @@ const delay = () => new Promise(res => setTimeout(res, 2000));
 const SomeData = ({source}) => (
     <div>
         <Loader onLoad={<div>Loading</div>} onError={<div>Data failed to fetch</div>}>
-            {h => source.get(h) // The data hook is created by the loader
+            {
+                h => source.get(h) // The data hook is created by the loader
             }
         </Loader>
         <button onClick={() => source.markDirty()}>reload</button>
@@ -989,7 +990,8 @@ const delay = () => new Promise<void>(res => setTimeout(res, 2000));
 const SomeData: FC<{source: DataLoader<number>}> = ({source}) => (
     <div>
         <Loader onLoad={<div>Loading</div>} onError={<div>Data failed to fetch</div>}>
-            {h => source.get(h) // The data hook is created by the loader
+            {
+                h => source.get(h) // The data hook is created by the loader
             }
         </Loader>
         <button onClick={() => source.markDirty()}>reload</button>
@@ -1886,8 +1888,12 @@ Since this system relies on updating observers, a large number of calls might be
 
 # Contributing
 
-Any contributions are welcome. The library is operational and no changes are planned. However, if any bugs are found, or someone wants to add features or examples, they are welcome to.
-In addition, I would like to add unit tests at some point, to ensure everything works as intended.
+Any contributions are welcome. The library is operational and no code changes are planned. However, if any bugs are found, or someone wants to add features or examples, they are welcome to.
+Some things that I do want to add at some point are:
+
+-   Unit tests, to ensure everything works as intended
+-   A nice webpage to advertise/introduce model-react
+-   Better formatted, interactive, examples/API
 
 ## Environment setup
 

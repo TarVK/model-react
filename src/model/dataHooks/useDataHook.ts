@@ -31,8 +31,12 @@ export const useDataHook = (
     const dependencyRemovers = useRef([] as (() => void)[]);
 
     // Remove all dependencies when the element is removed or rerendered
-    dependencyRemovers.current.forEach(remove => remove());
-    useEffect(() => () => dependencyRemovers.current.forEach(remove => remove()), []);
+    const removeDependencies = () => {
+        dependencyRemovers.current.forEach(remove => remove());
+        dependencyRemovers.current = [];
+    };
+    useEffect(() => removeDependencies, []);
+    removeDependencies();
     return [
         // Return the listener which will force an update, and registers whether any data is refreshing
         {

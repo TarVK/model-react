@@ -36,3 +36,4 @@ export declare class DataLoader<T> extends AbstractDataSource<T> {
      */
     markDirty(): void;
 }
+//# sourceMappingURL=DataLoader.d.ts.map

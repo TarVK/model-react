@@ -8,3 +8,4 @@ export declare type IDataHook = IStrictDataHook | null;
  * A non nullable data hook
  */
 export declare type IStrictDataHook = IDataLoadRequest | IDataListener;
+//# sourceMappingURL=IDataHook.d.ts.map

@@ -30,3 +30,4 @@ export declare class LoadableField<T> extends Field<T> {
      */
     protected updateValue(hook: IDataHook): void;
 }
+//# sourceMappingURL=LoadableField.d.ts.map

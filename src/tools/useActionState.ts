@@ -14,7 +14,7 @@ export function useActionState<T = void>(
 ): [
     (
         /** The action to add, whose value will be returned */
-        action: Promise<T> | (() => Promise<T>), 
+        action: Promise<T> | (() => Promise<T>),
         /** Whether to reset the state of previously added actions */
         reset?: boolean
     ) => Promise<T>,
@@ -34,7 +34,7 @@ export function useActionState<T = void>(
 ): [
     (
         /** The action to add, whose value will be returned */
-        action: Promise<T> | (() => Promise<T>), 
+        action: Promise<T> | (() => Promise<T>),
         /** Whether to reset the state of previously added actions */
         reset?: boolean
     ) => Promise<T>,
@@ -55,8 +55,8 @@ export function useActionState<T = void>(
 
     // Read the state
     let result: T[] | T | undefined;
-    if (latest) result = actionState.current.get(hook);
-    else result = actionState.current.getLatest(hook);
+    if (latest) result = actionState.current.getLatest(hook);
+    else result = actionState.current.get(hook);
 
     // Return functions to track the data
     return [

@@ -34,3 +34,4 @@ export declare class DataCacher<T> extends AbstractDataSource<T> implements IDat
      */
     get(hook: IDataHook): T;
 }
+//# sourceMappingURL=DataCacher.d.ts.map

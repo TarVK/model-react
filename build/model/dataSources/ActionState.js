@@ -50,7 +50,9 @@ var ActionState = /** @class */ (function (_super) {
     ActionState.prototype.getLatest = function (hook) {
         _super.prototype.addListener.call(this, hook);
         this.forwardState(hook, true);
-        return this.actions.length && this.actions[this.actions.length - 1].result;
+        return this.actions.length !== 0
+            ? this.actions[this.actions.length - 1].result
+            : undefined;
     };
     /**
      * Forwards the state of the retriever being cached

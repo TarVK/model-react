@@ -13,3 +13,4 @@ export declare const useDataHook: (forceRefreshTime?: number) => [IDataListener 
     /** Retrieves the exceptions that may have occurred while loading */
     getExceptions: () => any[];
 }];
+//# sourceMappingURL=useDataHook.d.ts.map

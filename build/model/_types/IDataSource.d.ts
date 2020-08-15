@@ -10,3 +10,4 @@ export declare type IDataSource<T> = {
      */
     get: IDataRetriever<T>;
 };
+//# sourceMappingURL=IDataSource.d.ts.map
