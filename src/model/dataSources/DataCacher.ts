@@ -3,6 +3,9 @@ import {IDataSource} from "../_types/IDataSource";
 import {IDataHook} from "../_types/IDataHook";
 import {isDataLoadRequest} from "../_types/IDataLoadRequest";
 
+/**
+ * A class to create a data combiner, and cache the results
+ */
 export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<T> {
     // The source of the data
     protected source: (params: IDataHook, current: T | undefined) => T;
@@ -17,10 +20,15 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
     protected loading: boolean = false;
     protected exceptions: any[];
     protected lastLoadTime: number = 0;
+    protected isDirty = true;
+
+    // A function to execute when the data is changed, but after it finished computing (and once stored)
+    protected onUpdate?: (value: T, previous: T | undefined) => void;
 
     /**
      * Creates a new data cache, used to reduce number of calls to complex data transformers
      * @param source The function to use to compute the value
+     * @param config Any additional optional configuration
      */
     constructor(
         source: (
@@ -28,10 +36,17 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
             hook: IDataHook,
             /** The currently cached value */
             current: T | undefined
-        ) => T
+        ) => T,
+        {
+            onUpdate,
+        }: {
+            /** A side effect to perform after updating the now newly cached value */
+            onUpdate?: (value: T, previous: T | undefined) => void;
+        } = {}
     ) {
         super();
         this.source = source;
+        this.onUpdate = onUpdate;
     }
 
     /**
@@ -41,15 +56,17 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
     protected updateIfRequired(params?: IDataHook): void {
         // Make sure we don't have a dependency already, unless we want to force reload
         const refreshTimestamp =
-            isDataLoadRequest(params) &&
-            params.refreshData &&
-            params.refreshTimestamp > this.lastLoadTime &&
-            params.refreshTimestamp;
-        if (this.dependencyRemovers.length !== 0 && !refreshTimestamp) return;
+            isDataLoadRequest(params) && params.refreshData
+                ? params.refreshTimestamp !== undefined &&
+                  params.refreshTimestamp > this.lastLoadTime
+                    ? params.refreshTimestamp
+                    : undefined
+                : undefined;
+        if (!(this.isDirty || refreshTimestamp)) return;
 
         // Remove the old dependency listeners if there are any
         this.dependencyRemovers.forEach(remove => remove());
-        const dependencyRemoves = (this.dependencyRemovers = []);
+        const dependencyRemoves = (this.dependencyRemovers = [] as (() => void)[]);
 
         // Reset the state data
         this.exceptions = [];
@@ -66,10 +83,13 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
             this.dependencyRemovers = [];
 
             // Inform our listeners
+            this.isDirty = true;
             this.callListeners();
         };
 
         // Retrieve the new value and setup the new listener
+        const prev = this.cached;
+        this.isDirty = false;
         this.cached = this.source(
             {
                 refreshData: true,
@@ -85,8 +105,11 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
                     dependencyRemoves.push(remover);
                 },
             },
-            this.cached
+            prev
         );
+
+        // Perform any side effects
+        this.onUpdate?.(this.cached, prev);
     }
 
     /**
@@ -96,7 +119,7 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
     protected forwardState(hook: IDataHook): void {
         if (isDataLoadRequest(hook)) {
             if (hook.registerException)
-                this.exceptions.forEach(exception => hook.registerException(exception));
+                this.exceptions.forEach(exception => hook.registerException?.(exception));
             if (this.loading && hook.markIsLoading) hook.markIsLoading();
         }
     }
@@ -111,5 +134,15 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
         this.updateIfRequired(hook);
         this.forwardState(hook);
         return this.cached;
+    }
+
+    /**
+     * Destroys any potential data hook, making sure there are no memory leaks.
+     * Note that this hook would clean itself up when being called anyhow, so calling destroy is not strictly necessary,
+     * but it prevents potential build up of huge listener arrays that could cause a lag spike when initially called.
+     */
+    public destroy(): void {
+        this.dependencyRemovers.forEach(remove => remove());
+        this.dependencyRemovers = [];
     }
 }

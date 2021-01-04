@@ -9,6 +9,7 @@
         "module": "commonjs",
         "target": "es5",
         "jsx": "react",
+        "strictNullChecks": true,
         "allowSyntheticDefaultImports": true,
         "preserveSymlinks": true,
         "skipLibCheck": true
