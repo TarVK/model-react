@@ -2,6 +2,7 @@ import {AbstractDataSource} from "./AbstractDataSource";
 import {IDataSource} from "../_types/IDataSource";
 import {IDataHook} from "../_types/IDataHook";
 import {isDataLoadRequest} from "../_types/IDataLoadRequest";
+import { handleHookError } from "../../tools/hookErrorHandler";
 
 /**
  * A class to create a data combiner, and cache the results
@@ -119,8 +120,19 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
     protected forwardState(hook: IDataHook): void {
         if (isDataLoadRequest(hook)) {
             if (hook.registerException)
-                this.exceptions.forEach(exception => hook.registerException?.(exception));
-            if (this.loading && hook.markIsLoading) hook.markIsLoading();
+                this.exceptions.forEach(exception => {
+                    try {
+                        hook.registerException?.(exception)
+                    } catch(e){
+                        handleHookError(e, this, hook, "registerException");
+                    }
+                });
+            if (this.loading && hook.markIsLoading) 
+                try {
+                    hook.markIsLoading();
+                } catch(e) {
+                    handleHookError(e, this, hook, "markIsLoading");
+                }
         }
     }
 

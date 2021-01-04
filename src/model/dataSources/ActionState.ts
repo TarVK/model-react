@@ -2,7 +2,11 @@ import {AbstractDataSource} from "./AbstractDataSource";
 import {IDataSource} from "../_types/IDataSource";
 import {isDataLoadRequest} from "../_types/IDataLoadRequest";
 import {IDataHook} from "../_types/IDataHook";
+import { handleHookError } from "../../tools/hookErrorHandler";
 
+/**
+ * A class to keep track of the result and states of promises/actions
+ */
 export class ActionState<T = void> extends AbstractDataSource<T[]>
     implements IDataSource<T[]> {
     // The actions being tracked
@@ -29,7 +33,7 @@ export class ActionState<T = void> extends AbstractDataSource<T[]>
     public get(hook: IDataHook): T[] {
         super.addListener(hook);
         this.forwardState(hook);
-        return this.actions.filter(({loading}) => !loading).map(({result}) => result);
+        return this.actions.filter(({loading}) => !loading).map(({result}) => result) as T[];
     }
 
     /**
@@ -56,10 +60,22 @@ export class ActionState<T = void> extends AbstractDataSource<T[]>
                 : this.actions;
             if (hook.registerException)
                 actions.forEach(
-                    ({exception, threw}) => threw && hook.registerException(exception)
+                    ({exception, threw}) => {
+                        if(threw) {
+                            try {
+                                hook.registerException?.(exception)
+                            }catch(e){
+                                handleHookError(e, this, hook, "registerException");
+                            }
+                        }
+                    }
                 );
             if (hook.markIsLoading && actions.find(({loading}) => loading))
-                hook.markIsLoading();
+                try {
+                    hook.markIsLoading();
+                }catch(e){
+                    handleHookError(e, this, hook, "markIsLoading");
+                }
         }
     }
 
@@ -79,7 +95,7 @@ export class ActionState<T = void> extends AbstractDataSource<T[]>
 
         // Create a temporary result
         const data = {
-            result: undefined,
+            result: undefined as T | undefined,
             promise: action,
             threw: false,
             exception: undefined,

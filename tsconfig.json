@@ -7,12 +7,13 @@
         "declaration": true,
         "declarationMap": true,
         "module": "commonjs",
-        "target": "es5",
+        "target": "ES2019",
         "jsx": "react",
         "strictNullChecks": true,
         "allowSyntheticDefaultImports": true,
         "preserveSymlinks": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "noImplicitAny": true,
     },
     "types": ["node"],
     "exclude": ["node_modules", "**/node_modules/*", "build", "demo", "examples"]

@@ -1,6 +1,7 @@
 import {AbstractDataSource} from "./AbstractDataSource";
 import {IDataLoadRequest, isDataLoadRequest} from "../_types/IDataLoadRequest";
 import {IDataHook} from "../_types/IDataHook";
+import {handleHookError} from "../../tools/hookErrorHandler";
 
 export class DataLoader<T> extends AbstractDataSource<T> {
     // The currently loaded data
@@ -64,11 +65,20 @@ export class DataLoader<T> extends AbstractDataSource<T> {
             this.dirty ||
             (request.refreshTimestamp && request.refreshTimestamp > this.lastLoadTime);
         if (shouldRefresh && request.refreshData) this.load();
-        if (this.loading && request.markIsLoading) request.markIsLoading();
+        if (this.loading && request.markIsLoading)
+            try {
+                request.markIsLoading();
+            } catch (e) {
+                handleHookError(e, this, request, "markIsLoading");
+            }
 
         // Forward exceptions
         if (this.exception && request.registerException)
-            request.registerException(this.exception);
+            try {
+                request.registerException(this.exception);
+            } catch (e) {
+                handleHookError(e, this, request, "registerException");
+            }
     }
 
     /**

@@ -7,7 +7,7 @@ import {IDataHook} from "../_types/IDataHook";
  */
 export const getExceptions = (getter: (h: IDataHook) => void): any[] => {
     // Track the exceptions
-    const exceptions = [];
+    const exceptions: any[] = [];
 
     // Perform the poll
     getter({

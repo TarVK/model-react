@@ -1,6 +1,9 @@
 import {AbstractDataSource} from "./AbstractDataSource";
 import {IDataHook} from "../_types/IDataHook";
 
+/**
+ * A simple field class that can be used to store data that may change over time
+ */
 export class Field<T> extends AbstractDataSource<T> {
     // The data stored by the field
     protected value: T;

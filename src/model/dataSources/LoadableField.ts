@@ -5,6 +5,9 @@ import {Field} from "./Field";
 const defaultUpdater = (newLoaded: any, previousLoaded: any, current: any) =>
     newLoaded === previousLoaded ? current : newLoaded;
 
+/**
+ * A changeable field that retrieves its initial value from a loader
+ */
 export class LoadableField<T> extends Field<T> {
     // The previous data retrieved from the loader
     protected loader: IDataRetriever<T>;
@@ -31,7 +34,7 @@ export class LoadableField<T> extends Field<T> {
     ) {
         super(loader(null));
         this.loader = loader;
-        this.updater = defaultUpdater;
+        this.updater = updater ?? defaultUpdater;
     }
 
     /**
@@ -46,7 +49,7 @@ export class LoadableField<T> extends Field<T> {
 
     /**
      * Retrieves the data from the loader,
-     * and desides whether it should overwrite the field value
+     * and decides whether it should overwrite the field value
      * @param hook Data to hook into the meta state and to notify about state changes
      */
     protected updateValue(hook: IDataHook): void {

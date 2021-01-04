@@ -1,5 +1,6 @@
-import { IDataListener, isDataListener } from "../_types/IDataListener";
-import { isDataLoadRequest } from "../_types/IDataLoadRequest";
+import {handleHookError} from "../../tools/hookErrorHandler";
+import {IDataListener, isDataListener} from "../_types/IDataListener";
+import {isDataLoadRequest} from "../_types/IDataLoadRequest";
 
 /**
  * A class to help with creating advanced manual data sources
@@ -73,9 +74,20 @@ export class ManualSourceHelper {
      */
     public addListener(listener?: any): void {
         if (isDataLoadRequest(listener)) {
-            if (listener.markIsLoading && this.loading) listener.markIsLoading();
+            if (listener.markIsLoading && this.loading)
+                try {
+                    listener.markIsLoading();
+                } catch (e) {
+                    handleHookError(e, this, listener, "markIsLoading");
+                }
             if (listener.registerException)
-                this.exceptions.forEach(ex => listener.registerException?.(ex));
+                this.exceptions.forEach(ex => {
+                    try {
+                        listener.registerException?.(ex);
+                    } catch (e) {
+                        handleHookError(e, this, listener, "registerException");
+                    }
+                });
             if (listener.refreshData && this.onLoadRequest)
                 this.onLoadRequest(listener.refreshTimestamp);
         }

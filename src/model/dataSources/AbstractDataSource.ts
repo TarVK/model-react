@@ -1,6 +1,7 @@
 import {IDataSource} from "../_types/IDataSource";
 import {IDataListener, isDataListener} from "../_types/IDataListener";
 import {IDataHook} from "../_types/IDataHook";
+import {handleHookError} from "../../tools/hookErrorHandler";
 
 export abstract class AbstractDataSource<T> implements IDataSource<T> {
     // Data listeners to notify when data has changed
@@ -32,6 +33,12 @@ export abstract class AbstractDataSource<T> implements IDataSource<T> {
      */
     protected callListeners(): void {
         const listenersCopy = [...this.listeners];
-        listenersCopy.forEach(listener => listener.call());
+        listenersCopy.forEach(listener => {
+            try {
+                listener.call();
+            } catch (e) {
+                handleHookError(e, this, listener, "onCall");
+            }
+        });
     }
 }

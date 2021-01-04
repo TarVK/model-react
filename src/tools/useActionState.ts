@@ -50,8 +50,7 @@ export function useActionState<T = void>(
     () => void,
     T[] | T | undefined
 ] {
-    const actionState = useRef(undefined as ActionState<T>);
-    if (!actionState.current) actionState.current = new ActionState<T>();
+    const actionState = useLazyRef<ActionState<T>>(() => new ActionState<T>());
 
     // Read the state
     let result: T[] | T | undefined;
@@ -80,3 +79,14 @@ export function useActionState<T = void>(
         result,
     ];
 }
+
+/**
+ * Uses a reference with a lazy initializer that gets called if the current value is falsy
+ * @param init The initializer
+ * @returns The ref
+ */
+const useLazyRef = <T>(init: () => T) => {
+    const ref = useRef<T>((undefined as any) as T);
+    if (!ref.current) ref.current = init();
+    return ref;
+};
