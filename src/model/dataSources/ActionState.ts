@@ -2,12 +2,13 @@ import {AbstractDataSource} from "./AbstractDataSource";
 import {IDataSource} from "../_types/IDataSource";
 import {isDataLoadRequest} from "../_types/IDataLoadRequest";
 import {IDataHook} from "../_types/IDataHook";
-import { handleHookError } from "../../tools/hookErrorHandler";
+import {handleHookError} from "../../tools/hookErrorHandler";
 
 /**
  * A class to keep track of the result and states of promises/actions
  */
-export class ActionState<T = void> extends AbstractDataSource<T[]>
+export class ActionState<T = void>
+    extends AbstractDataSource<T[]>
     implements IDataSource<T[]> {
     // The actions being tracked
     protected actions: {
@@ -30,10 +31,12 @@ export class ActionState<T = void> extends AbstractDataSource<T[]>
      * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The value that's currently available
      */
-    public get(hook: IDataHook): T[] {
+    public get(hook?: IDataHook): T[] {
         super.addListener(hook);
         this.forwardState(hook);
-        return this.actions.filter(({loading}) => !loading).map(({result}) => result) as T[];
+        return this.actions
+            .filter(({loading}) => !loading)
+            .map(({result}) => result) as T[];
     }
 
     /**
@@ -41,7 +44,7 @@ export class ActionState<T = void> extends AbstractDataSource<T[]>
      * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The action data
      */
-    public getLatest(hook: IDataHook): T | undefined {
+    public getLatest(hook?: IDataHook): T | undefined {
         super.addListener(hook);
         this.forwardState(hook, true);
         return this.actions.length !== 0
@@ -53,27 +56,25 @@ export class ActionState<T = void> extends AbstractDataSource<T[]>
      * Forwards the state of the retriever being cached
      * @param hook Data to hook into the meta state and to notify about state changes
      */
-    protected forwardState(hook: IDataHook, last: boolean = false): void {
+    protected forwardState(hook?: IDataHook, last: boolean = false): void {
         if (isDataLoadRequest(hook)) {
             const actions = last
                 ? this.actions.slice(this.actions.length - 1)
                 : this.actions;
             if (hook.registerException)
-                actions.forEach(
-                    ({exception, threw}) => {
-                        if(threw) {
-                            try {
-                                hook.registerException?.(exception)
-                            }catch(e){
-                                handleHookError(e, this, hook, "registerException");
-                            }
+                actions.forEach(({exception, threw}) => {
+                    if (threw) {
+                        try {
+                            hook.registerException?.(exception);
+                        } catch (e) {
+                            handleHookError(e, this, hook, "registerException");
                         }
                     }
-                );
+                });
             if (hook.markIsLoading && actions.find(({loading}) => loading))
                 try {
                     hook.markIsLoading();
-                }catch(e){
+                } catch (e) {
                     handleHookError(e, this, hook, "markIsLoading");
                 }
         }

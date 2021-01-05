@@ -2,7 +2,7 @@ import {AbstractDataSource} from "./AbstractDataSource";
 import {IDataSource} from "../_types/IDataSource";
 import {IDataHook} from "../_types/IDataHook";
 import {isDataLoadRequest} from "../_types/IDataLoadRequest";
-import { handleHookError } from "../../tools/hookErrorHandler";
+import {handleHookError} from "../../tools/hookErrorHandler";
 
 /**
  * A class to create a data combiner, and cache the results
@@ -117,20 +117,20 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
      * Forwards the state of the retriever being cached
      * @param hook Data used to notify about state changes
      */
-    protected forwardState(hook: IDataHook): void {
+    protected forwardState(hook?: IDataHook): void {
         if (isDataLoadRequest(hook)) {
             if (hook.registerException)
                 this.exceptions.forEach(exception => {
                     try {
-                        hook.registerException?.(exception)
-                    } catch(e){
+                        hook.registerException?.(exception);
+                    } catch (e) {
                         handleHookError(e, this, hook, "registerException");
                     }
                 });
-            if (this.loading && hook.markIsLoading) 
+            if (this.loading && hook.markIsLoading)
                 try {
                     hook.markIsLoading();
-                } catch(e) {
+                } catch (e) {
                     handleHookError(e, this, hook, "markIsLoading");
                 }
         }
@@ -141,7 +141,7 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
      * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The value that's currently available
      */
-    public get(hook: IDataHook): T {
+    public get(hook?: IDataHook): T {
         super.addListener(hook);
         this.updateIfRequired(hook);
         this.forwardState(hook);

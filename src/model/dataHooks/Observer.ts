@@ -6,21 +6,26 @@ import {IObserverListener} from "../_types/IObserverListener";
  * A data hook to listen to a stream of changes
  */
 export class Observer<T> {
+    // The input data
     protected getter: IDataRetriever<T>;
     protected debounce: number;
     protected refreshData: boolean;
 
+    // Listener variables
     protected listeners: IObserverListener<T>[] = [];
     protected callListenersTimeout: undefined | NodeJS.Timeout;
 
+    // State variables
     protected isDestroyed = false;
     protected isDirty = true;
 
-    protected hookListenerRemovers: (() => void)[] = [];
+    // Dependency management variables
+    protected dependencyRemovers: (() => void)[] = [];
     protected value: T;
     protected exceptions: any[] = [];
     protected isLoading = false;
 
+    // Variables to keep track of the previous value
     protected initialized = false;
     protected previousValue: T;
 
@@ -61,7 +66,7 @@ export class Observer<T> {
         this.exceptions = [];
         this.value = this.getter({
             call: () => {
-                this.removeHookListeners();
+                this.removeDependencies();
                 this.isDirty = true;
 
                 // Setup the listener again, and call all our listeners
@@ -69,7 +74,7 @@ export class Observer<T> {
                 this.callListeners();
             },
             registerRemover: (remover: () => void) => {
-                this.hookListenerRemovers.push(remover);
+                this.dependencyRemovers.push(remover);
             },
             markIsLoading: () => {
                 this.isLoading = true;
@@ -91,9 +96,9 @@ export class Observer<T> {
     /**
      * Gets rid of all listeners
      */
-    protected removeHookListeners(): void {
-        this.hookListenerRemovers.forEach(remove => remove());
-        this.hookListenerRemovers = [];
+    protected removeDependencies(): void {
+        this.dependencyRemovers.forEach(remove => remove());
+        this.dependencyRemovers = [];
     }
 
     /**
@@ -101,7 +106,7 @@ export class Observer<T> {
      */
     public destroy(): void {
         this.isDestroyed = true;
-        this.removeHookListeners();
+        this.removeDependencies();
         this.isDirty = false;
     }
 

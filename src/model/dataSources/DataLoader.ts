@@ -3,6 +3,9 @@ import {IDataLoadRequest, isDataLoadRequest} from "../_types/IDataLoadRequest";
 import {IDataHook} from "../_types/IDataHook";
 import {handleHookError} from "../../tools/hookErrorHandler";
 
+/**
+ * A data source that can be used to convert an asynchronous loader into a synchronous data retriever with loading state
+ */
 export class DataLoader<T> extends AbstractDataSource<T> {
     // The currently loaded data
     protected data: T;
@@ -45,7 +48,7 @@ export class DataLoader<T> extends AbstractDataSource<T> {
      * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The value that's currently available
      */
-    public get(hook: IDataHook): T {
+    public get(hook?: IDataHook): T {
         super.addListener(hook);
 
         // Handle any load request

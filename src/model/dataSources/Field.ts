@@ -22,7 +22,7 @@ export class Field<T> extends AbstractDataSource<T> {
      * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The value that's currently available
      */
-    public get(hook: IDataHook): T {
+    public get(hook?: IDataHook): T {
         super.addListener(hook);
         return this.value;
     }

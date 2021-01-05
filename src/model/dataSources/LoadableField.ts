@@ -32,7 +32,7 @@ export class LoadableField<T> extends Field<T> {
             current: T
         ) => T = defaultUpdater
     ) {
-        super(loader(null));
+        super(loader());
         this.loader = loader;
         this.updater = updater ?? defaultUpdater;
     }
@@ -42,7 +42,7 @@ export class LoadableField<T> extends Field<T> {
      * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The value that's currently available
      */
-    public get(hook: IDataHook): T {
+    public get(hook?: IDataHook): T {
         this.updateValue(hook);
         return super.get(hook);
     }
@@ -52,7 +52,7 @@ export class LoadableField<T> extends Field<T> {
      * and decides whether it should overwrite the field value
      * @param hook Data to hook into the meta state and to notify about state changes
      */
-    protected updateValue(hook: IDataHook): void {
+    protected updateValue(hook?: IDataHook): void {
         const value = this.loader(hook);
         this.value = this.updater(value, this.previousLoaded, this.value);
         this.previousLoaded = value;
