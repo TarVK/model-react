@@ -1,5 +1,8 @@
 import { AbstractDataSource } from "./AbstractDataSource";
 import { IDataHook } from "../_types/IDataHook";
+/**
+ * A simple field class that can be used to store data that may change over time
+ */
 export declare class Field<T> extends AbstractDataSource<T> {
     protected value: T;
     /**
@@ -12,7 +15,7 @@ export declare class Field<T> extends AbstractDataSource<T> {
      * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The value that's currently available
      */
-    get(hook: IDataHook): T;
+    get(hook?: IDataHook): T;
     /**
      * Sets the new value of the field
      * @param value The new value

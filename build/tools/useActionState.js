@@ -1,14 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var react_1 = require("react");
-var ActionState_1 = require("../model/dataSources/ActionState");
-function useActionState(hook, latest) {
-    if (latest === void 0) { latest = false; }
-    var actionState = react_1.useRef(undefined);
-    if (!actionState.current)
-        actionState.current = new ActionState_1.ActionState();
+import { useRef } from "react";
+import { ActionState } from "../model/dataSources/ActionState";
+export function useActionState(hook, latest = false) {
+    const actionState = useLazyRef(() => new ActionState());
     // Read the state
-    var result;
+    let result;
     if (latest)
         result = actionState.current.getLatest(hook);
     else
@@ -21,19 +16,26 @@ function useActionState(hook, latest) {
          * @param reset Whether to remove the old data
          * @returns The result of the action
          */
-        function (action, reset) {
-            if (reset === void 0) { reset = false; }
-            return actionState.current.addAction(action, reset);
-        },
+        (action, reset = false) => actionState.current.addAction(action, reset),
         /**
          * Removes the results of previous actions
          */
-        function () { return actionState.current.reset(); },
+        () => actionState.current.reset(),
         /**
          * The return values of all the actions
          */
         result,
     ];
 }
-exports.useActionState = useActionState;
+/**
+ * Uses a reference with a lazy initializer that gets called if the current value is falsy
+ * @param init The initializer
+ * @returns The ref
+ */
+const useLazyRef = (init) => {
+    const ref = useRef(undefined);
+    if (!ref.current)
+        ref.current = init();
+    return ref;
+};
 //# sourceMappingURL=useActionState.js.map

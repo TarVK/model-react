@@ -1,1 +1,1 @@
-{"version":3,"file":"getAsync.d.ts","sourceRoot":"","sources":["../../../src/model/dataHooks/getAsync.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,gBAAgB,EAAC,MAAM,4BAA4B,CAAC;AAC5D,OAAO,EAAC,aAAa,EAAC,MAAM,yBAAyB,CAAC;AAEtD;;;;;GAKG;AACH,eAAO,MAAM,QAAQ,qGAqDf,CAAC"}
+{"version":3,"file":"getAsync.d.ts","sourceRoot":"","sources":["../../../src/model/dataHooks/getAsync.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,gBAAgB,EAAC,MAAM,4BAA4B,CAAC;AAC5D,OAAO,EAAC,aAAa,EAAC,MAAM,yBAAyB,CAAC;AAEtD;;;;;GAKG;AACH,eAAO,MAAM,QAAQ,qBACF,gBAAgB,GAAG,aAAa,4DAoD7C,CAAC"}

@@ -4,5 +4,5 @@ import { IDataHook } from "./IDataHook";
  * @param hook Data to hook into the meta state and to notify about state changes
  * @returns The value that's currently available
  */
-export declare type IDataRetriever<T> = (hook: IDataHook) => T;
+export declare type IDataRetriever<T> = (hook?: IDataHook) => T;
 //# sourceMappingURL=IDataRetriever.d.ts.map

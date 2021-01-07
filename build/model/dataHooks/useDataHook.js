@@ -1,57 +1,54 @@
-"use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var react_1 = require("react");
+import { useState, useEffect, useRef } from "react";
 /**
  * Retrieves a hook that can be used to listen to data from data sources,
  * such that the component rerenders upon data changes.
  * It also returns a function to determine whether the data is still loading, or has errored.
- * @param forceRefreshTime The time such that if data is older, it will be refreshed
+ * @param options  Configuration options
  * @returns The data hook followed by contextual data
  */
-exports.useDataHook = function (forceRefreshTime) {
-    // A fake state in order to fore an update
-    var _a = react_1.useState(), update = _a[1];
+export const useDataHook = ({ forceRefreshTime, debounce = 0, onChange, } = {}) => {
+    // A fake state in order to force an update
+    const [, _update] = useState({});
+    const update = () => {
+        onChange === null || onChange === void 0 ? void 0 : onChange();
+        _update({});
+    };
+    const updateTimeout = useRef(undefined);
     // A variable to track whether any retrieved data is refreshing, and exceptions
-    var isRefreshing = false;
-    var exceptions = [];
+    let isRefreshing = false;
+    let exceptions = [];
     // A list of functions to call to remove the passed listener as a dependency
-    var dependencyRemovers = react_1.useRef([]);
+    const dependencyRemovers = useRef([]);
     // Remove all dependencies when the element is removed or rerendered
-    var removeDependencies = function () {
-        dependencyRemovers.current.forEach(function (remove) { return remove(); });
+    const removeDependencies = () => {
+        dependencyRemovers.current.forEach(remove => remove());
         dependencyRemovers.current = [];
     };
-    react_1.useEffect(function () { return removeDependencies; }, []);
     removeDependencies();
+    useEffect(() => removeDependencies, []);
     return [
-        __assign({ 
+        Object.assign({ 
             // Data listener fields
-            call: function () {
-                update({});
+            call() {
+                if (debounce == -1)
+                    update();
+                else if (!updateTimeout.current)
+                    updateTimeout.current = setTimeout(() => {
+                        updateTimeout.current = undefined;
+                        update();
+                    }, debounce);
             },
-            registerRemover: function (remover) {
+            registerRemover(remover) {
                 dependencyRemovers.current.push(remover);
             }, 
             // Data loading fields
-            refreshData: true, markIsLoading: function () {
+            refreshData: true, markIsLoading() {
                 isRefreshing = true;
-            },
-            registerException: function (exception) {
+            }, registerException(exception) {
                 exceptions.push(exception);
             } }, (forceRefreshTime !== undefined && { refreshTimestamp: forceRefreshTime })),
         // Return the function that retrieves if any data is refreshing
-        { isLoading: function () { return isRefreshing; }, getExceptions: function () { return exceptions; } },
+        { isLoading: () => isRefreshing, getExceptions: () => exceptions },
     ];
 };
 //# sourceMappingURL=useDataHook.js.map

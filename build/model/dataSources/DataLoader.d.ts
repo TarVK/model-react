@@ -1,6 +1,9 @@
 import { AbstractDataSource } from "./AbstractDataSource";
 import { IDataLoadRequest } from "../_types/IDataLoadRequest";
 import { IDataHook } from "../_types/IDataHook";
+/**
+ * A data source that can be used to convert an asynchronous loader into a synchronous data retriever with loading state
+ */
 export declare class DataLoader<T> extends AbstractDataSource<T> {
     protected data: T;
     protected dirty: boolean;
@@ -21,7 +24,7 @@ export declare class DataLoader<T> extends AbstractDataSource<T> {
      * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The value that's currently available
      */
-    get(hook: IDataHook): T;
+    get(hook?: IDataHook): T;
     /**
      * Handles a data load request
      * @param request The request to handle

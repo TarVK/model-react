@@ -1,27 +1,12 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var React = require("react"); // Required for fragment as separate import due to some config settings
+import * as React from "react"; // Required for fragment as separate import due to some config settings
 /**
  * A component to handle the loading or error state of loadable data sources
  */
-exports.LoaderSwitch = function (_a) {
-    var 
-    /** An alias for content */
-    children = _a.children, 
-    /** The content to show when there are no exceptions and data loaded */
-    content = _a.content, 
-    /** The node to show while loading */
-    onLoad = _a.onLoad, 
-    /** The node to show if an error occured */
-    onError = _a.onError, 
-    /** A function to check whether the data is currently loading */
-    isLoading = _a.isLoading, 
-    /** A getter for the exceptions */
-    getExceptions = _a.getExceptions;
+export const LoaderSwitch = ({ children, content, onLoad, onError, isLoading, getExceptions }) => {
     if (isLoading && isLoading() && onLoad)
         return React.createElement(React.Fragment, null, onLoad instanceof Function ? onLoad() : onLoad);
     if (getExceptions && onError) {
-        var exceptions = getExceptions();
+        const exceptions = getExceptions();
         if (exceptions.length > 0)
             return React.createElement(React.Fragment, null, onError instanceof Function ? onError(exceptions) : onError);
     }

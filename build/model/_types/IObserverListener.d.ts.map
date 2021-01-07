@@ -1,0 +1,1 @@
+{"version":3,"file":"IObserverListener.d.ts","sourceRoot":"","sources":["../../../src/model/_types/IObserverListener.ts"],"names":[],"mappings":"AAAA;;GAEG;AACH,oBAAY,iBAAiB,CAAC,CAAC;AAC3B;;;;;GAKG;AACH,CACI,IAAI,EAAE,CAAC,EACP,IAAI,EAAE;IAAC,QAAQ,CAAC,SAAS,EAAE,OAAO,CAAC;IAAC,QAAQ,CAAC,UAAU,EAAE,SAAS,GAAG,EAAE,CAAA;CAAC,EACxE,QAAQ,EAAE,CAAC,KACV,IAAI,CAAC"}

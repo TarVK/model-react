@@ -6,5 +6,5 @@ import { IDataListener } from "../_types/IDataListener";
  * @param forceRefreshTime The time such that if data is older, it will be refreshed
  * @returns A promise with the result after all data sources finished loading/refreshing
  */
-export declare const getAsync: <T>(getter: (hook: IDataLoadRequest & IDataListener) => T, forceRefreshTime?: number) => Promise<T>;
+export declare const getAsync: <T>(getter: (hook: IDataLoadRequest & IDataListener) => T, forceRefreshTime?: number | undefined) => Promise<T>;
 //# sourceMappingURL=getAsync.d.ts.map

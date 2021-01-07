@@ -1,0 +1,1 @@
+{"version":3,"file":"waitFor.js","sourceRoot":"","sources":["../../../src/model/dataHooks/waitFor.ts"],"names":[],"mappings":";;;;;;;;;AACA,OAAO,EAAE,QAAQ,EAAE,MAAM,YAAY,CAAC;AAEtC;;;;GAIG;AACH,MAAM,UAAgB,OAAO,CAAC,SAAuC;;QACjE,MAAM,QAAQ,CAAC,CAAC,CAAC,EAAE;;YACf,IAAI,CAAC,SAAS,CAAC,CAAC,CAAC;gBAAE,MAAA,CAAC,CAAC,aAAa,+CAAf,CAAC,EAAmB;QAC3C,CAAC,CAAC,CAAC;IACP,CAAC;CAAA"}

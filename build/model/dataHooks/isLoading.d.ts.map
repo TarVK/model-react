@@ -1,1 +1,1 @@
-{"version":3,"file":"isLoading.d.ts","sourceRoot":"","sources":["../../../src/model/dataHooks/isLoading.ts"],"names":[],"mappings":"AAEA;;;;GAIG;AACH,eAAO,MAAM,SAAS,iFAcrB,CAAC"}
+{"version":3,"file":"isLoading.d.ts","sourceRoot":"","sources":["../../../src/model/dataHooks/isLoading.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAC,MAAM,qBAAqB,CAAC;AAE9C;;;;GAIG;AACH,eAAO,MAAM,SAAS,eAAgB,SAAS,KAAK,IAAI,KAAG,OAc1D,CAAC"}
