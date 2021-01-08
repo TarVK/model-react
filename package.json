@@ -27,13 +27,13 @@
     },
     "homepage": "https://github.com/TarVK/model-react#readme",
     "peerDependencies": {
-        "react": "^16.8.6"
+        "react": "^17.0.1"
     },
     "devDependencies": {
-        "@types/react": "^16.8.19",
-        "@types/react-dom": "^16.8.4",
-        "react-dom": "^16.8.6",
-        "react": "^16.8.6",
+        "@types/react": "^17.0.0",
+        "@types/react-dom": "^17.0.0",
+        "react-dom": "^17.0.1",
+        "react": "^17.0.1",
         "ts-loader": "^6.0.2",
         "typescript": "^3.5.1",
         "webpack": "^4.32.2",

@@ -6,7 +6,7 @@
         "sourceMap": true,
         "declaration": true,
         "declarationMap": true,
-        "module": "commonjs",
+        "module": "ES6",
         "target": "ES6",
         "jsx": "react",
         "strictNullChecks": true,

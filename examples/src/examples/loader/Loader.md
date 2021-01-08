@@ -1,0 +1,1 @@
+The loader is almost identical to the loader switch, except it 'hosts' the data hook. It can be used to neatly visualize the state of a loadable source and subscribe to changes. This way the user is informed of data still being loaded, and of possible errors while loading the data.

@@ -19,10 +19,9 @@ export * from "./model/dataSources/ActionState";
 export * from "./model/dataSources/DataCacher";
 export * from "./model/dataSources/DataLoader";
 export * from "./model/dataSources/Field";
-export * from "./model/dataSources/LoadableField";
 export * from "./model/dataSources/ManualSourceHelper";
 
-export * from "./tools/hookErrorhandler";
+export * from "./tools/hookErrorHandler";
 export * from "./tools/Loader";
 export * from "./tools/LoaderSwitch";
 export * from "./tools/proxyHook";

@@ -93,7 +93,7 @@ export class DataCacher<T> extends AbstractDataSource<T> implements IDataSource<
         this.isDirty = false;
         this.cached = this.source(
             {
-                refreshData: true,
+                refreshData: true, // TODO: consider how we may be able to keep this false as this cacher hasn't received hooks that requested data refreshes
                 refreshTimestamp,
                 call: onChange,
                 markIsLoading: () => {

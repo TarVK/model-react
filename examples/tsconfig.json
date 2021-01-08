@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "outDir": "./build/",
+        "rootDir": "./src/",
+        "sourceMap": true,
+        "declaration": true,
+        "declarationMap": true,
+        "module": "es6",
+        "target": "ES6",
+        "jsx": "react",
+        "strictNullChecks": true,
+        "allowSyntheticDefaultImports": true,
+        "preserveSymlinks": true,
+        "skipLibCheck": true,
+        "noImplicitAny": true,
+    },
+    "include": ["src/**/*"],
+    "types": ["node", "@emotion/core"],
+    "exclude": ["node_modules"]
+}
