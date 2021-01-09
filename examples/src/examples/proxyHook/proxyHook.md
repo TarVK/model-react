@@ -1,0 +1,1 @@
+Sometimes it's difficult to tell whether hooks are properly being called, and where updates originate from. The `proxyHook` function can be used as a debugging tool by wrapping a hook with it, and logging data when the hook gets called.

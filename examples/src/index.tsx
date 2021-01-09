@@ -9,13 +9,18 @@ import dataLoader from "./examples/dataLoader/DataLoader?example";
 import loaderSwitch from "./examples/loaderSwitch/LoaderSwitch?example";
 import loader from "./examples/loader/Loader?example";
 import refreshData from "./examples/refreshData/refreshData?example";
+import exceptions from "./examples/exceptions/exceptions?example";
 import virtualDataSource from "./examples/virtualDataSource/virtualDataSource?example";
 import dataCacher from "./examples/dataCacher/DataCacher?example";
+import executionState from "./examples/executionState/ExecutionState?example";
 import getAsync from "./examples/getAsync/getAsync?example";
+import observer from "./examples/observer/Observer?example";
+import waitFor from "./examples/waitFor/waitFor?example";
 import getState from "./examples/getState/getState?example";
-import exceptions from "./examples/exceptions/exceptions?example";
-import actionState from "./examples/actionState/ActionState?example";
-import useActionState from "./examples/useActionState/useActionState?example";
+import createCallbackHook from "./examples/createCallbackHook/createCallbackHook?example";
+import proxyHook from "./examples/proxyHook/proxyHook?example";
+import ManualSourceHelper from "./examples/manualSourceHelper/ManualSourceHelper?example";
+import hookErrorHandler from "./examples/hookErrorHandler/hookErrorHandler?example";
 
 ReactDOM.render(
     <AppLayout
@@ -24,21 +29,73 @@ ReactDOM.render(
             {
                 name: "examples",
                 children: [
-                    {name: "Field", content: <Example {...field} />},
-                    {name: "DataLoader", content: <Example {...dataLoader} />},
-                    {name: "LoaderSwitch", content: <Example {...loaderSwitch} />},
-                    {name: "Loader", content: <Example {...loader} />},
+                    {name: "Field", content: <Example {...field} />, apiLink: ["@Field"]},
+                    {
+                        name: "DataLoader",
+                        content: <Example {...dataLoader} />,
+                        apiLink: ["@DataLoader"],
+                    },
+                    {
+                        name: "LoaderSwitch",
+                        content: <Example {...loaderSwitch} />,
+                        apiLink: ["@LoaderSwitch"],
+                    },
+                    {
+                        name: "Loader",
+                        content: <Example {...loader} />,
+                        apiLink: ["@Loader"],
+                    },
                     {name: "Force refresh time", content: <Example {...refreshData} />},
+                    {name: "Exceptions", content: <Example {...exceptions} />},
                     {
                         name: "Virtual data sources",
                         content: <Example {...virtualDataSource} />,
                     },
-                    {name: "DataCacher", content: <Example {...dataCacher} />},
-                    {name: "getAsync", content: <Example {...getAsync} />},
-                    {name: "exceptions", content: <Example {...exceptions} />},
-                    {name: "getState", content: <Example {...getState} />},
-                    {name: "actionState", content: <Example {...actionState} />},
-                    {name: "useActionState", content: <Example {...useActionState} />},
+                    {
+                        name: "DataCacher",
+                        content: <Example {...dataCacher} />,
+                        apiLink: ["@DataCacher"],
+                    },
+                    {
+                        name: "ExecutionState",
+                        content: <Example {...executionState} />,
+                        apiLink: ["@ExecutionState"],
+                    },
+                    {
+                        name: "GetAsync",
+                        content: <Example {...getAsync} />,
+                        apiLink: ["@getASync"],
+                    },
+                    {
+                        name: "Observer",
+                        content: <Example {...observer} />,
+                        apiLink: ["@Observer"],
+                    },
+                    {
+                        name: "WaitFor",
+                        content: <Example {...waitFor} />,
+                        apiLink: ["@waitFor"],
+                    },
+                    {
+                        name: "GetState",
+                        content: <Example {...getState} />,
+                        apiLink: ["@getExceptions", "@isLoading"],
+                    },
+                    {
+                        name: "ProxyHook",
+                        content: <Example {...proxyHook} />,
+                        apiLink: ["@proxyHook"],
+                    },
+                    {
+                        name: "ManualSourceHelper",
+                        content: <Example {...ManualSourceHelper} />,
+                        apiLink: ["@ManualSourceHelper"],
+                    },
+                    {
+                        name: "HookErrorHandler",
+                        content: <Example {...hookErrorHandler} />,
+                        apiLink: ["@hookErrorHandler"],
+                    },
                 ],
             },
         ]}

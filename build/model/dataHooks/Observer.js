@@ -1,3 +1,4 @@
+import { handleHookError } from "../../tools/hookErrorHandler";
 /**
  * A data hook to listen to a stream of changes
  */
@@ -83,7 +84,14 @@ export class Observer {
             return;
         if (this.debounce == -1) {
             const meta = { isLoading: this.isLoading, exceptions: this.exceptions };
-            this.listeners.forEach(listener => listener(this.value, meta, this.previousValue));
+            this.listeners.forEach(listener => {
+                try {
+                    listener(this.value, meta, this.previousValue);
+                }
+                catch (e) {
+                    handleHookError(e, this, undefined, "onCall");
+                }
+            });
             this.previousValue = this.value;
         }
         // If the call should be debounced, only add a timer if none is present already
@@ -91,7 +99,14 @@ export class Observer {
             this.callListenersTimeout = setTimeout(() => {
                 this.callListenersTimeout = undefined;
                 const meta = { isLoading: this.isLoading, exceptions: this.exceptions };
-                this.listeners.forEach(listener => listener(this.value, meta, this.previousValue));
+                this.listeners.forEach(listener => {
+                    try {
+                        listener(this.value, meta, this.previousValue);
+                    }
+                    catch (e) {
+                        handleHookError(e, this, undefined, "onCall");
+                    }
+                });
                 this.previousValue = this.value;
             }, this.debounce);
         }

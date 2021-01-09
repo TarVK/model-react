@@ -21,7 +21,7 @@ const loadData = () =>
         .then(result => alert(result))
         .catch(error => alert(error));
 
-// Render as element
+// Render some 'app' element that shows an input and output using the same field
 export default (
     <div>
         <Loader onLoad="Loading" onError={e => `The following errors were thrown: ${e}`}>

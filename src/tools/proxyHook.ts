@@ -1,6 +1,6 @@
-import { IDataHook } from "../model/_types/IDataHook";
-import { IDataListener } from "../model/_types/IDataListener";
-import { IDataLoadRequest } from "../model/_types/IDataLoadRequest";
+import {IDataHook} from "../model/_types/IDataHook";
+import {IDataListener} from "../model/_types/IDataListener";
+import {IDataLoadRequest} from "../model/_types/IDataLoadRequest";
 
 /**
  * Proxies a data hook, can be used for debugging
@@ -8,16 +8,17 @@ import { IDataLoadRequest } from "../model/_types/IDataLoadRequest";
  * @param config The config for events to listen for
  * @returns The proxied hook
  */
-export function proxyHook(
+export const proxyHook = (
     hook: IDataHook | undefined,
     config: {
         /** The callback to perform when the hook is getting called */
-        onCall?: () => void, 
+        onCall?: () => void;
         /** The callback to perform when the data source indicates to be loading */
-        onMarkIsLoading?: ()=>void, 
+        onMarkIsLoading?: () => void;
         /** The callback to perform when the data source registers an exception */
-        onRegisterException?: (data:any)=>void}
-): IDataHook {
+        onRegisterException?: (data: any) => void;
+    }
+): IDataHook => {
     const h = hook as (IDataListener & IDataLoadRequest) | undefined;
     return {
         call: () => {
@@ -28,14 +29,14 @@ export function proxyHook(
             h?.registerRemover(remove);
         },
         refreshData: h?.refreshData ?? false,
-        markIsLoading: ()=>{
+        markIsLoading: () => {
             config.onMarkIsLoading?.();
             h?.markIsLoading?.();
         },
         refreshTimestamp: h?.refreshTimestamp,
-        registerException: (exception)=>{
+        registerException: exception => {
             config.onRegisterException?.(exception);
             h?.registerException?.(exception);
         },
     };
-}
+};

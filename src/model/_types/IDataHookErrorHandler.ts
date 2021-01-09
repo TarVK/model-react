@@ -1,6 +1,6 @@
 import {IDataHook} from "./IDataHook";
-import {IDataSource} from "./IDataSource";
 
+/** The error handler for hooks */
 export type IDataHookErrorHandler = {
     /**
      * Handles the given exception that occurred when calling a data hook
@@ -12,7 +12,7 @@ export type IDataHookErrorHandler = {
     (
         exception: any,
         dataSource: any,
-        hook: IDataHook,
+        hook: IDataHook | undefined,
         type: "onCall" | "registerException" | "markIsLoading"
     ): void;
 };

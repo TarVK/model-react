@@ -6,7 +6,7 @@ import { useDataHook } from "../model/dataHooks/useDataHook";
 export const Loader = ({ children, content, onLoad, onError, forceRefreshTime, debounce }) => {
     const [h, { isLoading, getExceptions }] = useDataHook({ forceRefreshTime, debounce });
     const result = (content || children || (() => { }))(h);
-    if (isLoading && isLoading())
+    if (isLoading())
         return React.createElement(React.Fragment, null, onLoad instanceof Function ? onLoad() : onLoad);
     if (getExceptions) {
         const exceptions = getExceptions();

@@ -216,7 +216,7 @@ The library offers some simple data sources:
 -   Field: A data source whose value can be updated.
 -   DataLoader: A data source that retrieves its value from an async callback.
 -   DataCacher: A data source that caches combinations of values of other sources.
--   ActionState: A data source to track states of arbitrary async function calls.
+-   ExecutionState: A data source to track states of arbitrary async function calls.
 -   ManualSourceHelper: A helper class that can be used to add state data to existing variables.
 
 Together with some simple data hooks:
@@ -227,14 +227,12 @@ Together with some simple data hooks:
 -   waitFor: A function to turn a predicate involving a data source into a promise that resolves once the predicate becomes true.
 -   isLoading: A function to extract the loading state out of a `IDataRetriever`.
 -   getExceptions: A function to extract the exceptions out of a `IDataRetriever`.
--   createCallbackHook: A function to create a hook that can be used to get an update callback just once.
 
 And some additional tools:
 
 -   Loader: A react component that uses a render prop to pass the data hook, and renders alternative elements while your data is loading.
 -   LoaderSwitch: A react component that allows you to pass data of your data hook to render alternative elements while your data is loading.
 -   proxyHook: A function to proxy an existing data hook, and call events on updates. Primarily useful for debugging.
--   useActionState: A react hook to easily track the state of arbitrary async function calls, such that a `Loader` or `LoaderSwitch` can be used to show the state.
 -   hookErrorHandler: A module that can be used to change the behavior for when a hook callback errors when triggered.
 
 ## Examples
@@ -254,19 +252,19 @@ A field stores a value, and allows you to change this value at any time.
 #### Interface
 
 ```ts
-interface Field<T> {
+declare class Field<T> {
     /**
      * Creates a new field
      * @param value The initial value of the field
      */
-    new (value: T): Field<T>;
+    constructor(value: T);
 
     /**
      * Retrieves the value of the source
      * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The value that's currently available
      */
-    get(hook: IDataHook): T;
+    get(hook?: IDataHook): T;
 
     /**
      * Sets the new value of the field
@@ -283,7 +281,7 @@ A data loader obtains a value from an asynchronous callback, and reloads it when
 #### Interface
 
 ```ts
-interface DataLoader<T> {
+declare class DataLoader<T> {
     /**
      * Creates a new data loader instance
      * @param loader The function to load the data with
@@ -291,19 +289,19 @@ interface DataLoader<T> {
      * @param dirty Whether the initial value should be overwritten when any data is requested
      * @param loadImmediately Whether the data should already be fetched despite not having been requested yet
      */
-    new (
+    constructor(
         loader: () => Promise<T>,
         initial: T,
         dirty: boolean = true,
         loadImmediately: boolean = false
-    ): DataLoader<T>;
+    );
 
     /**
      * Retrieves the data of the source
      * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The data that's currently available
      */
-    get(hook: IDataHook): T;
+    get(hook?: IDataHook): T;
 
     /**
      * Indicates that this data is no longer up to date and should be reloaded
@@ -312,77 +310,29 @@ interface DataLoader<T> {
 }
 ```
 
-### LoadableField
-
-A loadable field is a combination of a data loader and a field. It will use a data loader to retrieve its initial value, but can be altered like a field. The data loader takes precedence over the value that has been manually set however. This means that by default, when the data loader updates, the loadable field will copy its data overwriting the current data.
-
-#### Interface
-
-```ts
-interface LoadableField<T> {
-    /**
-     * Creates a new field that synchronizes with a data loader.
-     * @param loader The loader to get the data from
-     * @param updater A function to determine the new value of the field
-     */
-    new (
-        loader: IDataRetriever<T>,
-        updater: (
-            newLoaded: T, // The latest value of the loader
-            previousLoaded: T | undefined, // The previous value of the loader
-            current: T // The current value of the field
-        ) => T = defaultUpdater
-    ): LoadableField<T>;
-
-    /**
-     * Retrieves the value of the source
-     * @param hook Data to hook into the meta state and to notify about state changes
-     * @returns The value that's currently available
-     */
-    get(hook: IDataHook): T;
-
-    /**
-     * Sets the new value of the field
-     * @param value The new value
-     */
-    set(value: T): void;
-}
-```
-
-#### Notes
-
-<details>
-<summary>Show notes</summary>
-
-The updater function is used to determine what the value of a field should be whenever someone accesses the data. It will provide the latest value of the loader, the value that the loader had when the updater was previously called and the current value of the field. This data can be combined to determine the new value of the field. The updater that's provided by default looks as follows:
-
-```ts
-const defaultUpdater = (newLoaded: T, previousLoaded: T, current: T) =>
-    newLoaded === previousLoaded ? current : newLoaded;
-```
-
-This results in the field retaining it's last assigned value, unless the loader updated its value. In this case the new loader value is taken instead. Notice that we use shallow equivalence. This may need to be replaced by deep equivalence depending on the data that the loader returns.
-
-</details>
-
 ### DataCacher
 
-A data cacher simply caches a value obtained from other sources. This can be used when you use the data of another source (or multiple sources), but apply a slow transformation on it. The cacher makes sure that not every get request recomputes this value and only recomputes it when one of the sources it depends on asked it to recompute.
+A data cacher simply caches a value obtained from other sources. This can be used when you use the data of another source (or multiple sources), but process them in some way. The cacher makes sure that not every get request recomputes this value and only recomputes it when one of the sources it depends on asked it to recompute.
 
 #### Interface
 
 ```ts
-interface DataCacher<T> {
+declare class DataCacher<T> {
     /**
      * Creates a new data cache, used to reduce number of calls to complex data transformers
      * @param source The function to use to compute the value
+     * @param config Any additional optional configuration
      */
-    new (
+    constructor(
         source: (
             hook: IDataHook, // The data hook to forward the sources
             current: T | undefined // The currently cached value
-        ) => T
-    ): LoadableField<T>;
+        ) => T,
+        config?: {
+            /** A side effect to perform after updating the now newly cached value */
+            onUpdate?: (value: T, previous: T | undefined) => void;
+        }
+    );
 
     /**
      * Retrieves the value of the source
@@ -390,51 +340,114 @@ interface DataCacher<T> {
      * @returns The value that's currently available
      */
     get(hook: IDataHook): T;
+
+    /**
+     * Destroys any potential data hook, making sure there are no memory leaks.
+     * Note that this hook would clean itself up when being called anyhow, so calling destroy is not strictly necessary,
+     * but it prevents potential build up of huge listener arrays that could cause a lag spike when initially called.
+     */
+    destroy(): void;
 }
 ```
 
-### ActionState
+### ExecutionState
 
-A action state is able to keep track of the state of asynchronous actions. This is used to convert promises to meta data that can be read by data hooks. This can for instance be useful when wanting track whether the model is currently saving to the api, such that loaders can be shown accordingly.
+The execution state data source can be used to track whether any functions of a certain type are still processing. This is useful to show the user data is currently saving, and or prevent them from saving again until the previous request finishes.
 
 #### Interface
 
 ```ts
-interface ActionState<T = void> {
+declare class ExecutionState {
     /**
-     * Creates a new action state, used to track the state of async actions/function calls
+     * Creates a new execution state source
      */
-    new(): ActionState<T = void>;
+    constructor();
 
     /**
-     * Retrieves the value of a source
-     * @param hook Data to hook into the meta state and to notify about state changes
-     * @returns The value that's currently available
+     * Retrieves whether any promises are executing
+     * @param hook The hook to subscribe to changes, and store the meta loading state
+     * @returns Whether any promises are still executing
      */
-    get(hook: IDataHook): T[];
+    get(hook?: IDataHook): boolean;
 
     /**
-     * Retrieves the last added action
-     * @param hook Data to hook into the meta state and to notify about state changes
-     * @returns The action data
+     * Retrieves the same result as the `get` method,
+     * except it doesn't pass the loading as meta state to the hook
+     * @param hook The hook to subscribe to changes
+     * @returns Whether any promises are executing
      */
-    getLatest(hook: IDataHook): T | undefined;
+    isLoading(hook?: IDataHook): boolean;
 
     /**
-     * Adds an action to be tracked
-     * @param action The to be called and tracked, or just the result promise of the action
-     * @param reset Whether to remove the old data
-     * @returns The result of the action
+     * Adds a promise for which to keep track of its execution state.
+     * If an asynchronous function is added, it will automatically be invoked.
+     * @param promise The promise to be added
+     * @returns The promise itself, for chaining
      */
-    addAction(
-        action: Promise<T> | (() => Promise<T>),
-        reset: boolean = false
-    ): Promise<T>;
+    add<T>(promise: Promise<T> | (() => Promise<T>)): Promise<T>;
 
     /**
-     * Removes the results of previous actions
+     * Removes a promise which may have been aded before
+     * @param promise The promise to be removed
+     * @returns Whether the promise was present, and not already resolved
      */
-    reset(): void;
+    remove(promise: Promise<any>): boolean;
+}
+```
+
+### ManualSourceHelper
+
+The ManualSourceHelper isn't strictly a data source of its own, but can be used to create a custom data source. This class can manage all of the hook data. Such that you only have to mange the real source data itself, and trigger changes using the helper when necessary.
+
+#### Interface
+
+```ts
+declare class ManualSourceHelper {
+    /**
+     * Creates a new manual source helper
+     * @param onLoadRequest The callback to make when a hook requests a data (re)load
+     */
+    constructor(onLoadRequest?: (time?: number) => void);
+
+    /**
+     * Sets any exceptions that may have occurred in the source
+     * @param exceptions The exceptions to pass to listeners
+     * @param suppressUpdate Whether to suppress calling the listeners
+     */
+    setExceptions(
+        exceptions: any[] | readonly any[],
+        suppressUpdate: boolean = this.exceptions == exceptions
+    ): void;
+
+    /**
+     * Retrieves the exceptions that the source currently indicate to have
+     * @returns The exceptions
+     */
+    getExceptions(): readonly any[];
+
+    /**
+     * Sets whether this source is loading
+     * @param loading Whether the source is loading
+     * @param suppressUpdate Whether to suppress calling the listeners
+     */
+    setLoading(loading: boolean, suppressUpdate: boolean = this.loading == loading): void;
+
+    /**
+     * Retrieves whether the source currently indicates to be loading
+     * @returns Whether the source indicates to be loading
+     */
+    getLoading(): boolean;
+
+    /**
+     * Adds a listener for this field
+     * @param listener The listener to add
+     */
+    addListener(listener?: any): void;
+
+    /**
+     * Signals all listeners that data has been altered
+     */
+    callListeners(): void;
 }
 ```
 
@@ -453,14 +466,18 @@ The main hook that allows you to connect component lifecycles with data sources.
  * Retrieves a hook that can be used to listen to data from data sources,
  * such that the component rerenders upon data changes.
  * It also returns a function to determine whether the data is still loading, or has errored.
- * @param forceRefreshTime The time such that if data is older, it will be refreshed
+ * @param options  Configuration options
  * @returns The data hook followed by contextual data
  */
-function useDataHook(
-    forceRefreshTime?: number
-): [
-    // The retriever params that can be passed to any data retriever call
-    IDataRetrieverParams,
+declare function useDataHook(config?: {
+    /** The time such that if data is older, it will be refreshed */
+    forceRefreshTime?: number;
+    /** The number of milliseconds to debounce updates, -1 to forward changes synchronously, defaults to 0 */
+    debounce?: number;
+    /** Code to call when a data update occurred */
+    onChange?: () => void;
+}): [
+    IDataListener & IDataLoadRequest,
     {
         // Retrieves whether any obtained data is currently loading
         isLoading: () => boolean;
@@ -475,6 +492,8 @@ function useDataHook(
 
 <details>
 <summary>Show notes</summary>
+
+##### Meta data
 
 The `isLoading` and `getExceptions` functions retrieve the data corresponding to retrieve calls that have been made using the return retriever params. If you try to call them before calling a retriever, it won't work as intended.
 
@@ -498,11 +517,20 @@ const data = source.get(l);
 
 This is why the Loader and LoaderSwitch component are particularly useful. By design of React's html element resolution, the `isLoading` and `getExceptions` functions passed to the loader will be invoked after the current element has finished executing its code block.
 
+##### Debounce
+
+By default the debounce delay is set to 0. This means that if multiple updates occur in the same cycle, react won't try to rerender multiple times. This delay can be increased for sources that may update very frequently, or set to -1 for an instantaneous response.
+
+##### forceRefreshTime
+
+`forceRefreshTime` can be used to make sure the shown data is never from before a given time.
+When this value (numeric timestamp) is provided, data will automatically refresh when too old at time of requesting the data.
+
 </details>
 
 ### getAsync
 
-getAsync can be used to transform a loadable data retriever into an async data fetch that resolves when all data finished loading.
+`getAsync` can be used to transform a loadable data retriever into an async data fetch that resolves when all data finished loading.
 
 #### Interface
 
@@ -513,7 +541,7 @@ getAsync can be used to transform a loadable data retriever into an async data f
  * @param forceRefreshTime The time such that if data is older, it will be refreshed
  * @returns A promise with the result after all data sources finished loading/refreshing
  */
-function getAsync<T>(
+declare function getAsync<T>(
     getter: (hook: IDataLoadRequest & IDataListener) => T,
     forceRefreshTime?: number
 ): Promise<T>;
@@ -528,6 +556,97 @@ Since a data retriever may consist of multiple data sources, multiple errors may
 
 </details>
 
+### Observer
+
+The observer class can be used to change a data retriever in a more traditional event based system. The observer can add listeners that will automatically be called whenever the observed data changes.
+
+#### Interface
+
+```ts
+declare class Observer<T> {
+    /**
+     * Creates a new observer
+     * @param getter The target data to observe
+     * @param options Any additional configuration options
+     */
+    constructor(
+        getter: IDataRetriever<T> | IDataSource<T>,
+        {
+            init = false,
+            debounce = 0,
+            refreshData = true,
+        }: {
+            /** Whether to call the getter, even without any listeners present */
+            init?: boolean;
+            /** The number of milliseconds to debounce updates, -1 to forward changes synchronously, defaults to 0 */
+            debounce?: number;
+            /** Whether to force data to load if it's not present yet (won't load E.G. data loaders if false), defaults to true */
+            refreshData?: boolean;
+        } = {}
+    );
+
+    /**
+     * Adds a listener to the observer
+     * @param listener The listener to add
+     * @param initCall Whether to call the listener with the initial value
+     * @returns This, for method chaining
+     */
+    listen(listener: IObserverListener<T>, initCall?: boolean): this;
+
+    /**
+     * Removes a listener from the observer
+     * @param listener The listener to remove
+     * @returns Whether the listener was removed
+     */
+    removeListener(listener: IObserverListener<T>): boolean;
+
+    /**
+     * Destroys the observer, preventing it from listening to the target
+     */
+    destroy(): void;
+}
+
+type IObserverListener<T> =
+    /**
+     * Listens for data changes in the model
+     * @param data The main data provided by the model
+     * @param meta The meta data of the getter
+     * @param previous The previous value provided by the model (it may not be reliable if initCall=true)
+     */
+    (
+        data: T,
+        meta: {readonly isLoading: boolean; readonly exceptions: readonly any[]},
+        previous: T
+    ) => void;
+```
+
+#### Notes
+
+<details>
+<summary>Show notes</summary>
+
+The forceRefreshTime and debounce time behave the same as in [useDataHook](#useDataHook).
+
+The `previous` value that listeners receive, may be the same as the current value at the initial call in case `initCall` is used.
+
+</details>
+
+### waitFor
+
+`waitFor` can be used to transform a predicate data retriever into a promise that only resolves once the predicate holds.
+This should only be used in situations where it's guaranteed that the predicate will eventually hold, in order to prevent memory leaks.
+
+#### Interface
+
+```ts
+/**
+ * Waits for a condition to become true
+ * @param condition The getter to get the condition result from
+ * @returns A promise that resolves once the condition is met
+ */
+declare function waitFor(condition: (hook: IDataHook) => boolean): Promise<void>;
+```
+
 ### isLoading
 
 isLoading can be used to extract the info of whether a data retriever is currently loading. It won't load any data itself like getAsync does, but just extracts a retriever's state.
@@ -540,7 +659,7 @@ isLoading can be used to extract the info of whether a data retriever is current
  * @param getter The getter to get the loading state from
  * @returns Whether the getter is loading
  */
-function isLoading(getter: (h: IDataHook) => void): boolean;
+declare function isLoading(getter: (h: IDataHook) => void): boolean;
 ```
 
 ### getExceptions
@@ -555,7 +674,7 @@ getExceptions can be used to extract the exceptions a data retriever might have 
  * @param getter The getter to get the loading state from
  * @returns The exceptions that were thrown by the getter
  */
-function getExceptions(getter: (h: IDataHook) => void): any[];
+declare function getExceptions(getter: (h: IDataHook) => void): any[];
 ```
 
 ## Tools
@@ -569,7 +688,7 @@ The loader switch component can be used to easily deal with representing the sta
 #### Interface
 
 ```ts
-const LoaderSwitch: FC<{
+declare const LoaderSwitch: FC<{
     /** An alias for content */
     children?: ReactNode;
     /** The content to show when there are no exceptions and data loaded */
@@ -592,7 +711,7 @@ The loader component can be used in the same situations as the loader switch, bu
 #### Interface
 
 ```ts
-const Loader: FC<{
+declare const Loader: FC<{
     /** An alias for content */
     children?: (hook: IDataHook) => ReactNode;
     /** The content to show when there are no exceptions and data loaded */
@@ -601,69 +720,92 @@ const Loader: FC<{
     onLoad?: ReactNode | (() => ReactNode);
     /** The node to show if an error occured */
     onError?: ReactNode | ((exceptions: any[]) => ReactNode);
+    /** The time such that if data is older, it will be refreshed */
+    forceRefreshTime?: number;
+    /** The number of milliseconds to debounce updates, -1 to forward changes synchronously, defaults to 0 */
+    debounce?: number;
 }>;
 ```
 
-### useActionState
+#### Notes
 
-useActionState can be used to create a local ActionState data source. This source can be used to capture the state of asynchronous actions, in order to use the Loader or LoaderSwitch to visualize the loading state and or exceptions.
+<details>
+<summary>Show notes</summary>
+
+The forceRefreshTime and debounce time behave the same as in [useDataHook](#useDataHook).
+
+</details>
+
+### proxyHook
+
+The `proxyHook` function can be used to wrap a hook, in order to proxy it. This way you can add additional callbacks when the hook is called, exceptions are registered or a source is indicated to be loading.
+This can be useful while debugging, when you're not quite sure which source causes a certain behavior.
 
 #### Interface
 
 ```ts
 /**
- * Creates a function to use the async state of a
- * @param hook The data hook to forward the state to
- * @param latest Whether to only retrieve the last added action
- * @returns A function that promises can be wrapped with to track their state, a function to reset the state (mainly errors), and all the results
+ * Proxies a data hook, can be used for debugging
+ * @param hook The hook to be proxied
+ * @param config The config for events to listen for
+ * @returns The proxied hook
  */
-export function useActionState<T = void>(
-    hook: IDataHook,
-    latest?: false
-): [
-    (
-        /** The action to add, whose value will be returned */
-        action: Promise<T> | (() => Promise<T>),
-        /** Whether to reset the state of previously added actions */
-        reset?: boolean
-    ) => Promise<T>,
-    () => void,
-    T[]
-];
+declare function proxyHook(
+    hook: IDataHook | undefined,
+    config: {
+        /** The callback to perform when the hook is getting called */
+        onCall?: () => void;
+        /** The callback to perform when the data source indicates to be loading */
+        onMarkIsLoading?: () => void;
+        /** The callback to perform when the data source registers an exception */
+        onRegisterException?: (data: any) => void;
+    }
+): IDataHook;
 ```
 
-<details>
-<summary> Or get only get the last of the action values by specifying true for parameter latest </summary>
+### hookErrorHandler
+
+When a hook provides a callback that a source calls. It's possible that this callback itself errors.
+These errors should be caught to prevent other (unrelated) parts of the program from not working.
+`hookErrorHandler` provides a setter for a function that deals with these errors, and a function to call this handler. The default behavior is to forward all data to `console.error`.
+
+#### Interface
 
 ```ts
 /**
- * Creates a function to use the async state of a
- * @param hook The data hook to forward the state to
- * @param latest Whether to only retrieve the last added action
- * @returns A function that promises can be wrapped with to track their state, a function to reset the state (mainly errors), and the last result
+ * Sets the handler to call when a hook's call results in an error
+ * @param handler The handler to call
  */
-function useActionState<T = void>(
-    hook: IDataHook,
-    latest: true
-): [
-    (
-        /** The action to add, whose value will be returned */
-        action: Promise<T> | (() => Promise<T>),
-        /** Whether to reset the state of previously added actions */
-        reset?: boolean
-    ) => Promise<T>,
-    () => void,
-    T | undefined
-];
-```
+declare function setHookErrorHandler(handler: IDataHookErrorHandler): void;
 
-</details>
+/**
+ * Handles the error that occurred when calling a data hook
+ */
+declare const handleHookError: IDataHookErrorHandler;
+
+/** The error handler for hooks */
+type IDataHookErrorHandler = {
+    /**
+     * Handles the given exception that occurred when calling a data hook
+     * @param exception The exception that occurred
+     * @param dataSource The data source that invoked the hook
+     * @param hook The hook that got called
+     * @param type The type of the call that errored
+     */
+    (
+        exception: any,
+        dataSource: any,
+        hook: IDataHook | undefined,
+        type: "onCall" | "registerException" | "markIsLoading"
+    ): void;
+};
+```
 
 # Limitations
 
 ## Efficiency
 
-Since this system relies on updating observers, a large number of calls might be made before the data is actually finalized. This might be rather inefficient, and this should be considered when making complex transformers. One could also make their own DataRetriever that does some debouncing to reduce the load. This technique isn't yet included in the library however, since the provided behavior is sufficient in most situations.
+Since this system relies on updating observers, a large number of calls might be made before the data is actually finalized. This might be rather inefficient, and this should be considered when making complex transformers (in which case dataCachers are also recommended).
 
 # Contributing
 
@@ -685,8 +827,8 @@ yarn install
 In addition, if trying to run the examples with the local model-react instance, replace:
 
 ```
-"model-react": "^3.0.0",
-"react": "^16.8.6",
+"model-react": "^4.0.0",
+"react": "^17.0.1",
 ```
 
 by

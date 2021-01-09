@@ -23,7 +23,7 @@ export const Loader: FC<{
     const [h, {isLoading, getExceptions}] = useDataHook({forceRefreshTime, debounce});
     const result = (content || children || (() => {}))(h);
 
-    if (isLoading && isLoading())
+    if (isLoading())
         return <>{onLoad instanceof Function ? onLoad() : onLoad}</>;
 
     if (getExceptions) {

@@ -4,5 +4,6 @@ export type INavItem =
           icon?: JSX.Element;
           children?: INavItem[];
           content?: JSX.Element;
+          apiLink?: string[];
       }
     | {divider: true};

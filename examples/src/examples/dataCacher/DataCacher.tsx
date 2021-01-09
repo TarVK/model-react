@@ -1,12 +1,5 @@
 import React, {FC, useState} from "react";
-import {
-    Field,
-    DataCacher,
-    DataLoader,
-    useDataHook,
-    Loader,
-    IDataRetriever,
-} from "model-react";
+import {Field, DataCacher, useDataHook, IDataRetriever} from "model-react";
 
 // Create some standard components
 const SomeInput: FC<{field: Field<string>}> = ({field}) => {

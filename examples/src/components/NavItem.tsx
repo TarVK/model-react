@@ -30,7 +30,10 @@ export const NavItem: FC<{
             <ListItem
                 button
                 onClick={onClickCallback}
-                style={{paddingLeft: theme.spacing(2) + depth * theme.spacing(2)}}>
+                style={{
+                    padding: 0,
+                    paddingLeft: theme.spacing(2) + depth * theme.spacing(2),
+                }}>
                 {item.icon && <ListItemIcon>{item.icon}</ListItemIcon>}
                 <ListItemText primary={item.name} />
                 {item.children && (opened ? <ExpandLess /> : <ExpandMore />)}

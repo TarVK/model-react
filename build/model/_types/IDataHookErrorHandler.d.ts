@@ -7,6 +7,6 @@ export declare type IDataHookErrorHandler = {
      * @param hook The hook that got called
      * @param type The type of the call that errored
      */
-    (exception: any, dataSource: any, hook: IDataHook, type: "onCall" | "registerException" | "markIsLoading"): void;
+    (exception: any, dataSource: any, hook: IDataHook | undefined, type: "onCall" | "registerException" | "markIsLoading"): void;
 };
 //# sourceMappingURL=IDataHookErrorHandler.d.ts.map
