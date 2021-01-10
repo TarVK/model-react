@@ -22,7 +22,7 @@ npm install model-react --save
 
 ## JavaScript
 
-The example described below can be directly tested on [codesandbox](https://codesandbox.io/s/github/TarVK/model-react/tree/master/examples/JS?file=/src/quickStart.jsx).
+The example described below can be directly tested on [codesandbox](https://codesandbox.io/s/github/TarVK/model-react/tree/V3/examples/JS?file=/src/quickStart.jsx).
 
 ```jsx
 import {Field, useDataHook} from "model-react";
@@ -87,7 +87,7 @@ render(
 
 ## TypeScript
 
-The example described below can be directly tested on [codesandbox](https://codesandbox.io/s/github/TarVK/model-react/tree/master/examples/TS?file=/src/quickStart.jsx).
+The example described below can be directly tested on [codesandbox](https://codesandbox.io/s/github/TarVK/model-react/tree/V3/examples/TS?file=/src/quickStart.jsx).
 
 <details><summary>Code</summary>
 
@@ -165,7 +165,7 @@ Model-react primarily consists of 1 design pattern, together with surrounding to
 Model data (data of some data model) that should be accessible from a react component, should implement the IDataRetriever interface:
 
 ```ts
-type IDataRetriever<T> = (hook: IDataHook) => T;
+type IDataRetriever<T> = (hook?: IDataHook) => T;
 ```
 
 Where IDataHook is defined as:
