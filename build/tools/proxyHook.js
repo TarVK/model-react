@@ -4,7 +4,7 @@
  * @param config The config for events to listen for
  * @returns The proxied hook
  */
-export function proxyHook(hook, config) {
+export const proxyHook = (hook, config) => {
     var _a;
     const h = hook;
     return {
@@ -23,11 +23,11 @@ export function proxyHook(hook, config) {
             (_b = h === null || h === void 0 ? void 0 : h.markIsLoading) === null || _b === void 0 ? void 0 : _b.call(h);
         },
         refreshTimestamp: h === null || h === void 0 ? void 0 : h.refreshTimestamp,
-        registerException: (exception) => {
+        registerException: exception => {
             var _a, _b;
             (_a = config.onRegisterException) === null || _a === void 0 ? void 0 : _a.call(config, exception);
             (_b = h === null || h === void 0 ? void 0 : h.registerException) === null || _b === void 0 ? void 0 : _b.call(h, exception);
         },
     };
-}
+};
 //# sourceMappingURL=proxyHook.js.map

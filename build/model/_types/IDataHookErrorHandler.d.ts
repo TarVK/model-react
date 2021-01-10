@@ -1,4 +1,5 @@
 import { IDataHook } from "./IDataHook";
+/** The error handler for hooks */
 export declare type IDataHookErrorHandler = {
     /**
      * Handles the given exception that occurred when calling a data hook

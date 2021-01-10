@@ -1,1 +1,1 @@
-{"version":3,"file":"waitFor.d.ts","sourceRoot":"","sources":["../../../src/model/dataHooks/waitFor.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,qBAAqB,CAAC;AAGhD;;;;GAIG;AACH,wBAAsB,OAAO,CAAC,SAAS,EAAE,CAAC,IAAI,EAAE,SAAS,KAAK,OAAO,GAAG,OAAO,CAAC,IAAI,CAAC,CAIpF"}
+{"version":3,"file":"waitFor.d.ts","sourceRoot":"","sources":["../../../src/model/dataHooks/waitFor.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAC,MAAM,qBAAqB,CAAC;AAG9C;;;;GAIG;AACH,eAAO,MAAM,OAAO,qBAA4B,SAAS,KAAK,OAAO,KAAG,QAAQ,IAAI,CAG9E,CAAC"}

@@ -14,10 +14,13 @@ export declare const useDataHook: ({ forceRefreshTime, debounce, onChange, }?: {
     debounce?: number | undefined;
     /** Code to call when a data update occurred */
     onChange?: (() => void) | undefined;
-}) => [IDataListener & IDataLoadRequest, {
-    /** Retrieves whether any obtained data is currently loading */
-    isLoading: () => boolean;
-    /** Retrieves the exceptions that may have occurred while loading */
-    getExceptions: () => any[];
-}];
+}) => [
+    IDataListener & IDataLoadRequest,
+    {
+        /** Retrieves whether any obtained data is currently loading */
+        isLoading: () => boolean;
+        /** Retrieves the exceptions that may have occurred while loading */
+        getExceptions: () => any[];
+    }
+];
 //# sourceMappingURL=useDataHook.d.ts.map

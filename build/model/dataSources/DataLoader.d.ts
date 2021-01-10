@@ -4,7 +4,7 @@ import { IDataHook } from "../_types/IDataHook";
 /**
  * A data source that can be used to convert an asynchronous loader into a synchronous data retriever with loading state
  */
-export declare class DataLoader<T> extends AbstractDataSource<T> {
+export declare class DataLoader<T, K extends T = T> extends AbstractDataSource<T> {
     protected data: T;
     protected dirty: boolean;
     protected lastLoadTime: number;
@@ -18,7 +18,7 @@ export declare class DataLoader<T> extends AbstractDataSource<T> {
      * @param dirty Whether the initial value should be overwritten when any data is requested
      * @param loadImmediately Whether the data should already be fetched despite not having been requested yet
      */
-    constructor(loader: () => Promise<T>, initial: T, dirty?: boolean, loadImmediately?: boolean);
+    constructor(loader: () => Promise<K>, initial: T, dirty?: boolean, loadImmediately?: boolean);
     /**
      * Retrieves the value of a source
      * @param hook Data to hook into the meta state and to notify about state changes

@@ -5,12 +5,12 @@ import { IDataHook } from "../model/_types/IDataHook";
  * @param config The config for events to listen for
  * @returns The proxied hook
  */
-export declare function proxyHook(hook: IDataHook | undefined, config: {
+export declare const proxyHook: (hook: IDataHook | undefined, config: {
     /** The callback to perform when the hook is getting called */
-    onCall?: () => void;
+    onCall?: (() => void) | undefined;
     /** The callback to perform when the data source indicates to be loading */
-    onMarkIsLoading?: () => void;
+    onMarkIsLoading?: (() => void) | undefined;
     /** The callback to perform when the data source registers an exception */
-    onRegisterException?: (data: any) => void;
-}): IDataHook;
+    onRegisterException?: ((data: any) => void) | undefined;
+}) => IDataHook;
 //# sourceMappingURL=proxyHook.d.ts.map

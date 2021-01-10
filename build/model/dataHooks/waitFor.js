@@ -13,13 +13,11 @@ import { getAsync } from "./getAsync";
  * @param condition The getter to get the condition result from
  * @returns A promise that resolves once the condition is met
  */
-export function waitFor(condition) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield getAsync(h => {
-            var _a;
-            if (!condition(h))
-                (_a = h.markIsLoading) === null || _a === void 0 ? void 0 : _a.call(h);
-        });
+export const waitFor = (condition) => __awaiter(void 0, void 0, void 0, function* () {
+    return getAsync(h => {
+        var _a;
+        if (!condition(h))
+            (_a = h.markIsLoading) === null || _a === void 0 ? void 0 : _a.call(h);
     });
-}
+});
 //# sourceMappingURL=waitFor.js.map

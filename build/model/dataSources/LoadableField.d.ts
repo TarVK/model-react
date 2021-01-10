@@ -1,6 +1,7 @@
 import { IDataRetriever } from "../_types/IDataRetriever";
 import { IDataHook } from "../_types/IDataHook";
 import { Field } from "./Field";
+/** A class to create fields that get their initial value from a data retriever */
 export declare class LoadableField<T> extends Field<T> {
     protected loader: IDataRetriever<T>;
     protected previousLoaded: T | undefined;
@@ -22,12 +23,18 @@ export declare class LoadableField<T> extends Field<T> {
      * @param hook Data to hook into the meta state and to notify about state changes
      * @returns The value that's currently available
      */
-    get(hook: IDataHook): T;
+    get(hook?: IDataHook): T;
     /**
      * Retrieves the data from the loader,
      * and desides whether it should overwrite the field value
      * @param hook Data to hook into the meta state and to notify about state changes
      */
-    protected updateValue(hook: IDataHook): void;
+    protected updateValue(hook?: IDataHook): void;
+    /**
+     * Retrieves whether the value has been altered compared to the retriever
+     * @param hook Data to hook into the meta state and to notify about state changes
+     * @returns Whether the value has been altered
+     */
+    isDirty(hook?: IDataHook): boolean;
 }
 //# sourceMappingURL=LoadableField.d.ts.map
