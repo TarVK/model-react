@@ -1,7 +1,7 @@
 import React, {FC} from "react";
-import {Field, useDataHook, proxyHook} from "model-react";
+import {Field, useDataHook, proxyHook, IDataRetriever} from "model-react";
 
-// Pass a field as a prop to the element, and use the data hook to stay synced with it
+// Create some standard components
 const SomeInput: FC<{field: Field<string>}> = ({field}) => {
     const [h] = useDataHook();
     return (
@@ -12,15 +12,14 @@ const SomeInput: FC<{field: Field<string>}> = ({field}) => {
         />
     );
 };
-
-// You can then have another element that uses the same field somewhere, and it will stay synced
-const SomeOutput: FC<{field: Field<string>}> = ({field}) => {
+const SomeOutput: FC<{dataRetriever: IDataRetriever<string>}> = ({dataRetriever}) => {
     const [h] = useDataHook();
     return (
         <div>
-            {field.get(
+            {dataRetriever(
+                // Proxy the hook in order to execute additional code on a callback
                 proxyHook(h, {
-                    onCall: () => console.log(field.get()),
+                    onCall: () => console.log(dataRetriever()),
                 })
             )}
         </div>
@@ -34,7 +33,7 @@ const field = new Field("hoi");
 export default (
     <div>
         <SomeInput field={field} />
-        <SomeOutput field={field} />
+        <SomeOutput dataRetriever={h => field.get(h)} />
         Check the console
     </div>
 );

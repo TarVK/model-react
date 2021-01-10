@@ -8,6 +8,7 @@ import field from "./examples/field/Field?example";
 import dataLoader from "./examples/dataLoader/DataLoader?example";
 import loaderSwitch from "./examples/loaderSwitch/LoaderSwitch?example";
 import loader from "./examples/loader/Loader?example";
+import loadableField from "./examples/loadableField/LoadableField?example";
 import refreshData from "./examples/refreshData/refreshData?example";
 import exceptions from "./examples/exceptions/exceptions?example";
 import virtualDataSource from "./examples/virtualDataSource/virtualDataSource?example";
@@ -17,10 +18,13 @@ import getAsync from "./examples/getAsync/getAsync?example";
 import observer from "./examples/observer/Observer?example";
 import waitFor from "./examples/waitFor/waitFor?example";
 import getState from "./examples/getState/getState?example";
-import createCallbackHook from "./examples/createCallbackHook/createCallbackHook?example";
 import proxyHook from "./examples/proxyHook/proxyHook?example";
 import ManualSourceHelper from "./examples/manualSourceHelper/ManualSourceHelper?example";
 import hookErrorHandler from "./examples/hookErrorHandler/hookErrorHandler?example";
+
+import transform from "./advancedExamples/transform/transform?example";
+import alterableApi from "./advancedExamples/alterableApi/alterableAPI?example";
+import api from "./advancedExamples/api/API?example";
 
 ReactDOM.render(
     <AppLayout
@@ -45,6 +49,11 @@ ReactDOM.render(
                         content: <Example {...loader} />,
                         apiLink: ["@Loader"],
                     },
+                    {
+                        name: "LoadableField",
+                        content: <Example {...loadableField} />,
+                        apiLink: ["@LoadableField"],
+                    },
                     {name: "Force refresh time", content: <Example {...refreshData} />},
                     {name: "Exceptions", content: <Example {...exceptions} />},
                     {
@@ -64,7 +73,7 @@ ReactDOM.render(
                     {
                         name: "GetAsync",
                         content: <Example {...getAsync} />,
-                        apiLink: ["@getASync"],
+                        apiLink: ["@getAsync"],
                     },
                     {
                         name: "Observer",
@@ -96,6 +105,20 @@ ReactDOM.render(
                         content: <Example {...hookErrorHandler} />,
                         apiLink: ["@hookErrorHandler"],
                     },
+                ],
+            },
+            {
+                name: "Advanced examples",
+                children: [
+                    {
+                        name: "Transforming data",
+                        content: <Example {...transform} />,
+                    },
+                    {
+                        name: "Alterable remote API",
+                        content: <Example {...alterableApi} />,
+                    },
+                    {name: "Remote API", content: <Example {...api} />},
                 ],
             },
         ]}

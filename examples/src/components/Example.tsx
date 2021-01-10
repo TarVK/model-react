@@ -95,21 +95,21 @@ export const Example: FC<{
                 {showJs.get(h) ? (
                     <SyntaxHighlighter
                         language="jsx"
+                        style={vs}
                         lineProps={{
                             style: {wordBreak: "break-all", whiteSpace: "pre-wrap"},
                         }}
-                        wrapLines
-                        style={vs}>
+                        wrapLines>
                         {JS}
                     </SyntaxHighlighter>
                 ) : (
                     <SyntaxHighlighter
                         language="tsx"
+                        style={vs}
                         lineProps={{
                             style: {wordBreak: "break-all", whiteSpace: "pre-wrap"},
                         }}
-                        wrapLines
-                        style={vs}>
+                        wrapLines>
                         {TS}
                     </SyntaxHighlighter>
                 )}

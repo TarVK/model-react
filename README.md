@@ -215,6 +215,7 @@ The library offers some simple data sources:
 
 -   Field: A data source whose value can be updated.
 -   DataLoader: A data source that retrieves its value from an async callback.
+-   LoadableField: A data source whose value is loaded from a data retriever, but can be changed like a field
 -   DataCacher: A data source that caches combinations of values of other sources.
 -   ExecutionState: A data source to track states of arbitrary async function calls.
 -   ManualSourceHelper: A helper class that can be used to add state data to existing variables.
@@ -309,6 +310,67 @@ declare class DataLoader<T> {
     markDirty(): void;
 }
 ```
+
+### LoadableField
+
+A loadable field is a combination of a data retriever and a field. It will use a data retriever to retrieve its initial value, but can be altered like a field.
+The data loader takes precedence over the value that has been manually set however. This means that by default, when the data loader updates, the loadable field will copy its data overwriting the current data.
+
+#### Interface
+
+```ts
+declare class LoadableField<T> {
+    /**
+     * Creates a new field that synchronizes with a data loader.
+     * @param loader The loader to get the data from
+     * @param updater A function to determine the new value of the field
+     */
+    constructor(
+        loader: IDataRetriever<T>,
+        updater: (
+            newLoaded: T, // The latest value of the loader
+            previousLoaded: T | undefined, // The previous value of the loader
+            current: T // The current value of the field
+        ) => T = defaultUpdater
+    );
+
+    /**
+     * Retrieves the value of the source
+     * @param hook Data to hook into the meta state and to notify about state changes
+     * @returns The value that's currently available
+     */
+    get(hook?: IDataHook): T;
+
+    /**
+     * Sets the new value of the field
+     * @param value The new value
+     */
+    set(value: T): void;
+
+    /**
+     * Retrieves whether the value has been altered compared to the retriever
+     * @param hook Data to hook into the meta state and to notify about state changes
+     * @returns Whether the value has been altered
+     */
+    isDirty(hook?: IDataHook): boolean;
+}
+```
+
+#### Notes
+
+<details>
+<summary>Show notes</summary>
+
+The updater function is used to determine what the value of a field should be whenever someone accesses the data. It will be supplied with the latest value of the loader, the value that the loader had when the updater was previously called and the current value of the field. This data can be combined to determine the new value of the field. The updater that's provided by default looks as follows:
+
+```ts
+const defaultUpdater = (newLoaded: T, previousLoaded: T, current: T) =>
+    newLoaded === previousLoaded ? current : newLoaded;
+```
+
+This results in the field retaining it's last assigned value, unless the loader updated its value. In this case the new loader value is taken instead. Notice that we use shallow equivalence. This may need to be replaced by deep equivalence depending on the data that the loader returns.
+
+</details>
 
 ### DataCacher
 
@@ -818,27 +880,11 @@ Some things that I do want to add at some point are:
 
 ## Environment setup
 
-within the main directory, examples and demo run:
+within the main directory, examples, and demo install dependencies by running:
 
 ```
 yarn install
 ```
-
-In addition, if trying to run the examples with the local model-react instance, replace:
-
-```
-"model-react": "^4.0.0",
-"react": "^17.0.1",
-```
-
-by
-
-```
-"model-react": "link:../..",
-"react": "link:../../node_modules/react",
-```
-
-in the example's package.json before calling yarn install
 
 ## Environment usage
 

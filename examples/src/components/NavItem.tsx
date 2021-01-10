@@ -33,6 +33,7 @@ export const NavItem: FC<{
                 style={{
                     padding: 0,
                     paddingLeft: theme.spacing(2) + depth * theme.spacing(2),
+                    paddingRight: theme.spacing(1),
                 }}>
                 {item.icon && <ListItemIcon>{item.icon}</ListItemIcon>}
                 <ListItemText primary={item.name} />

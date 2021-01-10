@@ -1,12 +1,5 @@
 import React, {FC} from "react";
-import {
-    Field,
-    handleHookError,
-    IDataHook,
-    Observer,
-    setHookErrorHandler,
-    useDataHook,
-} from "model-react";
+import {Field, Observer, setHookErrorHandler, useDataHook} from "model-react";
 
 // Create some standard components
 const SomeInput: FC<{field: Field<string>}> = ({field}) => {
@@ -30,7 +23,6 @@ const observer = new Observer(h => field.get(h)).listen(() => {
 setHookErrorHandler((exception, dataSource, hook, type) => {
     alert(exception);
 });
-console.log(setHookErrorHandler);
 
 // Render some 'app' element that shows an input
 export default (

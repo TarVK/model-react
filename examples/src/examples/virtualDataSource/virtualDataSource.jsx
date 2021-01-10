@@ -1,6 +1,7 @@
 import React from "react";
 import {Field, useDataHook} from "model-react";
 
+// Create some standard components
 const SomeInput = ({field}) => {
     const [h] = useDataHook();
     return (
@@ -20,14 +21,14 @@ const SomeOutput = ({dataRetriever}) => {
 const field1 = new Field("hoi");
 const field2 = new Field("bye");
 
-// Create a 'transformer' that combines or transforms source data
-const transformer = h => `${field1.get(h)} - ${field2.get(h)}`;
+// Create a 'virtual data source' that combines or transforms source data
+const virtualSource = h => `${field1.get(h)} - ${field2.get(h)}`;
 
 // Render some 'app' element that shows the two fields and combined output
 export default (
     <div>
         <SomeInput field={field1} />
         <SomeInput field={field2} />
-        <SomeOutput dataRetriever={transformer} />
+        <SomeOutput dataRetriever={virtualSource} />
     </div>
 );

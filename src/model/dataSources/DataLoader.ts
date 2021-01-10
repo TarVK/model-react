@@ -6,7 +6,7 @@ import {handleHookError} from "../../tools/hookErrorHandler";
 /**
  * A data source that can be used to convert an asynchronous loader into a synchronous data retriever with loading state
  */
-export class DataLoader<T> extends AbstractDataSource<T> {
+export class DataLoader<T, K extends T = T> extends AbstractDataSource<T> {
     // The currently loaded data
     protected data: T;
 
@@ -31,7 +31,7 @@ export class DataLoader<T> extends AbstractDataSource<T> {
      * @param loadImmediately Whether the data should already be fetched despite not having been requested yet
      */
     constructor(
-        loader: () => Promise<T>,
+        loader: () => Promise<K>,
         initial: T,
         dirty: boolean = true,
         loadImmediately: boolean = false

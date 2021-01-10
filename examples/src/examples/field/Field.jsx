@@ -1,4 +1,4 @@
-import React, {FC} from "react";
+import React from "react";
 import {Field, useDataHook} from "model-react";
 
 // Pass a field as a prop to the element, and use the data hook to stay synced with it

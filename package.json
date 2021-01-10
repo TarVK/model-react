@@ -32,10 +32,10 @@
     "devDependencies": {
         "@types/react": "^17.0.0",
         "@types/react-dom": "^17.0.0",
-        "react-dom": "^17.0.1",
         "react": "^17.0.1",
+        "react-dom": "^17.0.1",
         "ts-loader": "^6.0.2",
-        "typescript": "^3.5.1",
+        "typescript": "^4.0.2",
         "webpack": "^4.32.2",
         "webpack-cli": "^3.3.2",
         "webpack-dev-server": "^3.5.0"

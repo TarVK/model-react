@@ -1,5 +1,5 @@
-import {Field, useDataHook, IDataHook} from "model-react";
-import React, {FC} from "react";
+import {Field, useDataHook} from "model-react";
+import React from "react";
 
 
 

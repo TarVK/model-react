@@ -1,0 +1,1 @@
+Sometimes data should be loaded from a remote place, but alterable locally. This is what a LoadableField can be used for. It retrieves its initial value as well as future updates from a data retriever, but can update the value locally.

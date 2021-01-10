@@ -4,10 +4,9 @@ import {DataLoader, getAsync, getExceptions, isLoading} from "model-react";
 // Create a data source
 export const loadableSource = new DataLoader(async () => {
     // Fake api: https://reqres.in/
-    const apiUrl = "https://reqres.in/api/users?page=2";
-    const delayedUrl = `http://slowwly.robertomurray.co.uk/delay/3000/url/${apiUrl}`;
-    const {data} = await (await fetch(delayedUrl)).json();
-    return data[0].first_name as string;
+    const apiUrl = "https://reqres.in/api/users?delay=3";
+    const {data} = await (await fetch(apiUrl)).json();
+    return data[0].first_name;
 }, "test");
 
 // Create a function to force load the data
