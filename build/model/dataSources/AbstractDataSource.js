@@ -1,6 +1,9 @@
-import { isDataListener } from "../_types/IDataListener";
-import { handleHookError } from "../../tools/hookErrorHandler";
-export class AbstractDataSource {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AbstractDataSource = void 0;
+const IDataListener_1 = require("../_types/IDataListener");
+const hookErrorHandler_1 = require("../../tools/hookErrorHandler");
+class AbstractDataSource {
     constructor() {
         // Data listeners to notify when data has changed
         this.listeners = [];
@@ -10,7 +13,7 @@ export class AbstractDataSource {
      * @param listener The listener to add
      */
     addListener(listener) {
-        if (isDataListener(listener) && this.listeners.indexOf(listener) === -1) {
+        if (IDataListener_1.isDataListener(listener) && this.listeners.indexOf(listener) === -1) {
             this.listeners.push(listener);
             listener.registerRemover(() => {
                 const index = this.listeners.indexOf(listener);
@@ -29,9 +32,10 @@ export class AbstractDataSource {
                 listener.call();
             }
             catch (e) {
-                handleHookError(e, this, listener, "onCall");
+                hookErrorHandler_1.handleHookError(e, this, listener, "onCall");
             }
         });
     }
 }
+exports.AbstractDataSource = AbstractDataSource;
 //# sourceMappingURL=AbstractDataSource.js.map

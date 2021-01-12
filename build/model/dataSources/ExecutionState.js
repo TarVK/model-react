@@ -1,10 +1,13 @@
-import { handleHookError } from "../../tools/hookErrorHandler";
-import { isDataLoadRequest } from "../_types/IDataLoadRequest";
-import { AbstractDataSource } from "./AbstractDataSource";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ExecutionState = void 0;
+const hookErrorHandler_1 = require("../../tools/hookErrorHandler");
+const IDataLoadRequest_1 = require("../_types/IDataLoadRequest");
+const AbstractDataSource_1 = require("./AbstractDataSource");
 /**
  * A class to keep track of executing promises
  */
-export class ExecutionState extends AbstractDataSource {
+class ExecutionState extends AbstractDataSource_1.AbstractDataSource {
     constructor() {
         super(...arguments);
         this.executing = [];
@@ -18,12 +21,12 @@ export class ExecutionState extends AbstractDataSource {
         var _a;
         super.addListener(hook);
         if (this.executing.length > 0) {
-            if (isDataLoadRequest(hook)) {
+            if (IDataLoadRequest_1.isDataLoadRequest(hook)) {
                 try {
                     (_a = hook.markIsLoading) === null || _a === void 0 ? void 0 : _a.call(hook);
                 }
                 catch (e) {
-                    handleHookError(e, this, hook, "markIsLoading");
+                    hookErrorHandler_1.handleHookError(e, this, hook, "markIsLoading");
                 }
             }
             return true;
@@ -70,4 +73,5 @@ export class ExecutionState extends AbstractDataSource {
         return false;
     }
 }
+exports.ExecutionState = ExecutionState;
 //# sourceMappingURL=ExecutionState.js.map

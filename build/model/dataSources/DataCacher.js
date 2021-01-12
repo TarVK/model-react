@@ -1,10 +1,13 @@
-import { AbstractDataSource } from "./AbstractDataSource";
-import { isDataLoadRequest } from "../_types/IDataLoadRequest";
-import { handleHookError } from "../../tools/hookErrorHandler";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DataCacher = void 0;
+const AbstractDataSource_1 = require("./AbstractDataSource");
+const IDataLoadRequest_1 = require("../_types/IDataLoadRequest");
+const hookErrorHandler_1 = require("../../tools/hookErrorHandler");
 /**
  * A class to create a data combiner, and cache the results
  */
-export class DataCacher extends AbstractDataSource {
+class DataCacher extends AbstractDataSource_1.AbstractDataSource {
     /**
      * Creates a new data cache, used to reduce number of calls to complex data transformers
      * @param source The function to use to compute the value
@@ -28,7 +31,7 @@ export class DataCacher extends AbstractDataSource {
     updateIfRequired(params) {
         var _a;
         // Make sure we don't have a dependency already, unless we want to force reload
-        const refreshTimestamp = isDataLoadRequest(params) && params.refreshData
+        const refreshTimestamp = IDataLoadRequest_1.isDataLoadRequest(params) && params.refreshData
             ? params.refreshTimestamp !== undefined &&
                 params.refreshTimestamp > this.lastLoadTime
                 ? params.refreshTimestamp
@@ -80,7 +83,7 @@ export class DataCacher extends AbstractDataSource {
      * @param hook Data used to notify about state changes
      */
     forwardState(hook) {
-        if (isDataLoadRequest(hook)) {
+        if (IDataLoadRequest_1.isDataLoadRequest(hook)) {
             if (hook.registerException)
                 this.exceptions.forEach(exception => {
                     var _a;
@@ -88,7 +91,7 @@ export class DataCacher extends AbstractDataSource {
                         (_a = hook.registerException) === null || _a === void 0 ? void 0 : _a.call(hook, exception);
                     }
                     catch (e) {
-                        handleHookError(e, this, hook, "registerException");
+                        hookErrorHandler_1.handleHookError(e, this, hook, "registerException");
                     }
                 });
             if (this.loading && hook.markIsLoading)
@@ -96,7 +99,7 @@ export class DataCacher extends AbstractDataSource {
                     hook.markIsLoading();
                 }
                 catch (e) {
-                    handleHookError(e, this, hook, "markIsLoading");
+                    hookErrorHandler_1.handleHookError(e, this, hook, "markIsLoading");
                 }
         }
     }
@@ -121,4 +124,5 @@ export class DataCacher extends AbstractDataSource {
         this.dependencyRemovers = [];
     }
 }
+exports.DataCacher = DataCacher;
 //# sourceMappingURL=DataCacher.js.map

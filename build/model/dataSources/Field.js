@@ -1,8 +1,11 @@
-import { AbstractDataSource } from "./AbstractDataSource";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Field = void 0;
+const AbstractDataSource_1 = require("./AbstractDataSource");
 /**
  * A simple field class that can be used to store data that may change over time
  */
-export class Field extends AbstractDataSource {
+class Field extends AbstractDataSource_1.AbstractDataSource {
     /**
      * Creates a new field
      * @param value The initial value of the field
@@ -29,4 +32,5 @@ export class Field extends AbstractDataSource {
         this.callListeners();
     }
 }
+exports.Field = Field;
 //# sourceMappingURL=Field.js.map

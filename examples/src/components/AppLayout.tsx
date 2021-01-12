@@ -82,7 +82,7 @@ export const AppLayout: FC<{items: INavItem[]}> = ({items}) => {
 
     const drawer = (
         <div>
-            <Box className={classes.version}>Version 4.0.0</Box>
+            <Box className={classes.version}>Version 4.0.1</Box>
             <Divider />
             <List>
                 {items.map((item, i) => (

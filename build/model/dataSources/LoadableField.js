@@ -1,7 +1,10 @@
-import { Field } from "./Field";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LoadableField = void 0;
+const Field_1 = require("./Field");
 const defaultUpdater = (newLoaded, previousLoaded, current) => newLoaded === previousLoaded ? current : newLoaded;
 /** A class to create fields that get their initial value from a data retriever */
-export class LoadableField extends Field {
+class LoadableField extends Field_1.Field {
     /**
      * Creates a new field that synchronizes with a data loader.
      * @param loader The loader to get the data from
@@ -41,4 +44,5 @@ export class LoadableField extends Field {
         return this.get(hook) != this.previousLoaded;
     }
 }
+exports.LoadableField = LoadableField;
 //# sourceMappingURL=LoadableField.js.map

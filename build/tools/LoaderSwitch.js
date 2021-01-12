@@ -1,8 +1,11 @@
-import * as React from "react"; // Required for fragment as separate import due to some config settings
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LoaderSwitch = void 0;
+const React = require("react"); // Required for fragment as separate import due to some config settings
 /**
  * A component to handle the loading or error state of loadable data sources
  */
-export const LoaderSwitch = ({ children, content, onLoad, onError, isLoading, getExceptions }) => {
+const LoaderSwitch = ({ children, content, onLoad, onError, isLoading, getExceptions }) => {
     if (isLoading && isLoading() && onLoad)
         return React.createElement(React.Fragment, null, onLoad instanceof Function ? onLoad() : onLoad);
     if (getExceptions && onError) {
@@ -12,4 +15,5 @@ export const LoaderSwitch = ({ children, content, onLoad, onError, isLoading, ge
     }
     return React.createElement(React.Fragment, null, (content || children));
 };
+exports.LoaderSwitch = LoaderSwitch;
 //# sourceMappingURL=LoaderSwitch.js.map

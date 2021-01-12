@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -7,13 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getAsync = void 0;
 /**
  * Transforms a normal data getter into a promise that resolves when the data is loaded
  * @param getter The getter function call, which applies the hook
  * @param forceRefreshTime The time such that if data is older, it will be refreshed
  * @returns A promise with the result after all data sources finished loading/refreshing
  */
-export const getAsync = (getter, forceRefreshTime) => __awaiter(void 0, void 0, void 0, function* () {
+const getAsync = (getter, forceRefreshTime) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((res, rej) => {
         /**
          * Performs a data poll, and return the data if it's up to data,
@@ -54,4 +57,5 @@ export const getAsync = (getter, forceRefreshTime) => __awaiter(void 0, void 0, 
         poll();
     });
 });
+exports.getAsync = getAsync;
 //# sourceMappingURL=getAsync.js.map

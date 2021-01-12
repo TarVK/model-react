@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -7,13 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { AbstractDataSource } from "./AbstractDataSource";
-import { isDataLoadRequest } from "../_types/IDataLoadRequest";
-import { handleHookError } from "../../tools/hookErrorHandler";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DataLoader = void 0;
+const AbstractDataSource_1 = require("./AbstractDataSource");
+const IDataLoadRequest_1 = require("../_types/IDataLoadRequest");
+const hookErrorHandler_1 = require("../../tools/hookErrorHandler");
 /**
  * A data source that can be used to convert an asynchronous loader into a synchronous data retriever with loading state
  */
-export class DataLoader extends AbstractDataSource {
+class DataLoader extends AbstractDataSource_1.AbstractDataSource {
     /**
      * Creates a new data loader instance, used to create a data source for async data getters
      * @param loader The function to load the data with
@@ -41,7 +44,7 @@ export class DataLoader extends AbstractDataSource {
     get(hook) {
         super.addListener(hook);
         // Handle any load request
-        if (isDataLoadRequest(hook))
+        if (IDataLoadRequest_1.isDataLoadRequest(hook))
             this.handleDataLoadRequest(hook);
         // Return the current data
         return this.data;
@@ -61,7 +64,7 @@ export class DataLoader extends AbstractDataSource {
                 request.markIsLoading();
             }
             catch (e) {
-                handleHookError(e, this, request, "markIsLoading");
+                hookErrorHandler_1.handleHookError(e, this, request, "markIsLoading");
             }
         // Forward exceptions
         if (this.exception && request.registerException)
@@ -69,7 +72,7 @@ export class DataLoader extends AbstractDataSource {
                 request.registerException(this.exception);
             }
             catch (e) {
-                handleHookError(e, this, request, "registerException");
+                hookErrorHandler_1.handleHookError(e, this, request, "registerException");
             }
     }
     /**
@@ -107,4 +110,5 @@ export class DataLoader extends AbstractDataSource {
         this.callListeners();
     }
 }
+exports.DataLoader = DataLoader;
 //# sourceMappingURL=DataLoader.js.map

@@ -1,8 +1,11 @@
-import { handleHookError } from "../../tools/hookErrorHandler";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Observer = void 0;
+const hookErrorHandler_1 = require("../../tools/hookErrorHandler");
 /**
  * A data hook to listen to a stream of changes
  */
-export class Observer {
+class Observer {
     /**
      * Creates a new observer
      * @param getter The target data to observe
@@ -89,7 +92,7 @@ export class Observer {
                     listener(this.value, meta, this.previousValue);
                 }
                 catch (e) {
-                    handleHookError(e, this, undefined, "onCall");
+                    hookErrorHandler_1.handleHookError(e, this, undefined, "onCall");
                 }
             });
             this.previousValue = this.value;
@@ -104,7 +107,7 @@ export class Observer {
                         listener(this.value, meta, this.previousValue);
                     }
                     catch (e) {
-                        handleHookError(e, this, undefined, "onCall");
+                        hookErrorHandler_1.handleHookError(e, this, undefined, "onCall");
                     }
                 });
                 this.previousValue = this.value;
@@ -147,4 +150,5 @@ export class Observer {
         return false;
     }
 }
+exports.Observer = Observer;
 //# sourceMappingURL=Observer.js.map

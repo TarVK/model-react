@@ -1,10 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.proxyHook = void 0;
 /**
  * Proxies a data hook, can be used for debugging
  * @param hook The hook to be proxied
  * @param config The config for events to listen for
  * @returns The proxied hook
  */
-export const proxyHook = (hook, config) => {
+const proxyHook = (hook, config) => {
     var _a;
     const h = hook;
     return {
@@ -30,4 +33,5 @@ export const proxyHook = (hook, config) => {
         },
     };
 };
+exports.proxyHook = proxyHook;
 //# sourceMappingURL=proxyHook.js.map

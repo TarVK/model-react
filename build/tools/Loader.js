@@ -1,10 +1,13 @@
-import * as React from "react"; // Required for fragment as separate import due to some config settings
-import { useDataHook } from "../model/dataHooks/useDataHook";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Loader = void 0;
+const React = require("react"); // Required for fragment as separate import due to some config settings
+const useDataHook_1 = require("../model/dataHooks/useDataHook");
 /**
  * A component to handle the loading or error state of loadable data sources
  */
-export const Loader = ({ children, content, onLoad, onError, forceRefreshTime, debounce }) => {
-    const [h, { isLoading, getExceptions }] = useDataHook({ forceRefreshTime, debounce });
+const Loader = ({ children, content, onLoad, onError, forceRefreshTime, debounce }) => {
+    const [h, { isLoading, getExceptions }] = useDataHook_1.useDataHook({ forceRefreshTime, debounce });
     const result = (content || children || (() => { }))(h);
     if (isLoading())
         return React.createElement(React.Fragment, null, onLoad instanceof Function ? onLoad() : onLoad);
@@ -15,4 +18,5 @@ export const Loader = ({ children, content, onLoad, onError, forceRefreshTime, d
     }
     return React.createElement(React.Fragment, null, result);
 };
+exports.Loader = Loader;
 //# sourceMappingURL=Loader.js.map

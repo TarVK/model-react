@@ -1,10 +1,13 @@
-import { handleHookError } from "../../tools/hookErrorHandler";
-import { isDataListener } from "../_types/IDataListener";
-import { isDataLoadRequest } from "../_types/IDataLoadRequest";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ManualSourceHelper = void 0;
+const hookErrorHandler_1 = require("../../tools/hookErrorHandler");
+const IDataListener_1 = require("../_types/IDataListener");
+const IDataLoadRequest_1 = require("../_types/IDataLoadRequest");
 /**
  * A class to help with creating advanced manual data sources
  */
-export class ManualSourceHelper {
+class ManualSourceHelper {
     /**
      * Creates a new manual source helper
      * @param onLoadRequest The callback to make when a hook requests a data (re)load
@@ -57,13 +60,13 @@ export class ManualSourceHelper {
      * @param listener The listener to add
      */
     addListener(listener) {
-        if (isDataLoadRequest(listener)) {
+        if (IDataLoadRequest_1.isDataLoadRequest(listener)) {
             if (listener.markIsLoading && this.loading)
                 try {
                     listener.markIsLoading();
                 }
                 catch (e) {
-                    handleHookError(e, this, listener, "markIsLoading");
+                    hookErrorHandler_1.handleHookError(e, this, listener, "markIsLoading");
                 }
             if (listener.registerException)
                 this.exceptions.forEach(ex => {
@@ -72,13 +75,13 @@ export class ManualSourceHelper {
                         (_a = listener.registerException) === null || _a === void 0 ? void 0 : _a.call(listener, ex);
                     }
                     catch (e) {
-                        handleHookError(e, this, listener, "registerException");
+                        hookErrorHandler_1.handleHookError(e, this, listener, "registerException");
                     }
                 });
             if (listener.refreshData && this.onLoadRequest)
                 this.onLoadRequest(listener.refreshTimestamp);
         }
-        if (isDataListener(listener) && this.listeners.indexOf(listener) === -1) {
+        if (IDataListener_1.isDataListener(listener) && this.listeners.indexOf(listener) === -1) {
             this.listeners.push(listener);
             listener.registerRemover(() => {
                 const index = this.listeners.indexOf(listener);
@@ -95,4 +98,5 @@ export class ManualSourceHelper {
         listenersCopy.forEach(listener => listener.call());
     }
 }
+exports.ManualSourceHelper = ManualSourceHelper;
 //# sourceMappingURL=ManualSourceHelper.js.map
