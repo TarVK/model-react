@@ -1,6 +1,8 @@
 import {IDataLoadRequest} from "../_types/IDataLoadRequest";
 import {IDataListener} from "../_types/IDataListener";
 import {useState, useEffect, useRef} from "react";
+import {IUseDataHookConfig} from "../_types/IUseDataHookConfig";
+import {IUseDataHookState} from "../_types/IUseDataHookState";
 
 /**
  * Retrieves a hook that can be used to listen to data from data sources,
@@ -13,28 +15,7 @@ export const useDataHook = ({
     forceRefreshTime,
     debounce = 0,
     onChange,
-}: {
-    /** The time such that if data is older, it will be refreshed */
-    forceRefreshTime?: number;
-    /** The number of milliseconds to debounce updates, -1 to forward changes synchronously, defaults to 0 */
-    debounce?: number;
-    /** Code to call when a data update occurred */
-    onChange?: {
-        /**
-         * A callback when a data update occurred
-         * @param unmounted Whether the component already unmounted by now
-         */
-        (unmounted?: boolean): void;
-    };
-} = {}): [
-    IDataListener & IDataLoadRequest,
-    {
-        /** Retrieves whether any obtained data is currently loading */
-        isLoading: () => boolean;
-        /** Retrieves the exceptions that may have occurred while loading */
-        getExceptions: () => any[];
-    }
-] => {
+}: IUseDataHookConfig = {}): [IDataListener & IDataLoadRequest, IUseDataHookState] => {
     // A fake state in order to force an update
     const [, _update] = useState({});
     const update = () => {
