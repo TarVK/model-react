@@ -13,7 +13,7 @@ export declare const useDataHook: ({ forceRefreshTime, debounce, onChange, }?: {
     /** The number of milliseconds to debounce updates, -1 to forward changes synchronously, defaults to 0 */
     debounce?: number | undefined;
     /** Code to call when a data update occurred */
-    onChange?: (() => void) | undefined;
+    onChange?: ((unmounted?: boolean | undefined) => void) | undefined;
 }) => [
     IDataListener & IDataLoadRequest,
     {

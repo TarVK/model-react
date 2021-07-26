@@ -28,7 +28,14 @@ const useDataHook = ({ forceRefreshTime, debounce = 0, onChange, } = {}) => {
         dependencyRemovers.current = [];
     };
     removeDependencies();
-    react_1.useEffect(() => removeDependencies, []);
+    react_1.useEffect(() => () => {
+        removeDependencies();
+        // Dispose the timeout
+        if (updateTimeout.current) {
+            clearTimeout(updateTimeout.current);
+            onChange === null || onChange === void 0 ? void 0 : onChange(true);
+        }
+    }, []);
     return [
         Object.assign({ 
             // Data listener fields
@@ -47,7 +54,8 @@ const useDataHook = ({ forceRefreshTime, debounce = 0, onChange, } = {}) => {
             // Data loading fields
             refreshData: true, markIsLoading() {
                 isRefreshing = true;
-            }, registerException(exception) {
+            },
+            registerException(exception) {
                 exceptions.push(exception);
             } }, (forceRefreshTime !== undefined && { refreshTimestamp: forceRefreshTime })),
         // Return the function that retrieves if any data is refreshing
