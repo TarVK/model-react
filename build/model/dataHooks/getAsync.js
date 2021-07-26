@@ -33,9 +33,11 @@ const getAsync = (getter, forceRefreshTime) => __awaiter(void 0, void 0, void 0,
                     removeListeners();
                     // Poll again if any state changed
                     poll();
-                }, registerRemover(remover) {
+                },
+                registerRemover(remover) {
                     listenerRemovers.push(remover);
-                }, markIsLoading() {
+                },
+                markIsLoading() {
                     isRefreshing = true;
                 }, refreshData: true, registerException(exception) {
                     exceptions.push(exception);
