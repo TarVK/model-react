@@ -19,7 +19,13 @@ export const useDataHook = ({
     /** The number of milliseconds to debounce updates, -1 to forward changes synchronously, defaults to 0 */
     debounce?: number;
     /** Code to call when a data update occurred */
-    onChange?: () => void;
+    onChange?: {
+        /**
+         * A callback when a data update occurred
+         * @param unmounted Whether the component already unmounted by now
+         */
+        (unmounted?: boolean): void;
+    };
 } = {}): [
     IDataListener & IDataLoadRequest,
     {
@@ -50,7 +56,18 @@ export const useDataHook = ({
         dependencyRemovers.current = [];
     };
     removeDependencies();
-    useEffect(() => removeDependencies, []);
+    useEffect(
+        () => () => {
+            removeDependencies();
+
+            // Dispose the timeout
+            if (updateTimeout.current) {
+                clearTimeout(updateTimeout.current);
+                onChange?.(true);
+            }
+        },
+        []
+    );
     return [
         // Return the listener which will force an update, and registers whether any data is refreshing
         {
