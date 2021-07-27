@@ -21,6 +21,7 @@ import getState from "./examples/getState/getState?example";
 import proxyHook from "./examples/proxyHook/proxyHook?example";
 import ManualSourceHelper from "./examples/manualSourceHelper/ManualSourceHelper?example";
 import hookErrorHandler from "./examples/hookErrorHandler/hookErrorHandler?example";
+import useMemoDataHook from "./examples/useMemoDataHook/useMemoDataHook?example";
 
 import transform from "./advancedExamples/transform/transform?example";
 import alterableApi from "./advancedExamples/alterableApi/alterableAPI?example";
@@ -104,6 +105,11 @@ ReactDOM.render(
                         name: "HookErrorHandler",
                         content: <Example {...hookErrorHandler} />,
                         apiLink: ["@hookErrorHandler"],
+                    },
+                    {
+                        name: "UseMemoDataHook",
+                        content: <Example {...useMemoDataHook} />,
+                        apiLink: ["@useMemoDataHook"],
                     },
                 ],
             },

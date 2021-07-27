@@ -739,6 +739,36 @@ getExceptions can be used to extract the exceptions a data retriever might have 
 declare function getExceptions(getter: (h: IDataHook) => void): any[];
 ```
 
+### useMemoDataHook
+
+useMemoDataHook can be used to combine the functionality of useMemo and useDataHook. It allows you to memoize some value that's computed using subscribable data, by providing a datahook in the computation function.
+
+#### Interface
+
+```ts
+/**
+ * Acts like the regular `useMemo` function, except it provides a data hook that can be used for retrieval.
+ * `useDataHook` itself shouldn't be used in combination with `useMemo`, see: https://github.com/TarVK/model-react/issues/40.
+ * @param dataRetriever The data retriever that computes the value
+ * @param dependencies The dependencies that make the memoized value recompute on changes
+ * @param config Additional configuration to use for the data hook
+ * @returns The cached data, as well as the additional data hook data
+ */
+declare function useMemoDataHook<D>(
+    dataRetriever: IDataRetriever<D>,
+    dependencies: React.DependencyList,
+    config?: IUseDataHookConfig
+): [
+    D,
+    {
+        /** Retrieves whether any obtained data is currently loading */
+        isLoading: () => boolean;
+        /** Retrieves the exceptions that may have occurred while loading */
+        getExceptions: () => any[];
+    }
+];
+```
+
 ## Tools
 
 Model-react provides a couple of simple components that make dealing with loadable sources easier
